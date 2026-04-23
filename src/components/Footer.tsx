@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <img src={logo} alt="Удачная Плитка" className="h-14 w-auto brightness-0 invert mb-4" />
+            <img src={logo} alt="Удачная Плитка" className="h-20 w-auto brightness-0 invert mb-4" />
             <p className="text-primary-foreground/60 text-sm leading-relaxed">
               Уют • Порядок • Надёжность
             </p>
