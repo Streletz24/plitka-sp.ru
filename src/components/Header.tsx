@@ -1,22 +1,47 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const navLinks = [
-  { label: "Преимущества", href: "#advantages" },
-  { label: "Каталог", href: "#catalog" },
-  { label: "О компании", href: "#about" },
-  { label: "Галерея", href: "#gallery" },
-  { label: "Отзывы", href: "#reviews" },
-  { label: "Контакты", href: "#contact" },
+  { label: "Преимущества", href: "advantages" },
+  { label: "Каталог", href: "catalog" },
+  { label: "О компании", href: "about" },
+  { label: "Галерея", href: "gallery" },
+  { label: "Отзывы", href: "reviews" },
+  { label: "Контакты", href: "contact" },
 ];
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/#" + sectionId);
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setMenuOpen(false);
+  };
+
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8">
-        <a href="#" className="flex items-center gap-3">
+        <a href="/" onClick={handleLogoClick} className="flex items-center gap-3">
           <img src={logo} alt="Удачная Плитка" className="h-32 lg:h-40 w-auto" />
         </a>
 
@@ -24,7 +49,8 @@ const Header = () => {
           {navLinks.map((link) => (
             <a
               key={link.href}
-              href={link.href}
+              href={`/#${link.href}`}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300"
             >
               {link.label}
@@ -37,7 +63,8 @@ const Header = () => {
             +7 (916) 133-50-56
           </a>
           <a
-            href="#contact"
+            href={`/#contact`}
+            onClick={(e) => handleNavClick(e, "contact")}
             className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
           >
             Консультация
@@ -64,9 +91,9 @@ const Header = () => {
           {navLinks.map((link) => (
             <a
               key={link.href}
-              href={link.href}
+              href={`/#${link.href}`}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="block text-sm font-medium text-foreground/80 hover:text-primary py-2"
-              onClick={() => setMenuOpen(false)}
             >
               {link.label}
             </a>
@@ -75,9 +102,9 @@ const Header = () => {
             +7 (916) 133-50-56
           </a>
           <a
-            href="#contact"
+            href={`/#contact`}
+            onClick={(e) => handleNavClick(e, "contact")}
             className="block bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
-            onClick={() => setMenuOpen(false)}
           >
             Консультация
           </a>
