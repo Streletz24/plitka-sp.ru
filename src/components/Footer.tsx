@@ -26,8 +26,8 @@ const Footer = () => {
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Контакты</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
-              <p>+7 (900) 123-45-67</p>
-              <p>info@udachnaya-plitka.ru</p>
+              <p>+7 (916) 133-50-56</p>
+              <p>petrov321@yandex.ru</p>
               <p>г. Москва, ул. Примерная, 1</p>
             </div>
           </div>
