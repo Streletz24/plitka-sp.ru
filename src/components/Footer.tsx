@@ -28,13 +28,13 @@ const Footer = () => {
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Мы на карте</h4>
             <a
-              href="https://yandex.ru/maps/?pt=38.131389,56.315278&z=17&l=map"
+              href="https://yandex.ru/maps/?pt=38.1649728,56.2939722&z=17&l=map"
               target="_blank"
               rel="noopener noreferrer"
               className="block rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
             >
               <iframe
-                src="https://yandex.ru/map-widget/v1/?ll=38.131389%2C56.315278&z=16&pt=38.131389%2C56.315278%2Cpm2rdm"
+                src="https://yandex.ru/map-widget/v1/?ll=38.1649728%2C56.2939722&z=16&pt=38.1649728%2C56.2939722%2Cpm2rdm"
                 width="100%"
                 height="180"
                 style={{ border: 0, pointerEvents: "none" }}
