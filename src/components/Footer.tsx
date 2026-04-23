@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -51,8 +51,16 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center text-primary-foreground/40 text-sm">
-          © 2025 Удачная Плитка. Все права защищены.
+        <div className="border-t border-primary-foreground/10 mt-12 pt-8 flex flex-col items-center gap-4">
+          <Link
+            to="/prices"
+            className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
+          >
+            Наши цены
+          </Link>
+          <span className="text-primary-foreground/40 text-sm">
+            © 2025 Удачная Плитка. Все права защищены.
+          </span>
         </div>
       </div>
     </footer>

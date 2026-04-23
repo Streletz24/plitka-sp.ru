@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const navLinks = [
@@ -59,6 +59,12 @@ const Header = () => {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
+          <Link
+            to="/prices"
+            className="bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
+          >
+            Наши цены
+          </Link>
           <a href="tel:+79161335056" className="text-sm font-semibold text-foreground">
             +7 (916) 133-50-56
           </a>
@@ -101,6 +107,13 @@ const Header = () => {
           <a href="tel:+79161335056" className="block text-sm font-semibold text-foreground py-2">
             +7 (916) 133-50-56
           </a>
+          <Link
+            to="/prices"
+            className="block bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
+            onClick={() => setMenuOpen(false)}
+          >
+            Наши цены
+          </Link>
           <a
             href={`/#contact`}
             onClick={(e) => handleNavClick(e, "contact")}
