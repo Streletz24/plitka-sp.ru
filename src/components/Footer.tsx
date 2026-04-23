@@ -27,18 +27,22 @@ const Footer = () => {
 
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Мы на карте</h4>
-            <div className="rounded-lg overflow-hidden">
+            <a
+              href="https://yandex.ru/maps/?pt=38.131389,56.315278&z=17&l=map"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+            >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2209.5!2d38.1305!3d56.3153!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTbCsDE4JzU1LjEiTiAzOMKwMDcnNDkuOCJF!5e0!3m2!1sru!2sru!4v1"
+                src="https://yandex.ru/map-widget/v1/?ll=38.131389%2C56.315278&z=16&pt=38.131389%2C56.315278%2Cpm2rdm"
                 width="100%"
                 height="180"
-                style={{ border: 0 }}
+                style={{ border: 0, pointerEvents: "none" }}
                 allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
                 title="Удачная Плитка на карте"
               />
-            </div>
+            </a>
           </div>
 
           <div>
