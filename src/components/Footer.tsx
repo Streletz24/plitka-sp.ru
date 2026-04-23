@@ -26,7 +26,6 @@ const Footer = () => {
           </div>
 
           <div>
-          <div>
             <h4 className="text-primary-foreground font-bold mb-4">Мы на карте</h4>
             <div className="rounded-lg overflow-hidden">
               <iframe
