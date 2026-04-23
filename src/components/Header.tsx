@@ -17,7 +17,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8">
         <a href="#" className="flex items-center gap-3">
-          <img src={logo} alt="Удачная Плитка" className="h-16 lg:h-20 w-auto" />
+          <img src={logo} alt="Удачная Плитка" className="h-32 lg:h-40 w-auto" />
         </a>
 
         <nav className="hidden lg:flex items-center gap-8">
