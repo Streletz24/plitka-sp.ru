@@ -33,10 +33,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-primary-foreground font-bold mb-4">Мессенджеры</h4>
+            <h4 className="text-primary-foreground font-bold mb-4">Мессенджер</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
               <a href="#" className="block hover:text-primary-foreground transition-colors">WhatsApp</a>
-              <a href="#" className="block hover:text-primary-foreground transition-colors">Telegram</a>
             </div>
           </div>
         </div>
