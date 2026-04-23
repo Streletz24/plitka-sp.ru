@@ -26,12 +26,6 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-primary-foreground font-bold mb-4">Мессенджер</h4>
-            <div className="space-y-2 text-primary-foreground/60 text-sm">
-              <a href="#" className="block hover:text-primary-foreground transition-colors">Max</a>
-            </div>
-          </div>
-
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Мы на карте</h4>
             <div className="rounded-lg overflow-hidden">
@@ -45,6 +39,13 @@ const Footer = () => {
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Удачная Плитка на карте"
               />
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-primary-foreground font-bold mb-4">Мессенджер</h4>
+            <div className="space-y-2 text-primary-foreground/60 text-sm">
+              <a href="#" className="block hover:text-primary-foreground transition-colors">Max</a>
             </div>
           </div>
         </div>
