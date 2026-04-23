@@ -44,8 +44,7 @@ const Footer = () => {
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Часы работы</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
-              <p>Пн–Пт: 8:00–17:00</p>
-              <p className="pl-4 text-xs">(обед 12:00–13:00)</p>
+              <p>Пн–Пт: 8:00–17:00 (обед 12:00–13:00)</p>
               <p>Сб: 9:00–12:00</p>
               <p>Вс: выходной</p>
             </div>
