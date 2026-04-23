@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { catalogCategories } from "@/data/catalogData";
 import Header from "@/components/Header";
@@ -6,6 +7,10 @@ import { AnimateOnScroll } from "@/components/AnimateOnScroll";
 
 const CatalogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
   const category = catalogCategories.find((c) => c.slug === slug);
 
   if (!category) {
