@@ -6,13 +6,6 @@ const Footer = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <img src={logo} alt="Удачная Плитка" className="h-20 w-auto brightness-0 invert mb-4" />
-            <p className="text-primary-foreground/60 text-sm leading-relaxed">
-              Уют • Порядок • Надёжность
-            </p>
-          </div>
-
-          <div>
             <h4 className="text-primary-foreground font-bold mb-4">Меню</h4>
             <div className="space-y-2">
               {["Каталог", "О компании", "Галерея", "Отзывы", "Контакты"].map((item) => (
@@ -36,6 +29,22 @@ const Footer = () => {
             <h4 className="text-primary-foreground font-bold mb-4">Мессенджер</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
               <a href="#" className="block hover:text-primary-foreground transition-colors">Max</a>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-primary-foreground font-bold mb-4">Мы на карте</h4>
+            <div className="rounded-lg overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2209.5!2d38.1305!3d56.3153!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTbCsDE4JzU1LjEiTiAzOMKwMDcnNDkuOCJF!5e0!3m2!1sru!2sru!4v1"
+                width="100%"
+                height="180"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Удачная Плитка на карте"
+              />
             </div>
           </div>
         </div>
