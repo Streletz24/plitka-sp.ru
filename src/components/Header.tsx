@@ -60,6 +60,13 @@ const Header = () => {
 
         <div className="hidden lg:flex items-center gap-4">
           <Link
+            to="/sale"
+            className="relative inline-flex items-center gap-2 bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase tracking-wider shadow-lg animate-sale-pulse hover:scale-110 transition-transform"
+          >
+            <span className="text-base">🔥</span>
+            Распродажа
+          </Link>
+          <Link
             to="/prices"
             className="bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
           >
@@ -107,6 +114,13 @@ const Header = () => {
           <a href="tel:+79161335056" className="block text-sm font-semibold text-foreground py-2">
             +7 (916) 133-50-56
           </a>
+          <Link
+            to="/sale"
+            className="block bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase text-center shadow-md animate-sale-pulse"
+            onClick={() => setMenuOpen(false)}
+          >
+            🔥 Распродажа
+          </Link>
           <Link
             to="/prices"
             className="block bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
