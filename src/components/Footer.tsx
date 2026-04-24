@@ -1,6 +1,30 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+const footerNavLinks = [
+  { label: "Преимущества", href: "advantages" },
+  { label: "Каталог", href: "catalog" },
+  { label: "О компании", href: "about" },
+  { label: "Галерея", href: "gallery" },
+  { label: "Отзывы", href: "reviews" },
+  { label: "Контакты", href: "contact" },
+];
 
 const Footer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/#" + sectionId);
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <footer className="bg-foreground py-16">
       <div className="container mx-auto px-4 lg:px-8">
@@ -8,9 +32,14 @@ const Footer = () => {
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Меню</h4>
             <div className="space-y-2">
-              {["Каталог", "О компании", "Галерея", "Отзывы", "Контакты"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="block text-primary-foreground/60 text-sm hover:text-primary-foreground transition-colors">
-                  {item}
+              {footerNavLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={`/#${item.href}`}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="block text-primary-foreground/60 text-sm hover:text-primary-foreground transition-colors"
+                >
+                  {item.label}
                 </a>
               ))}
             </div>
