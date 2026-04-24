@@ -40,6 +40,10 @@
     --warm-gray: 30 5% 63%;
     --sand-light: 36 30% 90%;
 
+    --sale: 0 85% 55%;
+    --sale-foreground: 0 0% 100%;
+    --sale-glow: 25 100% 55%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
