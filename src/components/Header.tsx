@@ -61,7 +61,7 @@ const Header = () => {
         <div className="hidden lg:flex items-center gap-4">
           <Link
             to="/sale"
-            className="relative inline-flex items-center gap-2 bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase tracking-wider shadow-lg animate-sale-pulse hover:scale-110 transition-transform"
+            className="relative inline-flex items-center gap-2 bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase tracking-wider shadow-lg hover:scale-110 transition-transform"
           >
             <span className="text-base">🔥</span>
             Распродажа
@@ -116,7 +116,7 @@ const Header = () => {
           </a>
           <Link
             to="/sale"
-            className="block bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase text-center shadow-md animate-sale-pulse"
+            className="block bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase text-center shadow-md"
             onClick={() => setMenuOpen(false)}
           >
             🔥 Распродажа
