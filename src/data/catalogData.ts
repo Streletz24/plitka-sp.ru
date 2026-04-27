@@ -17,6 +17,9 @@ import tileParquetRed from "@/assets/tile-parquet-red.jpg";
 import tileWoodYellow from "@/assets/tile-wood-yellow.webp";
 import tileWoodGray from "@/assets/tile-wood-gray.webp";
 import tileWoodRed from "@/assets/tile-wood-red.webp";
+import tileCloverYellow from "@/assets/tile-clover-yellow.webp";
+import tileCloverGray from "@/assets/tile-clover-gray.webp";
+import tileCloverRed from "@/assets/tile-clover-red.jpg";
 
 export interface ProductColor {
   name: string;
@@ -53,6 +56,36 @@ export const catalogCategories: CatalogCategory[] = [
     fullDescription:
       "Тротуарная плитка для двора — это надёжное и эстетичное решение для благоустройства придомовой территории. Мы предлагаем широкий выбор форм, цветов и текстур, чтобы создать уникальный дизайн вашего двора.",
     products: [
+      {
+        id: "yard-clover",
+        name: "Плитка «Клевер»",
+        description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+        image: tileCloverYellow,
+        price: "140 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileCloverYellow,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "140 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileCloverGray,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "130 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileCloverRed,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "145 руб/шт",
+          },
+        ],
+      },
       {
         id: "yard-stone",
         name: "Плитка «Тучка»",
