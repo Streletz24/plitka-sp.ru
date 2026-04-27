@@ -13,6 +13,8 @@ export interface ProductColor {
   name: string;
   hex: string;
   image: string;
+  description?: string;
+  price?: string;
 }
 
 export interface CatalogProduct {
@@ -20,6 +22,7 @@ export interface CatalogProduct {
   name: string;
   description: string;
   image: string;
+  price?: string;
   colors?: ProductColor[];
 }
 
@@ -46,10 +49,29 @@ export const catalogCategories: CatalogCategory[] = [
         name: "Плитка 8 кирпичей",
         description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
         image: tile8Brown,
+        price: "150 руб/шт",
         colors: [
-          { name: "Коричневый", hex: "#B5734A", image: tile8Brown },
-          { name: "Серый", hex: "#A8A8A8", image: tile8Gray },
-          { name: "Красный", hex: "#C84F55", image: tile8Red },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: tile8Brown,
+            description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
+            price: "150 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tile8Gray,
+            description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
+            price: "140 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tile8Red,
+            description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
+            price: "155 руб/шт",
+          },
         ],
       },
       {
@@ -57,10 +79,29 @@ export const catalogCategories: CatalogCategory[] = [
         name: "Плитка 12 кирпичей",
         description: "50х50х5см Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
         image: tileOldYellow,
+        price: "200 руб/шт",
         colors: [
-          { name: "Жёлтый", hex: "#D4C25A", image: tileOldYellow },
-          { name: "Серый", hex: "#A8A8A8", image: tileOldGray },
-          { name: "Красный", hex: "#C84F55", image: tileOldRed },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileOldYellow,
+            description: "50х50х5см Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
+            price: "200 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileOldGray,
+            description: "50х50х5см Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
+            price: "190 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileOldRed,
+            description: "50х50х5см Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
+            price: "210 руб/шт",
+          },
         ],
       },
       {
