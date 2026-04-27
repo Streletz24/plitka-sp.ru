@@ -8,7 +8,10 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const hasColors = product.colors && product.colors.length > 0;
-  const currentImage = hasColors ? product.colors![selectedIdx].image : product.image;
+  const currentColor = hasColors ? product.colors![selectedIdx] : undefined;
+  const currentImage = currentColor?.image ?? product.image;
+  const currentDescription = currentColor?.description ?? product.description;
+  const currentPrice = currentColor?.price ?? product.price;
 
   return (
     <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
@@ -22,7 +25,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {currentPrice && (
+            <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
+          )}
+          {currentDescription}
+        </p>
 
         {hasColors && (
           <div className="mt-5 pt-5 border-t border-border">
