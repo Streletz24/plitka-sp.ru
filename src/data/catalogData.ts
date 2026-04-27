@@ -42,7 +42,12 @@ export const catalogCategories: CatalogCategory[] = [
         id: "yard-1",
         name: "Плитка 8 кирпичей",
         description: "50х50х5см. Подходит для пешеходных зон и дворовых территорий.",
-        image: catalogYard,
+        image: tile8Brown,
+        colors: [
+          { name: "Коричневый", hex: "#B5734A", image: tile8Brown },
+          { name: "Серый", hex: "#A8A8A8", image: tile8Gray },
+          { name: "Красный", hex: "#C84F55", image: tile8Red },
+        ],
       },
       {
         id: "yard-2",
