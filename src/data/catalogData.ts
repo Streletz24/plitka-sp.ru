@@ -13,6 +13,8 @@ export interface ProductColor {
   name: string;
   hex: string;
   image: string;
+  description?: string;
+  price?: string;
 }
 
 export interface CatalogProduct {
@@ -20,6 +22,7 @@ export interface CatalogProduct {
   name: string;
   description: string;
   image: string;
+  price?: string;
   colors?: ProductColor[];
 }
 
