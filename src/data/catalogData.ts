@@ -2,12 +2,22 @@ import catalogYard from "@/assets/catalog-yard.jpg";
 import catalogPaths from "@/assets/catalog-paths.jpg";
 import catalogDriveway from "@/assets/catalog-driveway.jpg";
 import catalogBorders from "@/assets/catalog-borders.jpg";
+import tile8Brown from "@/assets/tile-8bricks-brown.jpg";
+import tile8Gray from "@/assets/tile-8bricks-gray.jpg";
+import tile8Red from "@/assets/tile-8bricks-red.webp";
+
+export interface ProductColor {
+  name: string;
+  hex: string;
+  image: string;
+}
 
 export interface CatalogProduct {
   id: string;
   name: string;
   description: string;
   image: string;
+  colors?: ProductColor[];
 }
 
 export interface CatalogCategory {
