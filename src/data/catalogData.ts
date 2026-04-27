@@ -5,6 +5,9 @@ import catalogBorders from "@/assets/catalog-borders.jpg";
 import tile8Brown from "@/assets/tile-8bricks-brown.jpg";
 import tile8Gray from "@/assets/tile-8bricks-gray.jpg";
 import tile8Red from "@/assets/tile-8bricks-red.webp";
+import tileOldYellow from "@/assets/tile-oldtown-yellow.webp";
+import tileOldGray from "@/assets/tile-oldtown-gray.jpg";
+import tileOldRed from "@/assets/tile-oldtown-red.webp";
 
 export interface ProductColor {
   name: string;
@@ -53,7 +56,12 @@ export const catalogCategories: CatalogCategory[] = [
         id: "yard-2",
         name: "Плитка «Старый город»",
         description: "Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
-        image: catalogYard,
+        image: tileOldYellow,
+        colors: [
+          { name: "Жёлтый", hex: "#D4C25A", image: tileOldYellow },
+          { name: "Серый", hex: "#A8A8A8", image: tileOldGray },
+          { name: "Красный", hex: "#C84F55", image: tileOldRed },
+        ],
       },
       {
         id: "yard-3",
