@@ -4,6 +4,7 @@ import { catalogCategories } from "@/data/catalogData";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
+import ProductCard from "@/components/ProductCard";
 
 const CatalogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -77,24 +78,7 @@ const CatalogDetail = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {category.products.map((product, i) => (
               <AnimateOnScroll key={product.id} delay={i * 150}>
-                <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group">
-                  <div className="overflow-hidden aspect-[4/3]">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-foreground mb-2">
-                      {product.name}
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {product.description}
-                    </p>
-                  </div>
-                </div>
+                <ProductCard product={product} />
               </AnimateOnScroll>
             ))}
           </div>

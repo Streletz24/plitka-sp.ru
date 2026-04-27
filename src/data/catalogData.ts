@@ -2,12 +2,22 @@ import catalogYard from "@/assets/catalog-yard.jpg";
 import catalogPaths from "@/assets/catalog-paths.jpg";
 import catalogDriveway from "@/assets/catalog-driveway.jpg";
 import catalogBorders from "@/assets/catalog-borders.jpg";
+import tile8Brown from "@/assets/tile-8bricks-brown.jpg";
+import tile8Gray from "@/assets/tile-8bricks-gray.jpg";
+import tile8Red from "@/assets/tile-8bricks-red.webp";
+
+export interface ProductColor {
+  name: string;
+  hex: string;
+  image: string;
+}
 
 export interface CatalogProduct {
   id: string;
   name: string;
   description: string;
   image: string;
+  colors?: ProductColor[];
 }
 
 export interface CatalogCategory {
@@ -32,7 +42,12 @@ export const catalogCategories: CatalogCategory[] = [
         id: "yard-1",
         name: "Плитка 8 кирпичей",
         description: "50х50х5см. Подходит для пешеходных зон и дворовых территорий.",
-        image: catalogYard,
+        image: tile8Brown,
+        colors: [
+          { name: "Коричневый", hex: "#B5734A", image: tile8Brown },
+          { name: "Серый", hex: "#A8A8A8", image: tile8Gray },
+          { name: "Красный", hex: "#C84F55", image: tile8Red },
+        ],
       },
       {
         id: "yard-2",
