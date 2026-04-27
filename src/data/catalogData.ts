@@ -11,6 +11,9 @@ import tileOldRed from "@/assets/tile-oldtown-red.webp";
 import tileStoneYellow from "@/assets/tile-stone-yellow.jpg";
 import tileStoneGray from "@/assets/tile-stone-gray.webp";
 import tileStoneRed from "@/assets/tile-stone-red.webp";
+import tileParquetYellow from "@/assets/tile-parquet-yellow.jpg";
+import tileParquetGray from "@/assets/tile-parquet-gray.webp";
+import tileParquetRed from "@/assets/tile-parquet-red.jpg";
 
 export interface ProductColor {
   name: string;
@@ -74,6 +77,36 @@ export const catalogCategories: CatalogCategory[] = [
             image: tileStoneRed,
             description: "33х33х4см. Декоративная плитка с фактурой природного камня.",
             price: "135 руб/шт",
+          },
+        ],
+      },
+      {
+        id: "yard-parquet",
+        name: "Плитка «Паркет»",
+        description: "30х30х3см. Декоративная плитка с рисунком паркета.",
+        image: tileParquetYellow,
+        price: "110 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileParquetYellow,
+            description: "30х30х3см. Декоративная плитка с рисунком паркета.",
+            price: "110 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileParquetGray,
+            description: "30х30х3см. Декоративная плитка с рисунком паркета.",
+            price: "100 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileParquetRed,
+            description: "30х30х3см. Декоративная плитка с рисунком паркета.",
+            price: "115 руб/шт",
           },
         ],
       },
