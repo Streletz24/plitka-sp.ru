@@ -8,6 +8,9 @@ import tile8Red from "@/assets/tile-8bricks-red.webp";
 import tileOldYellow from "@/assets/tile-oldtown-yellow.webp";
 import tileOldGray from "@/assets/tile-oldtown-gray.jpg";
 import tileOldRed from "@/assets/tile-oldtown-red.webp";
+import tileStoneYellow from "@/assets/tile-stone-yellow.jpg";
+import tileStoneGray from "@/assets/tile-stone-gray.webp";
+import tileStoneRed from "@/assets/tile-stone-red.webp";
 
 export interface ProductColor {
   name: string;
@@ -44,6 +47,36 @@ export const catalogCategories: CatalogCategory[] = [
     fullDescription:
       "Тротуарная плитка для двора — это надёжное и эстетичное решение для благоустройства придомовой территории. Мы предлагаем широкий выбор форм, цветов и текстур, чтобы создать уникальный дизайн вашего двора.",
     products: [
+      {
+        id: "yard-stone",
+        name: "Плитка «Тучка»",
+        description: "33х33х4см. Декоративная плитка с фактурой природного камня.",
+        image: tileStoneYellow,
+        price: "130 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileStoneYellow,
+            description: "33х33х4см. Декоративная плитка с фактурой природного камня.",
+            price: "130 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileStoneGray,
+            description: "33х33х4см. Декоративная плитка с фактурой природного камня.",
+            price: "120 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileStoneRed,
+            description: "33х33х4см. Декоративная плитка с фактурой природного камня.",
+            price: "135 руб/шт",
+          },
+        ],
+      },
       {
         id: "yard-1",
         name: "Плитка 8 кирпичей",
