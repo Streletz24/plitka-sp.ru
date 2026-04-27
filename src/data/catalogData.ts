@@ -30,8 +30,8 @@ export const catalogCategories: CatalogCategory[] = [
     products: [
       {
         id: "yard-1",
-        name: "Брусчатка «Классика»",
-        description: "Универсальная брусчатка прямоугольной формы. Толщина 60 мм. Подходит для пешеходных зон и дворовых территорий.",
+        name: "Плитка 8 кирпичей",
+        description: "50х50х5см. Подходит для пешеходных зон и дворовых территорий.",
         image: catalogYard,
       },
       {
