@@ -44,7 +44,7 @@ export const catalogCategories: CatalogCategory[] = [
       {
         id: "yard-1",
         name: "Плитка 8 кирпичей",
-        description: "50х50х5см. Подходит для пешеходных зон и дворовых территорий.",
+        description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
         image: tile8Brown,
         colors: [
           { name: "Коричневый", hex: "#B5734A", image: tile8Brown },
@@ -54,8 +54,8 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "yard-2",
-        name: "Плитка «Старый город»",
-        description: "Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
+        name: "Плитка 12 кирпичей",
+        description: "50х50х5см Плитка с эффектом состаренного камня. Создаёт атмосферу уюта и классического стиля.",
         image: tileOldYellow,
         colors: [
           { name: "Жёлтый", hex: "#D4C25A", image: tileOldYellow },
