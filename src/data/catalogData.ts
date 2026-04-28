@@ -147,7 +147,36 @@ export const catalogCategories: CatalogCategory[] = [
         ],
       },
       {
-        id: "yard-1",
+        id: "yard-clover",
+        name: "Плитка «Клевер»",
+        description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+        image: tileCloverYellow,
+        price: "140 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileCloverYellow,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "140 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileCloverGray,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "130 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileCloverRed,
+            description: "35х35х4см. Декоративная плитка с узором клевера и плетёным бордюром.",
+            price: "145 руб/шт",
+          },
+        ],
+      },
+      {
         name: "Плитка 8 кирпичей",
         description: "40х40х5см. Подходит для пешеходных зон и дворовых территорий.",
         image: tile8Brown,
