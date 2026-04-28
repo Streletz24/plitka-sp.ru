@@ -59,7 +59,7 @@ export const catalogCategories: CatalogCategory[] = [
       {
         id: "yard-stone",
         name: "Плитка «Брекчия»",
-        description: "30х30х3см. Декоративная плитка с фактурой природного камня.",
+        description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
         image: tileStoneYellow,
         price: "100 руб/шт",
         colors: [
@@ -67,21 +67,21 @@ export const catalogCategories: CatalogCategory[] = [
             name: "Жёлтый",
             hex: "#D4C25A",
             image: tileStoneYellow,
-            description: "30х30х3см. Декоративная плитка с фактурой природного камня.",
+            description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
             price: "100 руб/шт",
           },
           {
             name: "Серый",
             hex: "#A8A8A8",
             image: tileStoneGray,
-            description: "30х30х3см. Декоративная плитка с фактурой природного камня.",
+            description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
             price: "70 руб/шт",
           },
           {
             name: "Красный",
             hex: "#C84F55",
             image: tileStoneRed,
-            description: "30х30х3см. Декоративная плитка с фактурой природного камня.",
+            description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
             price: "80 руб/шт",
           },
         ],

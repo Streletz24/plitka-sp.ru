@@ -25,7 +25,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed">
+        <p className="text-muted-foreground text-sm leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
           {currentPrice && (
             <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
           )}
