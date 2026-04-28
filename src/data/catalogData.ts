@@ -154,8 +154,8 @@ export const catalogCategories: CatalogCategory[] = [
         price: "120 руб/шт",
         colors: [
           {
-            name: "Жёлтый",
-            hex: "#D4C25A",
+            name: "Коричневый",
+            hex: "#B5734A",
             image: tileWoodYellow,
             description: "30х30х3см. Декоративная плитка с фактурой натурального дерева.",
             price: "120 руб/шт",
