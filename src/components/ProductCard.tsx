@@ -25,12 +25,20 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
-          {currentPrice && (
-            <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
+        <div className="text-muted-foreground text-sm leading-relaxed">
+          <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+            {currentPrice && (
+              <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
+            )}
+            {currentDescription.split(/\.\s*(.+)/s)[0]}
+            {currentDescription.includes(".") ? "." : ""}
+          </p>
+          {currentDescription.split(/\.\s*(.+)/s)[1] && (
+            <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+              {currentDescription.split(/\.\s*(.+)/s)[1]}
+            </p>
           )}
-          {currentDescription}
-        </p>
+        </div>
 
         {hasColors && (
           <div className="mt-5 pt-5 border-t border-border">
