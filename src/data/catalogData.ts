@@ -20,9 +20,9 @@ import tileWoodRed from "@/assets/tile-wood-red.webp";
 import tileCloverYellow from "@/assets/tile-clover-yellow.webp";
 import tileCloverGray from "@/assets/tile-clover-gray.webp";
 import tileCloverRed from "@/assets/tile-clover-red.jpg";
-import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.png";
-import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.png";
-import tileKosaSquareRed from "@/assets/tile-kosa-square-red.png";
+import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.webp";
+import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.webp";
+import tileKosaSquareRed from "@/assets/tile-kosa-square-red.jpg";
 
 export interface ProductColor {
   name: string;
