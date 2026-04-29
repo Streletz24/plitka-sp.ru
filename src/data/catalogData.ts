@@ -26,6 +26,9 @@ import tileKosaSquareRed from "@/assets/tile-kosa-square-red.jpg";
 import borderGardenYellow from "@/assets/border-garden-yellow.webp";
 import borderGardenGray from "@/assets/border-garden-gray.jpg";
 import borderGardenRed from "@/assets/border-garden-red.webp";
+import borderThinBrown from "@/assets/border-thin-brown.webp";
+import borderThinGray from "@/assets/border-thin-gray.webp";
+import borderThinRed from "@/assets/border-thin-red.webp";
 
 export interface ProductColor {
   name: string;
@@ -370,9 +373,33 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "borders-2",
-        name: "Бордюр дорожный",
-        description: "Усиленный бордюр для въездных зон и парковок. Размер 1000×300×150 мм.",
-        image: catalogBorders,
+        name: "Бордюр садовый тонкий",
+        description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
+        image: borderThinBrown,
+        price: "135 руб/шт",
+        colors: [
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: borderThinBrown,
+            description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
+            price: "135 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: borderThinGray,
+            description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
+            price: "110 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: borderThinRed,
+            description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
+            price: "120 руб/шт",
+          },
+        ],
       },
       {
         id: "borders-3",
