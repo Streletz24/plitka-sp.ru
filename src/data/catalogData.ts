@@ -29,6 +29,8 @@ import borderGardenRed from "@/assets/border-garden-red.webp";
 import borderThinBrown from "@/assets/border-thin-brown.webp";
 import borderThinGray from "@/assets/border-thin-gray.webp";
 import borderThinRed from "@/assets/border-thin-red.webp";
+import borderMeterGray from "@/assets/border-meter-gray.jpeg";
+import borderMeterRed from "@/assets/border-meter-red.jpg";
 
 export interface ProductColor {
   name: string;
@@ -403,9 +405,26 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "borders-3",
-        name: "Водосточный лоток",
-        description: "Бетонный лоток для отвода дождевой воды. Обеспечивает долговечность покрытия.",
-        image: catalogBorders,
+        name: "Бордюр метровый",
+        description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
+        image: borderMeterGray,
+        price: "300 руб/шт",
+        colors: [
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: borderMeterGray,
+            description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
+            price: "300 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: borderMeterRed,
+            description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
+            price: "340 руб/шт",
+          },
+        ],
       },
     ],
   },
