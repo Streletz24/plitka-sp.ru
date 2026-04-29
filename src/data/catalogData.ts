@@ -23,6 +23,9 @@ import tileCloverRed from "@/assets/tile-clover-red.jpg";
 import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.webp";
 import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.webp";
 import tileKosaSquareRed from "@/assets/tile-kosa-square-red.jpg";
+import borderGardenYellow from "@/assets/border-garden-yellow.webp";
+import borderGardenGray from "@/assets/border-garden-gray.jpg";
+import borderGardenRed from "@/assets/border-garden-red.webp";
 
 export interface ProductColor {
   name: string;
@@ -337,9 +340,33 @@ export const catalogCategories: CatalogCategory[] = [
     products: [
       {
         id: "borders-1",
-        name: "Бордюр садовый",
-        description: "Компактный бордюр для садовых дорожек и клумб. Размер 500×200×40 мм.",
-        image: catalogBorders,
+        name: "Бордюр садовый стандарт",
+        description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
+        image: borderGardenYellow,
+        price: "170 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: borderGardenYellow,
+            description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
+            price: "170 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: borderGardenGray,
+            description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
+            price: "140 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: borderGardenRed,
+            description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
+            price: "160 руб/шт",
+          },
+        ],
       },
       {
         id: "borders-2",
