@@ -232,7 +232,7 @@ export const catalogCategories: CatalogCategory[] = [
             hex: "#C84F55",
             image: tileOldRed,
             description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
-            price: "210 руб/шт",
+            price: "300 руб/шт",
           },
         ],
       },
