@@ -20,6 +20,9 @@ import tileWoodRed from "@/assets/tile-wood-red.webp";
 import tileCloverYellow from "@/assets/tile-clover-yellow.webp";
 import tileCloverGray from "@/assets/tile-clover-gray.webp";
 import tileCloverRed from "@/assets/tile-clover-red.jpg";
+import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.png";
+import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.png";
+import tileKosaSquareRed from "@/assets/tile-kosa-square-red.png";
 
 export interface ProductColor {
   name: string;
@@ -238,9 +241,33 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "yard-3",
-        name: "Плитка «Катушка»",
-        description: "Фигурная плитка с надёжным сцеплением элементов. Высокая устойчивость к нагрузкам.",
-        image: catalogYard,
+        name: "Плитка «Коса Квадрат»",
+        description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+        image: tileKosaSquareYellow,
+        price: "380 руб/шт",
+        colors: [
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileKosaSquareYellow,
+            description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+            price: "380 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tileKosaSquareGray,
+            description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+            price: "250 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: tileKosaSquareRed,
+            description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+            price: "300 руб/шт",
+          },
+        ],
       },
     ],
   },
