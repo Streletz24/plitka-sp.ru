@@ -8,6 +8,7 @@ import CatalogDetail from "./pages/CatalogDetail.tsx";
 import Prices from "./pages/Prices.tsx";
 import Sale from "./pages/Sale.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ImageLightbox from "./components/ImageLightbox.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ImageLightbox />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
