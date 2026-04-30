@@ -77,3 +77,8 @@
     background-size: cover;
   }
 }
+
+@layer base {
+  header img { cursor: pointer; }
+  img:not([data-no-zoom]):not(header img) { cursor: zoom-in; }
+}
