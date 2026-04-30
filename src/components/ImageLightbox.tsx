@@ -14,19 +14,21 @@ const ImageLightbox = () => {
   }, []);
 
   useEffect(() => {
-    const onDblClick = (e: MouseEvent) => {
+    const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target || target.tagName !== "IMG") return;
       const img = target as HTMLImageElement;
       if (img.dataset.noZoom !== undefined) return;
       // skip header logo
       if (img.closest("header")) return;
+      // skip images inside links/buttons
+      if (img.closest("a, button")) return;
       e.preventDefault();
       setSrc(img.currentSrc || img.src);
       setAlt(img.alt || "");
     };
-    document.addEventListener("dblclick", onDblClick);
-    return () => document.removeEventListener("dblclick", onDblClick);
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, []);
 
   useEffect(() => {
