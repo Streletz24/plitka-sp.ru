@@ -31,6 +31,8 @@ import borderThinGray from "@/assets/border-thin-gray.webp";
 import borderThinRed from "@/assets/border-thin-red.webp";
 import borderMeterGray from "@/assets/border-meter-gray.jpeg";
 import borderMeterRed from "@/assets/border-meter-red.jpg";
+import borderMeterBrown from "@/assets/border-meter-brown.png";
+import borderMeterYellow from "@/assets/border-meter-yellow.png";
 import drainageBrown from "@/assets/drainage-brown.webp";
 import drainageGray from "@/assets/drainage-gray.webp";
 import drainageRed from "@/assets/drainage-red.webp";
@@ -427,6 +429,20 @@ export const catalogCategories: CatalogCategory[] = [
             image: borderMeterRed,
             description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
             price: "340 руб/шт",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: borderMeterBrown,
+            description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
+            price: "370 руб/шт",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: borderMeterYellow,
+            description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
+            price: "370 руб/шт",
           },
         ],
       },
