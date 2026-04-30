@@ -45,7 +45,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Выберите цвет
             </p>
-            <div className="flex flex-nowrap gap-1.5 overflow-x-auto">
+            <div className="flex flex-wrap gap-1.5">
               {product.colors!.map((color, idx) => {
                 const isActive = idx === selectedIdx;
                 return (
@@ -56,7 +56,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     aria-label={color.name}
                     aria-pressed={isActive}
                     title={color.name}
-                    className={`flex items-center justify-center gap-1 px-1.5 py-1 rounded-md border transition-all duration-300 shrink-0 ${
+                    className={`flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1 rounded-md border transition-all duration-300 ${
                       isActive
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
@@ -66,7 +66,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                       className="w-3.5 h-3.5 rounded-full border border-border/50 shadow-inner shrink-0"
                       style={{ backgroundColor: color.hex }}
                     />
-                    <span className="text-[11px] font-medium text-foreground">{color.name}</span>
+                    <span className="text-[11px] font-medium text-foreground truncate">{color.name}</span>
                   </button>
                 );
               })}
