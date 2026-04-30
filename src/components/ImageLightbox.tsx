@@ -67,8 +67,9 @@ const ImageLightbox = () => {
         src={src}
         alt={alt}
         data-no-zoom
-        onClick={(e) => e.stopPropagation()}
-        className={`max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 ${
+        onClick={close}
+        onDoubleClick={close}
+        className={`max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 cursor-zoom-out ${
           closing ? "scale-95" : "scale-100 animate-scale-in"
         }`}
       />
