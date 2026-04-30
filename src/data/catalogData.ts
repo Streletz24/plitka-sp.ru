@@ -31,6 +31,10 @@ import borderThinGray from "@/assets/border-thin-gray.webp";
 import borderThinRed from "@/assets/border-thin-red.webp";
 import borderMeterGray from "@/assets/border-meter-gray.jpeg";
 import borderMeterRed from "@/assets/border-meter-red.jpg";
+import drainageBrown from "@/assets/drainage-brown.webp";
+import drainageGray from "@/assets/drainage-gray.webp";
+import drainageRed from "@/assets/drainage-red.webp";
+import drainageYellow from "@/assets/drainage-yellow.png";
 
 export interface ProductColor {
   name: string;
@@ -423,6 +427,43 @@ export const catalogCategories: CatalogCategory[] = [
             image: borderMeterRed,
             description: "100х20х8см. 40 кг/шт, 31 шт/поддон.",
             price: "340 руб/шт",
+          },
+        ],
+      },
+      {
+        id: "borders-4",
+        name: "Водосток",
+        description: "50х16х6см. 126 шт/поддон.",
+        image: drainageBrown,
+        price: "120 руб/шт",
+        colors: [
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: drainageBrown,
+            description: "50х16х6см. 126 шт/поддон.",
+            price: "120 руб/шт",
+          },
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: drainageGray,
+            description: "50х16х6см. 126 шт/поддон.",
+            price: "110 руб/шт",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: drainageRed,
+            description: "50х16х6см. 126 шт/поддон.",
+            price: "120 руб/шт",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: drainageYellow,
+            description: "50х16х6см. 126 шт/поддон.",
+            price: "120 руб/шт",
           },
         ],
       },
