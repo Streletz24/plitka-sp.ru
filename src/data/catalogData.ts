@@ -295,9 +295,19 @@ export const catalogCategories: CatalogCategory[] = [
     products: [
       {
         id: "paths-1",
-        name: "Плитка «Волна»",
-        description: "Элегантная волнообразная плитка для извилистых садовых дорожек. Толщина 40 мм.",
-        image: catalogPaths,
+        name: "Кирпич тонкий",
+        description: "20х10х3см.",
+        image: tile8Gray,
+        price: "1250 руб/м2",
+        colors: [
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: tile8Gray,
+            description: "20х10х3см.",
+            price: "1250 руб/м2",
+          },
+        ],
       },
       {
         id: "paths-2",
