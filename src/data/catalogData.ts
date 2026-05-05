@@ -41,6 +41,10 @@ import brickThinGray from "@/assets/brick-thin-gray.webp";
 import brickThinRed from "@/assets/brick-thin-red.png";
 import brickThinYellow from "@/assets/brick-thin-yellow.png";
 import brickThinBrown from "@/assets/brick-thin-brown.png";
+import brickStandardGray from "@/assets/brick-standard-gray.jpg";
+import brickStandardRed from "@/assets/brick-standard-red.jpg";
+import brickStandardYellow from "@/assets/brick-standard-yellow.png";
+import brickStandardBrown from "@/assets/brick-standard-brown.jpg";
 
 export interface ProductColor {
   name: string;
@@ -336,9 +340,40 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "paths-2",
-        name: "Плитка «Кирпичик»",
-        description: "Классическая прямоугольная форма, идеальна для прямых и изогнутых дорожек.",
-        image: catalogPaths,
+        name: "Кирпич стандартный",
+        description: "25х12,5х6см. 32 шт/м2, 360 шт/поддон.",
+        image: brickStandardGray,
+        price: "1408 руб/м2",
+        colors: [
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: brickStandardGray,
+            description: "25х12,5х6см. 32 шт/м2, 360 шт/поддон.",
+            price: "1408 руб/м2",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: brickStandardRed,
+            description: "25х12,5х6см. 32 шт/м2, 360 шт/поддон.",
+            price: "1664 руб/м2",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: brickStandardYellow,
+            description: "25х12,5х6см. 32 шт/м2, 360 шт/поддон.",
+            price: "1797 руб/м2",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: brickStandardBrown,
+            description: "25х12,5х6см. 32 шт/м2, 360 шт/поддон.",
+            price: "1797 руб/м2",
+          },
+        ],
       },
       {
         id: "paths-3",
