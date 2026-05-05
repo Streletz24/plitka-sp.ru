@@ -37,6 +37,10 @@ import drainageBrown from "@/assets/drainage-brown.webp";
 import drainageGray from "@/assets/drainage-gray.webp";
 import drainageRed from "@/assets/drainage-red.webp";
 import drainageYellow from "@/assets/drainage-yellow.png";
+import brickThinGray from "@/assets/brick-thin-gray.webp";
+import brickThinRed from "@/assets/brick-thin-red.png";
+import brickThinYellow from "@/assets/brick-thin-yellow.png";
+import brickThinBrown from "@/assets/brick-thin-brown.png";
 
 export interface ProductColor {
   name: string;
@@ -296,16 +300,37 @@ export const catalogCategories: CatalogCategory[] = [
       {
         id: "paths-1",
         name: "Кирпич тонкий",
-        description: "20х10х3см.",
-        image: tile8Gray,
+        description: "20х10х3см. 50 шт/м2, 900 шт/поддон.",
+        image: brickThinGray,
         price: "1250 руб/м2",
         colors: [
           {
             name: "Серый",
             hex: "#A8A8A8",
-            image: tile8Gray,
-            description: "20х10х3см.",
+            image: brickThinGray,
+            description: "20х10х3см. 50 шт/м2, 900 шт/поддон.",
             price: "1250 руб/м2",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: brickThinRed,
+            description: "20х10х3см. 50 шт/м2, 900 шт/поддон.",
+            price: "1350 руб/м2",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: brickThinYellow,
+            description: "20х10х3см. 50 шт/м2, 900 шт/поддон.",
+            price: "1458 руб/м2",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: brickThinBrown,
+            description: "20х10х3см. 50 шт/м2, 900 шт/поддон.",
+            price: "1458 руб/м2",
           },
         ],
       },
