@@ -81,4 +81,11 @@
 @layer base {
   header img { cursor: pointer; }
   img:not([data-no-zoom]):not(header img) { cursor: zoom-in; }
+
+  /* High-quality image rendering across the site */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: bicubic;
+  }
 }
