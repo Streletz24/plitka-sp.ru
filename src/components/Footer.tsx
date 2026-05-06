@@ -49,7 +49,7 @@ const Footer = () => {
             <h4 className="text-primary-foreground font-bold mb-4">Контакты</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
               <p>+7 (916) 133-50-56</p>
-              <p>petrov321@yandex.ru</p>
+              <p>plitka-sp.ru@yandex.ru</p>
               <p>Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</p>
             </div>
           </div>
