@@ -259,6 +259,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onChange={(e) => setPhone(e.target.value)}
               className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
             />
+            <input
+              type="email"
+              placeholder="Электронная почта"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+            />
             <DialogFooter>
               <button
                 type="submit"
