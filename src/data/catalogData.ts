@@ -45,6 +45,10 @@ import brickStandardGray from "@/assets/brick-standard-gray.jpg";
 import brickStandardRed from "@/assets/brick-standard-red.jpg";
 import brickStandardYellow from "@/assets/brick-standard-yellow.png";
 import brickStandardBrown from "@/assets/brick-standard-brown.jpg";
+import retroGray from "@/assets/retro-gray.png";
+import retroRed from "@/assets/retro-red.png";
+import retroYellow from "@/assets/retro-yellow.png";
+import retroBrown from "@/assets/retro-brown.png";
 
 export interface ProductColor {
   name: string;
@@ -377,9 +381,40 @@ export const catalogCategories: CatalogCategory[] = [
       },
       {
         id: "paths-3",
-        name: "Плитка «Ромб»",
-        description: "Ромбовидная плитка, создающая интересный геометрический рисунок на дорожках.",
-        image: catalogPaths,
+        name: "Брусчатка ретро",
+        description: "24х24х4,5см.",
+        image: retroGray,
+        price: "2210 руб/м2",
+        colors: [
+          {
+            name: "Серый",
+            hex: "#A8A8A8",
+            image: retroGray,
+            description: "24х24х4,5см.",
+            price: "2210 руб/м2",
+          },
+          {
+            name: "Красный",
+            hex: "#C84F55",
+            image: retroRed,
+            description: "24х24х4,5см.",
+            price: "2380 руб/м2",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: retroYellow,
+            description: "24х24х4,5см.",
+            price: "2570 руб/м2",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: retroBrown,
+            description: "24х24х4,5см.",
+            price: "2570 руб/м2",
+          },
+        ],
       },
     ],
   },
