@@ -1,5 +1,14 @@
 import { useState, useMemo } from "react";
 import { CatalogProduct } from "@/data/catalogData";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: CatalogProduct;
@@ -21,6 +30,11 @@ const parsePiecesPerM2 = (desc: string) => {
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [area, setArea] = useState<string>("");
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   const hasColors = product.colors && product.colors.length > 0;
   const currentColor = hasColors ? product.colors![selectedIdx] : undefined;
   const currentImage = currentColor?.image ?? product.image;
@@ -41,8 +55,23 @@ const ProductCard = ({ product }: ProductCardProps) => {
     } else {
       total = a * p.value;
     }
-    return { total: Math.round(total), pieces: totalPieces };
+    return { total: Math.round(total), pieces: totalPieces, area: a };
   }, [area, currentPrice, currentDescription]);
+
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setOrderOpen(false);
+      setName("");
+      setPhone("");
+      toast({
+        title: "Заявка отправлена!",
+        description: "Мы свяжемся с вами в ближайшее время.",
+      });
+    }, 600);
+  };
 
   return (
     <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
@@ -124,7 +153,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               <span className="text-sm text-muted-foreground shrink-0">м²</span>
             </div>
             {calc && (
-              <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/20">
+              <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/20 space-y-2">
                 {calc.pieces !== null && (
                   <p className="text-sm text-foreground">
                     Потребуется: <span className="font-semibold">{calc.pieces} шт</span>
@@ -136,11 +165,88 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     {calc.total.toLocaleString("ru-RU")} руб
                   </span>
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setOrderOpen(true)}
+                  className="w-full mt-2 bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 transition-all duration-300"
+                >
+                  Оформить заявку
+                </button>
               </div>
             )}
           </div>
         )}
       </div>
+
+      <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Заявка на расчёт</DialogTitle>
+            <DialogDescription>
+              Оставьте контакты — мы свяжемся с вами и подтвердим заказ.
+            </DialogDescription>
+          </DialogHeader>
+
+          {calc && (
+            <div className="rounded-md bg-muted p-4 text-sm space-y-1">
+              <p>
+                <span className="text-muted-foreground">Товар:</span>{" "}
+                <span className="font-semibold text-foreground">{product.name}</span>
+              </p>
+              {currentColor && (
+                <p>
+                  <span className="text-muted-foreground">Цвет:</span>{" "}
+                  <span className="font-semibold text-foreground">{currentColor.name}</span>
+                </p>
+              )}
+              <p>
+                <span className="text-muted-foreground">Площадь:</span>{" "}
+                <span className="font-semibold text-foreground">{calc.area} м²</span>
+              </p>
+              {calc.pieces !== null && (
+                <p>
+                  <span className="text-muted-foreground">Количество:</span>{" "}
+                  <span className="font-semibold text-foreground">{calc.pieces} шт</span>
+                </p>
+              )}
+              <p>
+                <span className="text-muted-foreground">Стоимость:</span>{" "}
+                <span className="font-bold text-primary">
+                  {calc.total.toLocaleString("ru-RU")} руб
+                </span>
+              </p>
+            </div>
+          )}
+
+          <form onSubmit={handleOrderSubmit} className="space-y-3">
+            <input
+              type="text"
+              placeholder="Ваше имя"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+            />
+            <input
+              type="tel"
+              placeholder="Телефон"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+            />
+            <DialogFooter>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
+              >
+                {submitting ? "Отправка..." : "Отправить заявку"}
+              </button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
