@@ -33,6 +33,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const [orderOpen, setOrderOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const hasColors = product.colors && product.colors.length > 0;
@@ -58,19 +59,42 @@ const ProductCard = ({ product }: ProductCardProps) => {
     return { total: Math.round(total), pieces: totalPieces, area: a };
   }, [area, currentPrice, currentDescription]);
 
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.functions.invoke("send-order-request", {
+        body: {
+          name,
+          phone,
+          email,
+          product: product.name,
+          color: currentColor?.name ?? null,
+          area: calc?.area ?? null,
+          pieces: calc?.pieces ?? null,
+          total: calc?.total ?? null,
+          price: currentPrice,
+        },
+      });
+      if (error) throw error;
       setOrderOpen(false);
       setName("");
       setPhone("");
+      setEmail("");
       toast({
         title: "Заявка отправлена!",
         description: "Мы свяжемся с вами в ближайшее время.",
       });
-    }, 600);
+    } catch (err) {
+      toast({
+        title: "Ошибка отправки",
+        description: "Попробуйте позже или позвоните нам.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
