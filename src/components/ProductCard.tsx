@@ -1,17 +1,48 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CatalogProduct } from "@/data/catalogData";
 
 interface ProductCardProps {
   product: CatalogProduct;
 }
 
+const parsePrice = (price?: string) => {
+  if (!price) return null;
+  const num = parseFloat(price.replace(/\s/g, "").replace(",", "."));
+  if (isNaN(num)) return null;
+  const perPiece = /шт/i.test(price) && !/м2|м²/i.test(price);
+  return { value: num, perPiece };
+};
+
+const parsePiecesPerM2 = (desc: string) => {
+  const m = desc.match(/(\d+[.,]?\d*)\s*шт\s*\/\s*м2/i);
+  return m ? parseFloat(m[1].replace(",", ".")) : null;
+};
+
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [area, setArea] = useState<string>("");
   const hasColors = product.colors && product.colors.length > 0;
   const currentColor = hasColors ? product.colors![selectedIdx] : undefined;
   const currentImage = currentColor?.image ?? product.image;
   const currentDescription = currentColor?.description ?? product.description;
   const currentPrice = currentColor?.price ?? product.price;
+
+  const calc = useMemo(() => {
+    const a = parseFloat(area.replace(",", "."));
+    if (!a || a <= 0) return null;
+    const p = parsePrice(currentPrice);
+    if (!p) return null;
+    const piecesPerM2 = parsePiecesPerM2(currentDescription);
+    const totalPieces = piecesPerM2 ? Math.ceil(a * piecesPerM2) : null;
+    let total: number;
+    if (p.perPiece) {
+      if (!piecesPerM2) return null;
+      total = a * piecesPerM2 * p.value;
+    } else {
+      total = a * p.value;
+    }
+    return { total: Math.round(total), pieces: totalPieces };
+  }, [area, currentPrice, currentDescription]);
 
   return (
     <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
@@ -71,6 +102,42 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {currentPrice && (
+          <div className="mt-5 pt-5 border-t border-border">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Калькулятор расхода
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.1"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder="Площадь"
+                className="flex-1 min-w-0 px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+              />
+              <span className="text-sm text-muted-foreground shrink-0">м²</span>
+            </div>
+            {calc && (
+              <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/20">
+                {calc.pieces !== null && (
+                  <p className="text-sm text-foreground">
+                    Потребуется: <span className="font-semibold">{calc.pieces} шт</span>
+                  </p>
+                )}
+                <p className="text-sm text-foreground">
+                  Стоимость:{" "}
+                  <span className="font-bold text-primary">
+                    {calc.total.toLocaleString("ru-RU")} руб
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
