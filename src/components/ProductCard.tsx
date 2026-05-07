@@ -27,6 +27,13 @@ const parsePiecesPerM2 = (desc: string) => {
   return m ? parseFloat(m[1].replace(",", ".")) : null;
 };
 
+const parseLengthMeters = (desc: string) => {
+  const m = desc.match(/(\d+[.,]?\d*)\s*[хx×]/i);
+  if (!m) return null;
+  const cm = parseFloat(m[1].replace(",", "."));
+  return cm > 0 ? cm / 100 : null;
+};
+
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [area, setArea] = useState<string>("");
@@ -42,11 +49,22 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const currentDescription = currentColor?.description ?? product.description;
   const currentPrice = currentColor?.price ?? product.price;
 
+  const isLinear = /бордюр|водосток/i.test(product.name);
+  const unitLabel = isLinear ? "м.п." : "м²";
+
   const calc = useMemo(() => {
     const a = parseFloat(area.replace(",", "."));
     if (!a || a <= 0) return null;
     const p = parsePrice(currentPrice);
     if (!p) return null;
+    if (isLinear) {
+      const lengthM = parseLengthMeters(currentDescription);
+      if (!lengthM) return null;
+      const piecesPerM = 1 / lengthM;
+      const totalPieces = Math.ceil(a * piecesPerM);
+      const total = p.perPiece ? totalPieces * p.value : a * p.value;
+      return { total: Math.round(total), pieces: totalPieces, area: a };
+    }
     const piecesPerM2 = parsePiecesPerM2(currentDescription);
     const totalPieces = piecesPerM2 ? Math.ceil(a * piecesPerM2) : null;
     let total: number;
@@ -57,7 +75,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       total = a * p.value;
     }
     return { total: Math.round(total), pieces: totalPieces, area: a };
-  }, [area, currentPrice, currentDescription]);
+  }, [area, currentPrice, currentDescription, isLinear]);
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,10 +189,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 step="0.1"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                placeholder="Площадь"
+                placeholder={isLinear ? "Длина" : "Площадь"}
                 className="flex-1 min-w-0 px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
               />
-              <span className="text-sm text-muted-foreground shrink-0">м²</span>
+              <span className="text-sm text-muted-foreground shrink-0">{unitLabel}</span>
             </div>
             {calc && (
               <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/20 space-y-2">
@@ -224,8 +242,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </p>
               )}
               <p>
-                <span className="text-muted-foreground">Площадь:</span>{" "}
-                <span className="font-semibold text-foreground">{calc.area} м²</span>
+                <span className="text-muted-foreground">{isLinear ? "Длина:" : "Площадь:"}</span>{" "}
+                <span className="font-semibold text-foreground">{calc.area} {unitLabel}</span>
               </p>
               {calc.pieces !== null && (
                 <p>
