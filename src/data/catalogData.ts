@@ -23,9 +23,10 @@ import tileCloverRed from "@/assets/tile-clover-red.jpg";
 import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.webp";
 import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.webp";
 import tileKosaSquareRed from "@/assets/tile-kosa-square-red.jpg";
-import borderGardenYellow from "@/assets/border-garden-yellow.webp";
-import borderGardenGray from "@/assets/border-garden-gray.jpg";
-import borderGardenRed from "@/assets/border-garden-red.webp";
+import borderGardenYellow from "@/assets/border-garden-yellow-new.png";
+import borderGardenGray from "@/assets/border-garden-gray-new.png";
+import borderGardenRed from "@/assets/border-garden-red-new.png";
+import borderGardenBrown from "@/assets/border-garden-brown-new.jpg";
 import borderThinBrown from "@/assets/border-thin-brown.webp";
 import borderThinGray from "@/assets/border-thin-gray.webp";
 import borderThinRed from "@/assets/border-thin-red.webp";
@@ -481,6 +482,13 @@ export const catalogCategories: CatalogCategory[] = [
             image: borderGardenRed,
             description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
             price: "160 руб/шт",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: borderGardenBrown,
+            description: "50х20х6см. 13 кг/шт, 70 шт/поддон.",
+            price: "170 руб/шт",
           },
         ],
       },
