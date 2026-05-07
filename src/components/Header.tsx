@@ -40,45 +40,49 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8">
-        <a href="/" onClick={handleLogoClick} className="flex items-center gap-3">
-          <img src={logo} alt="Удачная Плитка" className="h-32 lg:h-40 w-auto" />
+      <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8 gap-6">
+        <a href="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
+          <img
+            src={logo}
+            alt="Удачная Плитка"
+            className="h-20 lg:h-24 w-auto mix-blend-multiply"
+            data-no-zoom
+          />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-7 flex-1 justify-center">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={`/#${link.href}`}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300"
+              className="relative text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
+          <a href="tel:+79161335056" className="text-sm font-semibold text-foreground/90 mr-1 tracking-wide">
+            +7 (916) 133-50-56
+          </a>
           <Link
             to="/sale"
-            className="relative inline-flex items-center gap-2 bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase tracking-wider shadow-lg hover:scale-110 transition-transform"
+            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-sale text-sale-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
-            <span className="text-base">🔥</span>
-            Распродажа
+            <span>🔥</span> Распродажа
           </Link>
           <Link
             to="/prices"
-            className="bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Наши цены
           </Link>
-          <a href="tel:+79161335056" className="text-sm font-semibold text-foreground">
-            +7 (916) 133-50-56
-          </a>
           <a
             href={`/#contact`}
             onClick={(e) => handleNavClick(e, "contact")}
-            className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
           </a>
