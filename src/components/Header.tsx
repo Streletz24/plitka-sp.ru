@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-transparent.png";
 
 const navLinks = [
   { label: "Преимущества", href: "advantages" },
@@ -45,7 +45,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-20 lg:h-24 w-auto mix-blend-multiply"
+            className="h-20 lg:h-24 w-auto"
             data-no-zoom
           />
         </a>
@@ -56,7 +56,7 @@ const Header = () => {
               key={link.href}
               href={`/#${link.href}`}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="relative text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
+              className="relative whitespace-nowrap text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
             >
               {link.label}
             </a>
