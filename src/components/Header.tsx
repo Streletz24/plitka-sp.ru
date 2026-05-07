@@ -104,13 +104,13 @@ const Header = () => {
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-3">
+        <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={`/#${link.href}`}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="block text-sm font-medium text-foreground/80 hover:text-primary py-2"
+              className="block text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
             >
               {link.label}
             </a>
@@ -118,27 +118,29 @@ const Header = () => {
           <a href="tel:+79161335056" className="block text-sm font-semibold text-foreground py-2">
             +7 (916) 133-50-56
           </a>
-          <Link
-            to="/sale"
-            className="block bg-sale text-sale-foreground px-5 py-2.5 rounded-lg text-sm font-extrabold uppercase text-center shadow-md"
-            onClick={() => setMenuOpen(false)}
-          >
-            🔥 Распродажа
-          </Link>
-          <Link
-            to="/prices"
-            className="block bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
-            onClick={() => setMenuOpen(false)}
-          >
-            Наши цены
-          </Link>
-          <a
-            href={`/#contact`}
-            onClick={(e) => handleNavClick(e, "contact")}
-            className="block bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
-          >
-            Консультация
-          </a>
+          <div className="grid grid-cols-1 gap-2 pt-2">
+            <Link
+              to="/sale"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-sale text-sale-foreground shadow-sm"
+            >
+              🔥 Распродажа
+            </Link>
+            <Link
+              to="/prices"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center justify-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm"
+            >
+              Наши цены
+            </Link>
+            <a
+              href={`/#contact`}
+              onClick={(e) => handleNavClick(e, "contact")}
+              className="inline-flex items-center justify-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm"
+            >
+              Консультация
+            </a>
+          </div>
         </div>
       )}
     </header>
