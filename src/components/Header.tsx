@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
+import CartButton from "./CartButton";
 
 const navLinks = [
   { label: "Преимущества", href: "advantages" },
@@ -86,8 +87,11 @@ const Header = () => {
           >
             Консультация
           </a>
+          <CartButton />
         </div>
 
+        <div className="lg:hidden flex items-center gap-2">
+          <CartButton />
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="lg:hidden p-2 text-foreground"
