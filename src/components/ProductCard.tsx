@@ -180,96 +180,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setOrderOpen(true)}
+                  onClick={handleAddToCart}
                   className="w-full mt-2 bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 transition-all duration-300"
                 >
-                  Оформить заявку
+                  Добавить в корзину
                 </button>
               </div>
             )}
           </div>
         )}
       </div>
-
-      <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Заявка на расчёт</DialogTitle>
-            <DialogDescription>
-              Оставьте контакты — мы свяжемся с вами и подтвердим заказ.
-            </DialogDescription>
-          </DialogHeader>
-
-          {calc && (
-            <div className="rounded-md bg-muted p-4 text-sm space-y-1">
-              <p>
-                <span className="text-muted-foreground">Товар:</span>{" "}
-                <span className="font-semibold text-foreground">{product.name}</span>
-              </p>
-              {currentColor && (
-                <p>
-                  <span className="text-muted-foreground">Цвет:</span>{" "}
-                  <span className="font-semibold text-foreground">{currentColor.name}</span>
-                </p>
-              )}
-              <p>
-                <span className="text-muted-foreground">{isLinear ? "Длина:" : "Площадь:"}</span>{" "}
-                <span className="font-semibold text-foreground">{calc.area} {unitLabel}</span>
-              </p>
-              {calc.pieces !== null && (
-                <p>
-                  <span className="text-muted-foreground">Количество:</span>{" "}
-                  <span className="font-semibold text-foreground">{calc.pieces} шт</span>
-                </p>
-              )}
-              <p>
-                <span className="text-muted-foreground">Стоимость:</span>{" "}
-                <span className="font-bold text-primary">
-                  {calc.total.toLocaleString("ru-RU")} руб
-                </span>
-              </p>
-            </div>
-          )}
-
-          <form onSubmit={handleOrderSubmit} className="space-y-3">
-            <input
-              type="text"
-              placeholder="Ваше имя"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <input
-              type="tel"
-              placeholder="Телефон"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <input
-              type="email"
-              placeholder="Электронная почта"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <DialogFooter>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
-              >
-                {submitting ? "Отправка..." : "Отправить заявку"}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
 
 export default ProductCard;
+
