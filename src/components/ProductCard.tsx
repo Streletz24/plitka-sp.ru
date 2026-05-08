@@ -30,11 +30,7 @@ const parseLengthMeters = (desc: string) => {
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [area, setArea] = useState<string>("");
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const { addItem } = useCart();
 
   const hasColors = product.colors && product.colors.length > 0;
   const currentColor = hasColors ? product.colors![selectedIdx] : undefined;
@@ -70,54 +66,26 @@ const ProductCard = ({ product }: ProductCardProps) => {
     return { total: Math.round(total), pieces: totalPieces, area: a };
   }, [area, currentPrice, currentDescription, isLinear]);
 
-  const handleOrderSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.functions.invoke("send-order-request", {
-        body: {
-          name,
-          phone,
-          email,
-          product: product.name,
-          color: currentColor?.name ?? null,
-          area: calc?.area ?? null,
-          pieces: calc?.pieces ?? null,
-          total: calc?.total ?? null,
-          price: currentPrice,
-        },
-      });
-      if (error) throw error;
-      setOrderOpen(false);
-      setName("");
-      setPhone("");
-      setEmail("");
-      toast({
-        title: "Заявка отправлена!",
-        description: "Мы свяжемся с вами в ближайшее время.",
-      });
-    } catch (err) {
-      toast({
-        title: "Ошибка отправки",
-        description: "Попробуйте позже или позвоните нам.",
-        variant: "destructive",
-      });
-    } finally {
-      setSubmitting(false);
-    }
+  const handleAddToCart = () => {
+    if (!calc) return;
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      colorName: currentColor?.name ?? null,
+      image: currentImage,
+      unit: unitLabel,
+      area: calc.area,
+      pieces: calc.pieces,
+      unitPrice: currentPrice ?? null,
+      total: calc.total,
+    });
+    setArea("");
+    toast({
+      title: "Добавлено в корзину",
+      description: `${product.name}${currentColor ? " · " + currentColor.name : ""}`,
+    });
   };
 
-  return (
-    <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
-      <div className="overflow-hidden aspect-[4/3] bg-muted flex items-center justify-center">
-        <img
-          src={currentImage}
-          alt={product.name}
-          loading="lazy"
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
-        />
-      </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
         <div className="text-muted-foreground text-sm leading-relaxed">
