@@ -1,13 +1,6 @@
 import { useState, useMemo } from "react";
 import { CatalogProduct } from "@/data/catalogData";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
@@ -37,11 +30,7 @@ const parseLengthMeters = (desc: string) => {
 const ProductCard = ({ product }: ProductCardProps) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [area, setArea] = useState<string>("");
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const { addItem } = useCart();
 
   const hasColors = product.colors && product.colors.length > 0;
   const currentColor = hasColors ? product.colors![selectedIdx] : undefined;
@@ -77,42 +66,24 @@ const ProductCard = ({ product }: ProductCardProps) => {
     return { total: Math.round(total), pieces: totalPieces, area: a };
   }, [area, currentPrice, currentDescription, isLinear]);
 
-  const handleOrderSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.functions.invoke("send-order-request", {
-        body: {
-          name,
-          phone,
-          email,
-          product: product.name,
-          color: currentColor?.name ?? null,
-          area: calc?.area ?? null,
-          pieces: calc?.pieces ?? null,
-          total: calc?.total ?? null,
-          price: currentPrice,
-        },
-      });
-      if (error) throw error;
-      setOrderOpen(false);
-      setName("");
-      setPhone("");
-      setEmail("");
-      toast({
-        title: "Заявка отправлена!",
-        description: "Мы свяжемся с вами в ближайшее время.",
-      });
-    } catch (err) {
-      toast({
-        title: "Ошибка отправки",
-        description: "Попробуйте позже или позвоните нам.",
-        variant: "destructive",
-      });
-    } finally {
-      setSubmitting(false);
-    }
+  const handleAddToCart = () => {
+    if (!calc) return;
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      colorName: currentColor?.name ?? null,
+      image: currentImage,
+      unit: unitLabel,
+      area: calc.area,
+      pieces: calc.pieces,
+      unitPrice: currentPrice ?? null,
+      total: calc.total,
+    });
+    setArea("");
+    toast({
+      title: "Добавлено в корзину",
+      description: `${product.name}${currentColor ? " · " + currentColor.name : ""}`,
+    });
   };
 
   return (
@@ -209,96 +180,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setOrderOpen(true)}
+                  onClick={handleAddToCart}
                   className="w-full mt-2 bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 transition-all duration-300"
                 >
-                  Оформить заявку
+                  Добавить в корзину
                 </button>
               </div>
             )}
           </div>
         )}
       </div>
-
-      <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Заявка на расчёт</DialogTitle>
-            <DialogDescription>
-              Оставьте контакты — мы свяжемся с вами и подтвердим заказ.
-            </DialogDescription>
-          </DialogHeader>
-
-          {calc && (
-            <div className="rounded-md bg-muted p-4 text-sm space-y-1">
-              <p>
-                <span className="text-muted-foreground">Товар:</span>{" "}
-                <span className="font-semibold text-foreground">{product.name}</span>
-              </p>
-              {currentColor && (
-                <p>
-                  <span className="text-muted-foreground">Цвет:</span>{" "}
-                  <span className="font-semibold text-foreground">{currentColor.name}</span>
-                </p>
-              )}
-              <p>
-                <span className="text-muted-foreground">{isLinear ? "Длина:" : "Площадь:"}</span>{" "}
-                <span className="font-semibold text-foreground">{calc.area} {unitLabel}</span>
-              </p>
-              {calc.pieces !== null && (
-                <p>
-                  <span className="text-muted-foreground">Количество:</span>{" "}
-                  <span className="font-semibold text-foreground">{calc.pieces} шт</span>
-                </p>
-              )}
-              <p>
-                <span className="text-muted-foreground">Стоимость:</span>{" "}
-                <span className="font-bold text-primary">
-                  {calc.total.toLocaleString("ru-RU")} руб
-                </span>
-              </p>
-            </div>
-          )}
-
-          <form onSubmit={handleOrderSubmit} className="space-y-3">
-            <input
-              type="text"
-              placeholder="Ваше имя"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <input
-              type="tel"
-              placeholder="Телефон"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <input
-              type="email"
-              placeholder="Электронная почта"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <DialogFooter>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
-              >
-                {submitting ? "Отправка..." : "Отправить заявку"}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
 
 export default ProductCard;
+

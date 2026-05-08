@@ -7,17 +7,47 @@ const corsHeaders = {
 
 const RECIPIENT = "plitka-sp.ru@yandex.ru";
 
-interface OrderPayload {
-  name: string;
-  phone: string;
-  email: string;
+interface OrderItem {
   product: string;
   color: string | null;
   area: number | null;
+  unit?: string | null;
   pieces: number | null;
   total: number | null;
   price: string | null;
 }
+
+interface OrderPayload {
+  name: string;
+  phone: string;
+  email: string;
+  // Multi-item (cart) payload
+  items?: OrderItem[];
+  total?: number;
+  // Legacy single-item payload (kept for compatibility)
+  product?: string;
+  color?: string | null;
+  area?: number | null;
+  pieces?: number | null;
+  price?: string | null;
+}
+
+const escape = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const renderItem = (it: OrderItem, idx: number) => {
+  const unit = it.unit ?? "м²";
+  return `
+    <div style="border:1px solid #eee;border-radius:8px;padding:12px;margin-bottom:10px;">
+      <p style="margin:0 0 6px;"><strong>${idx + 1}. ${escape(it.product)}</strong></p>
+      ${it.color ? `<p style="margin:2px 0;">Цвет: ${escape(it.color)}</p>` : ""}
+      ${it.area ? `<p style="margin:2px 0;">Объём: ${it.area} ${unit}</p>` : ""}
+      ${it.pieces ? `<p style="margin:2px 0;">Количество: ${it.pieces} шт</p>` : ""}
+      ${it.price ? `<p style="margin:2px 0;">Цена: ${escape(it.price)}</p>` : ""}
+      ${it.total ? `<p style="margin:2px 0;"><strong>Сумма: ${it.total.toLocaleString("ru-RU")} руб</strong></p>` : ""}
+    </div>
+  `;
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -32,20 +62,37 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const subject = `Новая заявка: ${payload.product}`;
+    const items: OrderItem[] = payload.items && payload.items.length > 0
+      ? payload.items
+      : [
+          {
+            product: payload.product ?? "—",
+            color: payload.color ?? null,
+            area: payload.area ?? null,
+            unit: "м²",
+            pieces: payload.pieces ?? null,
+            total: payload.total ?? null,
+            price: payload.price ?? null,
+          },
+        ];
+
+    const grandTotal =
+      payload.total ?? items.reduce((acc, i) => acc + (i.total ?? 0), 0);
+
+    const subject =
+      items.length > 1
+        ? `Новая заявка из корзины (${items.length} поз.)`
+        : `Новая заявка: ${items[0].product}`;
+
     const html = `
-      <h2>Новая заявка на расчёт</h2>
-      <p><strong>Товар:</strong> ${payload.product}</p>
-      ${payload.color ? `<p><strong>Цвет:</strong> ${payload.color}</p>` : ""}
-      ${payload.area ? `<p><strong>Площадь:</strong> ${payload.area} м²</p>` : ""}
-      ${payload.pieces ? `<p><strong>Количество:</strong> ${payload.pieces} шт</p>` : ""}
-      ${payload.price ? `<p><strong>Цена за единицу:</strong> ${payload.price}</p>` : ""}
-      ${payload.total ? `<p><strong>Итоговая стоимость:</strong> ${payload.total.toLocaleString("ru-RU")} руб</p>` : ""}
+      <h2>Новая заявка с сайта</h2>
+      ${items.map(renderItem).join("")}
+      <p style="font-size:16px;"><strong>Итого: ${grandTotal.toLocaleString("ru-RU")} руб</strong></p>
       <hr>
       <h3>Контакты клиента</h3>
-      <p><strong>Имя:</strong> ${payload.name}</p>
-      <p><strong>Телефон:</strong> <a href="tel:${payload.phone}">${payload.phone}</a></p>
-      <p><strong>Email:</strong> <a href="mailto:${payload.email}">${payload.email}</a></p>
+      <p><strong>Имя:</strong> ${escape(payload.name)}</p>
+      <p><strong>Телефон:</strong> <a href="tel:${escape(payload.phone)}">${escape(payload.phone)}</a></p>
+      <p><strong>Email:</strong> <a href="mailto:${escape(payload.email)}">${escape(payload.email)}</a></p>
     `;
 
     const { error } = await supabase.functions.invoke("send-transactional-email", {

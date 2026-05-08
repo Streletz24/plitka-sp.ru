@@ -9,25 +9,30 @@ import Prices from "./pages/Prices.tsx";
 import Sale from "./pages/Sale.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ImageLightbox from "./components/ImageLightbox.tsx";
+import { CartProvider } from "./contexts/CartContext.tsx";
+import CartDrawer from "./components/CartDrawer.tsx";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/catalog/:slug" element={<CatalogDetail />} />
-          <Route path="/prices" element={<Prices />} />
-          <Route path="/sale" element={<Sale />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <ImageLightbox />
-      </BrowserRouter>
+      <CartProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/catalog/:slug" element={<CatalogDetail />} />
+            <Route path="/prices" element={<Prices />} />
+            <Route path="/sale" element={<Sale />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <ImageLightbox />
+          <CartDrawer />
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
