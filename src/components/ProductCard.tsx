@@ -86,6 +86,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
     });
   };
 
+  return (
+    <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
+      <div className="overflow-hidden aspect-[4/3] bg-muted flex items-center justify-center">
+        <img
+          src={currentImage}
+          alt={product.name}
+          loading="lazy"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+        />
+      </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
         <div className="text-muted-foreground text-sm leading-relaxed">
