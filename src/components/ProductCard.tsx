@@ -1,13 +1,6 @@
 import { useState, useMemo } from "react";
 import { CatalogProduct } from "@/data/catalogData";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
