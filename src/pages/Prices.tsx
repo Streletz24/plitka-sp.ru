@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft } from "lucide-react";
-import { summarizeCatalogPrice, formatPriceSummary, isLinearProduct } from "@/lib/pricing";
+import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
 
 const Prices = () => {
   useEffect(() => {
@@ -44,6 +44,9 @@ const Prices = () => {
                             Наименование
                           </th>
                           <th className="text-left p-4 text-sm font-semibold text-foreground">
+                            Цвет
+                          </th>
+                          <th className="text-left p-4 text-sm font-semibold text-foreground">
                             Описание
                           </th>
                           <th className="text-right p-4 text-sm font-semibold text-foreground whitespace-nowrap">
@@ -52,25 +55,57 @@ const Prices = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {category.products.map((product, idx) => {
-                          const summary = summarizeCatalogPrice(product);
-                          const label = formatPriceSummary(summary);
-                          return (
-                            <tr
-                              key={product.id}
-                              className={idx % 2 === 0 ? "bg-card" : "bg-muted/50"}
-                            >
-                              <td className="p-4 text-sm font-medium text-foreground">
-                                {product.name}
-                              </td>
-                              <td className="p-4 text-sm text-foreground/70">
-                                {product.description}
-                              </td>
-                              <td className="p-4 text-sm font-semibold text-primary text-right whitespace-nowrap">
-                                {label}
-                              </td>
-                            </tr>
-                          );
+                        {category.products.flatMap((product, pIdx) => {
+                          const linearP = isLinearProduct(product.name);
+                          const unit = linearP ? "м.п." : "м²";
+                          const fmt = (n: number | null) =>
+                            n === null || n <= 0
+                              ? "По запросу"
+                              : `${n.toLocaleString("ru-RU")} руб/${unit}`;
+                          const rows =
+                            product.colors && product.colors.length > 0
+                              ? product.colors.map((c) => ({
+                                  color: c.name,
+                                  description: c.description ?? product.description,
+                                  price: computeUnitPrice(
+                                    product.name,
+                                    c.description ?? product.description,
+                                    c.price ?? product.price
+                                  ),
+                                }))
+                              : [
+                                  {
+                                    color: "—",
+                                    description: product.description,
+                                    price: computeUnitPrice(
+                                      product.name,
+                                      product.description,
+                                      product.price
+                                    ),
+                                  },
+                                ];
+                          return rows.map((row, rIdx) => {
+                            const idx = pIdx + rIdx;
+                            return (
+                              <tr
+                                key={`${product.id}-${rIdx}`}
+                                className={idx % 2 === 0 ? "bg-card" : "bg-muted/50"}
+                              >
+                                <td className="p-4 text-sm font-medium text-foreground">
+                                  {rIdx === 0 ? product.name : ""}
+                                </td>
+                                <td className="p-4 text-sm text-foreground/80">
+                                  {row.color}
+                                </td>
+                                <td className="p-4 text-sm text-foreground/70">
+                                  {row.description}
+                                </td>
+                                <td className="p-4 text-sm font-semibold text-primary text-right whitespace-nowrap">
+                                  {fmt(row.price)}
+                                </td>
+                              </tr>
+                            );
+                          });
                         })}
                       </tbody>
                     </table>
