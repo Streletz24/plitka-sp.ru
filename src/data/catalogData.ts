@@ -27,9 +27,10 @@ import borderGardenYellow from "@/assets/border-garden-yellow-new.png";
 import borderGardenGray from "@/assets/border-garden-gray-new.png";
 import borderGardenRed from "@/assets/border-garden-red-new.png";
 import borderGardenBrown from "@/assets/border-garden-brown-new.jpg";
-import borderThinBrown from "@/assets/border-thin-brown.webp";
-import borderThinGray from "@/assets/border-thin-gray.webp";
-import borderThinRed from "@/assets/border-thin-red.webp";
+import borderThinBrown from "@/assets/border-thin-brown-new.jpg";
+import borderThinGray from "@/assets/border-thin-gray-new.jpg";
+import borderThinRed from "@/assets/border-thin-red-new.jpg";
+import borderThinYellow from "@/assets/border-thin-yellow-new.jpg";
 import borderMeterGray from "@/assets/border-meter-gray.jpeg";
 import borderMeterRed from "@/assets/border-meter-red.jpg";
 import borderMeterBrown from "@/assets/border-meter-brown.png";
@@ -519,6 +520,13 @@ export const catalogCategories: CatalogCategory[] = [
             image: borderThinRed,
             description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
             price: "120 руб/шт",
+          },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: borderThinYellow,
+            description: "50х20х3,5см. 8,7 кг/шт, 110 шт/поддон.",
+            price: "135 руб/шт",
           },
         ],
       },
