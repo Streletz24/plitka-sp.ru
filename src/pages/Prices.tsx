@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft } from "lucide-react";
-import { summarizeCatalogPrice, formatPriceSummary, isLinearProduct } from "@/lib/pricing";
+import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
 
 const Prices = () => {
   useEffect(() => {
