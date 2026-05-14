@@ -3,10 +3,11 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
 
-const navLinks = [
+const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
   { label: "Каталог", href: "catalog" },
   { label: "О компании", href: "about" },
+  { label: "Укладка плитки", href: "tiling", route: "/tiling" },
   { label: "Галерея", href: "gallery" },
   { label: "Отзывы", href: "reviews" },
   { label: "Контакты", href: "contact" },
@@ -52,16 +53,26 @@ const Header = () => {
         </a>
 
         <nav className="hidden lg:flex items-center gap-7 flex-1 justify-center">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={`/#${link.href}`}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className="relative whitespace-nowrap text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            link.route ? (
+              <Link
+                key={link.href}
+                to={link.route}
+                className="relative whitespace-nowrap text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={`/#${link.href}`}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="relative whitespace-nowrap text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
+              >
+                {link.label}
+              </a>
+            )
+          )}
         </nav>
 
         <div className="hidden lg:flex items-center gap-3 shrink-0">
@@ -110,16 +121,27 @@ const Header = () => {
 
       {menuOpen && (
         <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={`/#${link.href}`}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className="block text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            link.route ? (
+              <Link
+                key={link.href}
+                to={link.route}
+                onClick={() => setMenuOpen(false)}
+                className="block text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={`/#${link.href}`}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="block text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
+              >
+                {link.label}
+              </a>
+            )
+          )}
           <a href="tel:+79161335056" className="block text-sm font-semibold text-foreground py-2">
             +7 (916) 133-50-56
           </a>
