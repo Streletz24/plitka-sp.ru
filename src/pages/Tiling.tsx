@@ -4,6 +4,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ArrowLeft, Hammer, Package, Wrench, ListChecks, AlertTriangle } from "lucide-react";
 import tilingHero from "@/assets/tiling-hero.jpg";
+import step1 from "@/assets/tiling-step-1.jpg";
+import step2 from "@/assets/tiling-step-2.jpg";
+import step3 from "@/assets/tiling-step-3.jpg";
+import step4 from "@/assets/tiling-step-4.jpg";
+import step5 from "@/assets/tiling-step-5.jpg";
+import step6 from "@/assets/tiling-step-6.jpg";
+import step7 from "@/assets/tiling-step-7.jpg";
+import step8 from "@/assets/tiling-step-8.jpg";
 
 const materials = [
   "Песок",
@@ -30,34 +38,42 @@ const steps = [
   {
     title: "Определение границ и уклона",
     text: "Определяемся с границами и уклоном площадки. Уклон в несколько градусов необходим для водоотведения.",
+    image: step1,
   },
   {
     title: "Разметка",
     text: "Делаем разметку границ, забивая колья и натягивая шнурок или леску по периметру, контролируя уклон уровнем.",
+    image: step2,
   },
   {
     title: "Выемка грунта",
     text: "Глубина зависит от толщины основания. Для пешеходной зоны достаточно 15–20 см, для въезда и стоянки легкового автомобиля — не менее 30–40 см.",
+    image: step3,
   },
   {
     title: "Нижний слой основания",
     text: "Нижний слой насыпаем щебнем 10–20 см (зависит от нагрузки), выравниваем и трамбуем. Для слабых грунтов используют геотекстиль — он укладывается под и на гравий, предотвращая перемешивание слоёв. На прочных грунтах достаточно уложить геотекстиль на утрамбованный щебень. Геотекстиль укрепляет покрытие и помогает избежать просадок от ливней и грунтовых вод.",
+    image: step4,
   },
   {
     title: "Установка бордюра",
     text: "На щебень и приготовленный густой раствор бетона выставляем бордюр, выравнивая его по натянутой леске.",
+    image: step5,
   },
   {
     title: "Верхний слой основания",
     text: "Насыпаем слой песка 10–15 см, выравниваем, обильно проливаем водой и трамбуем. Сверху — сухая цементно-песчаная смесь (1:5 или 1:8 в зависимости от марки цемента) слоем 3–5 см, выровненная правилом поперёк бордюров.",
+    image: step6,
   },
   {
     title: "Укладка тротуарной плитки",
     text: "Плитку укладывают от прямой линии, плотно приставляя к соседней и аккуратно осаживая ударами резиновой киянки. Постоянно контролируем плоскость.",
+    image: step7,
   },
   {
     title: "Заключительный этап",
     text: "Поверхность промести песком или песчано-цементной смесью, чтобы заполнить швы. При использовании смеси — мести особенно тщательно, чтобы избежать белесых пятен на цветной плитке.",
+    image: step8,
   },
 ];
 
@@ -156,20 +172,28 @@ const Tiling = () => {
               <h2 className="text-2xl lg:text-3xl font-bold text-foreground">Процесс укладки</h2>
             </div>
 
-            <ol className="space-y-5">
+            <ol className="space-y-6">
               {steps.map((s, i) => (
                 <li
                   key={s.title}
-                  className="group bg-card border border-border rounded-xl p-6 lg:p-7 shadow-sm hover:shadow-md hover:border-accent/40 transition-all"
+                  className="group bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-accent/40 transition-all"
                 >
-                  <div className="flex gap-5">
-                    <div className="shrink-0">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold text-lg flex items-center justify-center shadow-sm">
+                  <div className={`grid md:grid-cols-2 gap-0 ${i % 2 === 1 ? "md:[&>div:first-child]:order-2" : ""}`}>
+                    <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[280px] overflow-hidden">
+                      <img
+                        src={s.image}
+                        alt={s.title}
+                        loading="lazy"
+                        width={1024}
+                        height={640}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 left-4 w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold text-lg flex items-center justify-center shadow-lg">
                         {i + 1}
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-2">
+                    <div className="p-6 lg:p-8 flex flex-col justify-center">
+                      <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-3">
                         {s.title}
                       </h3>
                       <p className="text-foreground/80 leading-relaxed">{s.text}</p>
