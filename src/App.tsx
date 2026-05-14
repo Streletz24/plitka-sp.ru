@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import CatalogDetail from "./pages/CatalogDetail.tsx";
 import Prices from "./pages/Prices.tsx";
 import Sale from "./pages/Sale.tsx";
+import Tiling from "./pages/Tiling.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ImageLightbox from "./components/ImageLightbox.tsx";
 import { CartProvider } from "./contexts/CartContext.tsx";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/catalog/:slug" element={<CatalogDetail />} />
             <Route path="/prices" element={<Prices />} />
             <Route path="/sale" element={<Sale />} />
+            <Route path="/tiling" element={<Tiling />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
