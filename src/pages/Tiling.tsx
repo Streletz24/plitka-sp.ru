@@ -172,20 +172,28 @@ const Tiling = () => {
               <h2 className="text-2xl lg:text-3xl font-bold text-foreground">Процесс укладки</h2>
             </div>
 
-            <ol className="space-y-5">
+            <ol className="space-y-6">
               {steps.map((s, i) => (
                 <li
                   key={s.title}
-                  className="group bg-card border border-border rounded-xl p-6 lg:p-7 shadow-sm hover:shadow-md hover:border-accent/40 transition-all"
+                  className="group bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-accent/40 transition-all"
                 >
-                  <div className="flex gap-5">
-                    <div className="shrink-0">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold text-lg flex items-center justify-center shadow-sm">
+                  <div className={`grid md:grid-cols-2 gap-0 ${i % 2 === 1 ? "md:[&>div:first-child]:order-2" : ""}`}>
+                    <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[280px] overflow-hidden">
+                      <img
+                        src={s.image}
+                        alt={s.title}
+                        loading="lazy"
+                        width={1024}
+                        height={640}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 left-4 w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold text-lg flex items-center justify-center shadow-lg">
                         {i + 1}
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-2">
+                    <div className="p-6 lg:p-8 flex flex-col justify-center">
+                      <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-3">
                         {s.title}
                       </h3>
                       <p className="text-foreground/80 leading-relaxed">{s.text}</p>
