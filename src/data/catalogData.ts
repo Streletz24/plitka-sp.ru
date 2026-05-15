@@ -28,6 +28,8 @@ import tileCloverRed from "@/assets/tile-clover-red.jpg";
 import tileKosaSquareYellow from "@/assets/tile-kosa-square-yellow.webp";
 import tileKosaSquareGray from "@/assets/tile-kosa-square-gray.webp";
 import tileKosaSquareRed from "@/assets/tile-kosa-square-red.jpg";
+import tileKosaSquareBrown from "@/assets/tile-kosa-square-brown.png";
+import tileCloverYellowNew from "@/assets/tile-clover-yellow-new.png";
 import borderGardenYellow from "@/assets/border-garden-yellow-new.png";
 import borderGardenGray from "@/assets/border-garden-gray-new.png";
 import borderGardenRed from "@/assets/border-garden-red-new.png";
@@ -231,6 +233,13 @@ export const catalogCategories: CatalogCategory[] = [
             description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
             price: "180 руб/шт",
           },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tileCloverYellowNew,
+            description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
+            price: "235 руб/шт",
+          },
         ],
       },
       {
@@ -334,6 +343,13 @@ export const catalogCategories: CatalogCategory[] = [
             image: tileKosaSquareRed,
             description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
             price: "300 руб/шт",
+          },
+          {
+            name: "Коричневый",
+            hex: "#B5734A",
+            image: tileKosaSquareBrown,
+            description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+            price: "380 руб/шт",
           },
         ],
       },
