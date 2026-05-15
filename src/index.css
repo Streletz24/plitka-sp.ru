@@ -64,6 +64,20 @@
     @apply bg-background text-foreground font-sans;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  section[id] {
+    scroll-margin-top: 128px;
+  }
+
+  @media (max-width: 1023px) {
+    section[id] {
+      scroll-margin-top: 88px;
+    }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
