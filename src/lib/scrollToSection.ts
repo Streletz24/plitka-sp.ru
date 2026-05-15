@@ -18,7 +18,7 @@ export const scrollToSection = (sectionId: string, behavior: ScrollBehavior = "s
 
   const header = document.querySelector("header");
   const headerHeight = header instanceof HTMLElement ? header.offsetHeight : 0;
-  const safeGap = window.matchMedia("(max-width: 1023px)").matches ? 16 : 24;
+  const safeGap = window.matchMedia("(max-width: 1023px)").matches ? 16 : 12;
   const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - safeGap;
 
   if (window.location.pathname === "/" && window.location.hash !== `#${normalizedId}`) {
