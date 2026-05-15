@@ -4,10 +4,10 @@ import { catalogCategories } from "@/data/catalogData";
 
 const CatalogSection = () => {
   return (
-    <section id="catalog" className="py-24 lg:py-32 bg-background">
+    <section id="catalog" className="py-14 lg:py-16 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
         <AnimateOnScroll>
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 lg:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Каталог продукции
             </h2>
@@ -21,7 +21,7 @@ const CatalogSection = () => {
           {catalogCategories.map((cat, i) => (
             <AnimateOnScroll key={cat.slug} delay={i * 150}>
               <div className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500">
-                <div className="overflow-hidden aspect-[4/3]">
+                <div className="overflow-hidden aspect-[16/9]">
                   <img
                     src={cat.img}
                     alt={cat.title}
