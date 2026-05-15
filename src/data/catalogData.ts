@@ -5,18 +5,23 @@ import catalogBorders from "@/assets/catalog-borders.jpg";
 import tile8Brown from "@/assets/tile-8bricks-brown.jpg";
 import tile8Gray from "@/assets/tile-8bricks-gray.jpg";
 import tile8Red from "@/assets/tile-8bricks-red.webp";
+import tile8Yellow from "@/assets/tile-8bricks-yellow.png";
 import tileOldYellow from "@/assets/tile-oldtown-yellow.webp";
 import tileOldGray from "@/assets/tile-oldtown-gray.jpg";
 import tileOldRed from "@/assets/tile-oldtown-red.webp";
+import tile12Brown from "@/assets/tile-12bricks-brown.png";
 import tileStoneYellow from "@/assets/tile-stone-yellow.jpg";
 import tileStoneGray from "@/assets/tile-stone-gray.webp";
 import tileStoneRed from "@/assets/tile-stone-red.webp";
+import tileStoneBrown from "@/assets/tile-stone-brown.png";
 import tileParquetYellow from "@/assets/tile-parquet-yellow.jpg";
 import tileParquetGray from "@/assets/tile-parquet-gray.webp";
 import tileParquetRed from "@/assets/tile-parquet-red.jpg";
+import tileParquetBrown from "@/assets/tile-parquet-brown.png";
 import tileWoodYellow from "@/assets/tile-wood-yellow.webp";
 import tileWoodGray from "@/assets/tile-wood-gray.webp";
 import tileWoodRed from "@/assets/tile-wood-red.webp";
+import tileWoodBrown from "@/assets/tile-wood-brown.png";
 import tileCloverYellow from "@/assets/tile-clover-yellow.webp";
 import tileCloverGray from "@/assets/tile-clover-gray.webp";
 import tileCloverRed from "@/assets/tile-clover-red.jpg";
@@ -115,6 +120,13 @@ export const catalogCategories: CatalogCategory[] = [
             description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
             price: "80 руб/шт",
           },
+          {
+            name: "Коричневый",
+            hex: "#8B5A3C",
+            image: tileStoneBrown,
+            description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
+            price: "100 руб/шт",
+          },
         ],
       },
       {
@@ -145,6 +157,13 @@ export const catalogCategories: CatalogCategory[] = [
             description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
             price: "80 руб/шт",
           },
+          {
+            name: "Коричневый",
+            hex: "#8B5A3C",
+            image: tileParquetBrown,
+            description: "30х30х3см. 11 шт/м2, 5,5 кг/шт, 180шт/поддон.",
+            price: "100 руб/шт",
+          },
         ],
       },
       {
@@ -174,6 +193,13 @@ export const catalogCategories: CatalogCategory[] = [
             image: tileWoodRed,
             description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
             price: "180 руб/шт",
+          },
+          {
+            name: "Коричневый",
+            hex: "#8B5A3C",
+            image: tileWoodBrown,
+            description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
+            price: "235 руб/шт",
           },
         ],
       },
@@ -235,6 +261,13 @@ export const catalogCategories: CatalogCategory[] = [
             description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
             price: "180 руб/шт",
           },
+          {
+            name: "Жёлтый",
+            hex: "#D4C25A",
+            image: tile8Yellow,
+            description: "40х40х5см. 6,25 шт/м2, 16,5 кг/шт, 66 шт/поддон.",
+            price: "235 руб/шт",
+          },
         ],
       },
       {
@@ -264,6 +297,13 @@ export const catalogCategories: CatalogCategory[] = [
             image: tileOldRed,
             description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
             price: "300 руб/шт",
+          },
+          {
+            name: "Коричневый",
+            hex: "#8B5A3C",
+            image: tile12Brown,
+            description: "50х50х5см. 4 шт/м2, 25 кг/шт, 44 шт/поддон.",
+            price: "380 руб/шт",
           },
         ],
       },
