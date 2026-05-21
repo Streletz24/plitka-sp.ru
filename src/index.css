@@ -90,3 +90,44 @@
     -ms-interpolation-mode: bicubic;
   }
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-main {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .print-section-title {
+    color: #1f3a33 !important;
+    border-bottom-color: #b8b8b8 !important;
+  }
+
+  .print-visible-block {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .print-price-table th,
+  .print-price-table td {
+    border: 1px solid #bfbfbf !important;
+    color: #222 !important;
+  }
+
+  .print-price-table th {
+    background: #e9f0ee !important;
+    font-weight: 700 !important;
+  }
+
+  .print-price-table tr:nth-child(even) td {
+    background: #f7f7f7 !important;
+  }
+
+  .print-price-table td:last-child {
+    color: #a3522c !important;
+    font-weight: 700 !important;
+  }
+}

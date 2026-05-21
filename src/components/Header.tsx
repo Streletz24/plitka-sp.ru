@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
@@ -18,14 +18,21 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname, location.hash]);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLElement>, sectionId: string) => {
     e.preventDefault();
     if (location.pathname !== "/") {
-      navigate("/#" + sectionId);
+      navigate("/", { state: { scrollTo: sectionId } });
     } else {
+      window.history.replaceState(null, "", `#${sectionId}`);
       const el = document.getElementById(sectionId);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        const y = el.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       }
     }
     setMenuOpen(false);
@@ -41,16 +48,16 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8 gap-6">
-        <a href="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
+    <header className="fixed top-0 left-0 right-0 z-50 h-20 sm:h-24 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-20 lg:h-24 w-auto"
+            className="h-full w-auto lg:scale-[1.22] lg:origin-left"
             data-no-zoom
           />
-        </a>
+        </Link>
 
         <nav className="hidden lg:flex items-center gap-7 flex-1 justify-center">
           {navLinks.map((link) =>
@@ -63,14 +70,13 @@ const Header = () => {
                 {link.label}
               </Link>
             ) : (
-              <a
+              <button
                 key={link.href}
-                href={`/#${link.href}`}
                 onClick={(e) => handleNavClick(e, link.href)}
                 className="relative whitespace-nowrap text-[13px] font-medium tracking-wide uppercase text-foreground/75 hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-accent hover:after:w-full after:transition-all after:duration-300"
               >
                 {link.label}
-              </a>
+              </button>
             )
           )}
         </nav>
@@ -91,13 +97,13 @@ const Header = () => {
           >
             Наши цены
           </Link>
-          <a
-            href={`/#contact`}
+          <button
+            type="button"
             onClick={(e) => handleNavClick(e, "contact")}
             className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
-          </a>
+          </button>
           <CartButton />
         </div>
 
@@ -132,14 +138,13 @@ const Header = () => {
                 {link.label}
               </Link>
             ) : (
-              <a
+              <button
                 key={link.href}
-                href={`/#${link.href}`}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="block text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
+                className="block w-full text-left text-xs font-medium uppercase tracking-wider text-foreground/80 hover:text-primary py-2"
               >
                 {link.label}
-              </a>
+              </button>
             )
           )}
           <a href="tel:+79161335056" className="block text-sm font-semibold text-foreground py-2">
@@ -160,13 +165,13 @@ const Header = () => {
             >
               Наши цены
             </Link>
-            <a
-              href={`/#contact`}
+            <button
+              type="button"
               onClick={(e) => handleNavClick(e, "contact")}
               className="inline-flex items-center justify-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm"
             >
               Консультация
-            </a>
+            </button>
           </div>
         </div>
       )}
