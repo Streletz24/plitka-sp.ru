@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { normalizeSectionId, scrollToSection } from "@/lib/scrollToSection";
 
 const footerNavLinks = [
   { label: "Преимущества", href: "advantages" },
@@ -6,7 +7,7 @@ const footerNavLinks = [
   { label: "О компании", href: "about" },
   { label: "Галерея", href: "gallery" },
   { label: "Отзывы", href: "reviews" },
-  { label: "Контакты", href: "contact" },
+  { label: "Контакты", href: "contacts" },
 ];
 
 const Footer = () => {
@@ -15,13 +16,12 @@ const Footer = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
+    const normalizedId = normalizeSectionId(sectionId);
+
     if (location.pathname !== "/") {
-      navigate("/#" + sectionId);
+      navigate("/#" + normalizedId);
     } else {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
+      scrollToSection(normalizedId);
     }
   };
 
