@@ -57,7 +57,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-full w-auto"
+            className="h-full w-auto scale-[1.22] origin-left"
             data-no-zoom
           />
         </Link>
