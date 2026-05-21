@@ -10,7 +10,7 @@ const CTASection = () => {
   };
 
   return (
-    <section id="contact" className="py-24 lg:py-32 bg-primary">
+    <section id="contacts" className="py-24 lg:py-32 bg-primary">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <AnimateOnScroll>
