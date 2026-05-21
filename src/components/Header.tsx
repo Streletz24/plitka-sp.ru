@@ -30,15 +30,12 @@ const Header = () => {
     setMenuOpen(false);
 
     if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: sectionId } });
-    } else {
-      window.history.replaceState(null, "", `#${sectionId}`);
-      const el = document.getElementById(sectionId);
-      if (el) {
-        const y = el.getBoundingClientRect().top + window.scrollY - 120;
-        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-      }
+      navigate({ pathname: "/", hash: `#${normalizedId}` }, { state: { scrollTo: normalizedId } });
+      return;
     }
+
+    navigate({ pathname: "/", hash: `#${normalizedId}` }, { replace: true });
+    scrollToSection(normalizedId);
   };
 
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
