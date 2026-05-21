@@ -15,15 +15,13 @@ import CartDrawer from "./components/CartDrawer.tsx";
 import ScrollToHash from "./components/ScrollToHash.tsx";
 
 const queryClient = new QueryClient();
-const Router = import.meta.env.PROD ? HashRouter : BrowserRouter;
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <CartProvider>
         <Toaster />
         <Sonner />
-        <Router>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <ScrollToHash />
           <Routes>
             <Route path="/" element={<Index />} />
