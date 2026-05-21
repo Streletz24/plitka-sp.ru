@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
+import logo from "@/assets/logo-transparent.png";
 
 const Prices = () => {
   useEffect(() => {
@@ -55,7 +56,27 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const handleDownloadExcel = () => {
+  const toDataUrl = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("Не удалось загрузить логотип"));
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const handleDownloadExcel = async () => {
+    const exportDate = new Date().toLocaleString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const logoDataUrl = await toDataUrl(logo);
+
     const tableRows = priceRows
       .map(
         (row) => `
@@ -74,17 +95,32 @@ const Prices = () => {
       <head>
         <meta charset="UTF-8" />
         <style>
-          body { font-family: Arial, sans-serif; }
-          h1 { text-align: center; color: #1f3a33; margin: 12px 0 20px; }
+          body { font-family: Calibri, Arial, sans-serif; color: #1f2f2a; }
+          .head-wrap { border: 1px solid #d1d8d6; padding: 14px; margin-bottom: 14px; }
+          .head-table { width: 100%; border-collapse: collapse; }
+          .head-table td { border: none; vertical-align: middle; }
+          .logo { width: 170px; height: auto; }
+          .company { font-size: 22px; font-weight: 700; color: #1f3a33; text-align: right; }
+          .meta { font-size: 12px; color: #5b6b66; text-align: right; padding-top: 6px; }
           table { border-collapse: collapse; width: 100%; }
-          th, td { border: 1px solid #c8c8c8; padding: 8px 10px; font-size: 12px; }
-          th { background: #e9f0ee; color: #1f3a33; font-weight: 700; }
-          tr:nth-child(even) td { background: #f7f7f7; }
-          td:last-child { font-weight: 700; color: #a3522c; white-space: nowrap; }
+          th, td { border: 1px solid #c8d0cd; padding: 8px 10px; font-size: 12px; }
+          th { background: #dce9e4; color: #1f3a33; font-weight: 700; text-align: left; }
+          tr:nth-child(even) td { background: #f7f9f8; }
+          td:last-child { font-weight: 700; color: #8d3f1e; white-space: nowrap; }
         </style>
       </head>
       <body>
-        <h1>Прайс-лист «Удачная Плитка»</h1>
+        <div class="head-wrap">
+          <table class="head-table">
+            <tr>
+              <td><img class="logo" src="${logoDataUrl}" alt="Логотип" /></td>
+              <td>
+                <div class="company">Прайс-лист «Удачная Плитка»</div>
+                <div class="meta">Дата выгрузки: ${exportDate}</div>
+              </td>
+            </tr>
+          </table>
+        </div>
         <table>
           <thead>
             <tr>
@@ -127,7 +163,7 @@ const Prices = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={handleDownloadExcel}
+                onClick={() => void handleDownloadExcel()}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
                 <Download className="h-4 w-4" />

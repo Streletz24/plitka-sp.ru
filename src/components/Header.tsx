@@ -51,13 +51,13 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8 gap-6">
+    <header className="fixed top-0 left-0 right-0 z-50 h-28 lg:h-32 bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
         <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-24 lg:h-28 xl:h-32 w-auto"
+            className="h-full w-auto py-1"
             data-no-zoom
           />
         </Link>
