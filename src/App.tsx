@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +15,7 @@ import CartDrawer from "./components/CartDrawer.tsx";
 import ScrollToHash from "./components/ScrollToHash.tsx";
 
 const queryClient = new QueryClient();
+const Router = import.meta.env.PROD ? HashRouter : BrowserRouter;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -22,7 +23,7 @@ const App = () => (
       <CartProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <Router>
           <ScrollToHash />
           <Routes>
             <Route path="/" element={<Index />} />
@@ -35,7 +36,7 @@ const App = () => (
           </Routes>
           <ImageLightbox />
           <CartDrawer />
-        </BrowserRouter>
+        </Router>
       </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>

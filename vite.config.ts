@@ -6,6 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isGitHubPagesBuild = process.env.GITHUB_PAGES === "true";
+  const pagesBase = process.env.GH_PAGES_BASE ?? "/";
 
   return ({
   server: {
@@ -16,7 +17,7 @@ export default defineConfig(({ mode }) => {
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  base: isGitHubPagesBuild ? "/cozy-yard-builder/" : "/",
+  base: isGitHubPagesBuild ? pagesBase : "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
