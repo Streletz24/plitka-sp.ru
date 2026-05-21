@@ -10,7 +10,7 @@ const steps = [
 
 const StepsSection = () => {
   return (
-    <section className="py-24 lg:py-32 bg-card">
+    <section id="services" className="py-24 lg:py-32 bg-card">
       <div className="container mx-auto px-4 lg:px-8">
         <AnimateOnScroll>
           <div className="text-center mb-16">
