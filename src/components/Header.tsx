@@ -106,7 +106,7 @@ const Header = () => {
             className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
-          </a>
+          </button>
           <CartButton />
         </div>
 
