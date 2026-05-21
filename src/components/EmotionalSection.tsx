@@ -1,7 +1,13 @@
 import emotionalImg from "@/assets/emotional-block.jpg";
 import { AnimateOnScroll } from "./AnimateOnScroll";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const EmotionalSection = () => {
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    scrollToSection("contacts");
+  };
+
   return (
     <section className="relative py-32 lg:py-40 overflow-hidden">
       <div
@@ -22,7 +28,8 @@ const EmotionalSection = () => {
               Каждый проект — это продуманное решение для комфортной жизни в частном доме.
             </p>
             <a
-              href="#contact"
+              href="/#contacts"
+              onClick={handleContactClick}
               className="inline-block bg-accent text-accent-foreground px-10 py-4 rounded-lg text-base font-bold hover:opacity-90 transition-all duration-300 hover:scale-105"
             >
               Обсудить проект
