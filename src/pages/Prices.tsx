@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
 
 const Prices = () => {
@@ -11,44 +11,210 @@ const Prices = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const formatPrice = (n: number | null, unit: string) =>
+    n === null || n <= 0 ? "По запросу" : `${n.toLocaleString("ru-RU")} руб/${unit}`;
+
+  const priceRows = useMemo(() => {
+    const rows: Array<{ category: string; product: string; color: string; description: string; price: string }> = [];
+
+    for (const category of catalogCategories) {
+      for (const product of category.products) {
+        const linear = isLinearProduct(product.name);
+        const unit = linear ? "м.п." : "м²";
+        const variants =
+          product.colors && product.colors.length > 0
+            ? product.colors.map((c) => ({
+                color: c.name,
+                description: c.description ?? product.description,
+                price: computeUnitPrice(
+                  product.name,
+                  c.description ?? product.description,
+                  c.price ?? product.price
+                ),
+              }))
+            : [
+                {
+                  color: "—",
+                  description: product.description,
+                  price: computeUnitPrice(product.name, product.description, product.price),
+                },
+              ];
+
+        for (const row of variants) {
+          rows.push({
+            category: category.title,
+            product: product.name,
+            color: row.color,
+            description: row.description,
+            price: formatPrice(row.price, unit),
+          });
+        }
+      }
+    }
+
+    return rows;
+  }, []);
+
+  const handleDownloadExcel = async () => {
+    const exportDate = new Date().toLocaleString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const esc = (value: string) =>
+      value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+
+    const rowsXml = priceRows
+      .map(
+        (row, idx) => `
+      <Row>
+        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.category)}</Data></Cell>
+        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.product)}</Data></Cell>
+        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.color)}</Data></Cell>
+        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.description)}</Data></Cell>
+        <Cell ss:StyleID="${idx % 2 === 0 ? "PriceEven" : "PriceOdd"}"><Data ss:Type="String">${esc(row.price)}</Data></Cell>
+      </Row>`
+      )
+      .join("");
+
+    const xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="Title"><Font ss:Bold="1" ss:Size="16" ss:Color="#1f3a33"/><Alignment ss:Horizontal="Center"/></Style>
+    <Style ss:ID="Meta"><Font ss:Size="10" ss:Color="#5b6b66"/><Alignment ss:Horizontal="Right"/></Style>
+    <Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#1f3a33"/><Interior ss:Color="#dce9e4" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+    <Style ss:ID="BodyEven"><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
+    <Style ss:ID="BodyOdd"><Interior ss:Color="#F7F9F8" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
+    <Style ss:ID="PriceEven"><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><Font ss:Bold="1" ss:Color="#8D3F1E"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
+    <Style ss:ID="PriceOdd"><Interior ss:Color="#F7F9F8" ss:Pattern="Solid"/><Font ss:Bold="1" ss:Color="#8D3F1E"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
+  </Styles>
+  <Worksheet ss:Name="Прайс-лист">
+    <Table>
+      <Column ss:Width="180"/>
+      <Column ss:Width="220"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="280"/>
+      <Column ss:Width="130"/>
+      <Row><Cell ss:MergeAcross="4" ss:StyleID="Title"><Data ss:Type="String">Прайс-лист «Удачная Плитка»</Data></Cell></Row>
+      <Row><Cell ss:MergeAcross="4" ss:StyleID="Meta"><Data ss:Type="String">Дата выгрузки: ${esc(exportDate)}</Data></Cell></Row>
+      <Row></Row>
+      <Row>
+        <Cell ss:StyleID="Header"><Data ss:Type="String">Категория</Data></Cell>
+        <Cell ss:StyleID="Header"><Data ss:Type="String">Наименование</Data></Cell>
+        <Cell ss:StyleID="Header"><Data ss:Type="String">Цвет</Data></Cell>
+        <Cell ss:StyleID="Header"><Data ss:Type="String">Описание</Data></Cell>
+        <Cell ss:StyleID="Header"><Data ss:Type="String">Цена</Data></Cell>
+      </Row>
+      ${rowsXml}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + xml], { type: "application/xml;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "ceny-udachnaya-plitka.xml";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen prices-page">
       <Header />
-      <main className="pt-48 pb-20">
+      <main className="pt-48 pb-20 print-main">
         <div className="container mx-auto px-4 lg:px-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
-          >
+          <Link to="/" className="inline-flex items-center gap-2 text-primary hover:underline mb-8 no-print">
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
 
-          <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-12">
-            Наши цены
-          </h1>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8 no-print">
+            <h1 className="text-3xl lg:text-4xl font-bold text-foreground">Наши цены</h1>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void handleDownloadExcel()}
+                className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+              >
+                <Download className="h-4 w-4" />
+                Скачать Excel
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+              >
+                <Printer className="h-4 w-4" />
+                Печать прайса
+              </button>
+            </div>
+          </div>
 
           <div className="space-y-12">
             {catalogCategories.map((category) => {
               const linear = category.products.some((p) => isLinearProduct(p.name));
               return (
                 <div key={category.slug}>
-                  <h2 className="text-2xl font-bold text-foreground mb-6 border-b border-border pb-3">
-                    {category.title}
-                  </h2>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 border-b border-border pb-3 print-section-title">{category.title}</h2>
+
+                  <div className="space-y-3 md:hidden">
+                    {category.products.flatMap((product, pIdx) => {
+                      const linearP = isLinearProduct(product.name);
+                      const unit = linearP ? "м.п." : "м²";
+                      const rows =
+                        product.colors && product.colors.length > 0
+                          ? product.colors.map((c) => ({
+                              color: c.name,
+                              description: c.description ?? product.description,
+                              price: computeUnitPrice(
+                                product.name,
+                                c.description ?? product.description,
+                                c.price ?? product.price
+                              ),
+                            }))
+                          : [
+                              {
+                                color: "—",
+                                description: product.description,
+                                price: computeUnitPrice(product.name, product.description, product.price),
+                              },
+                            ];
+                      return rows.map((row, rIdx) => (
+                        <article
+                          key={`${product.id}-mobile-${rIdx}`}
+                          className={`rounded-lg border border-border p-4 ${((pIdx + rIdx) % 2 === 0) ? "bg-card" : "bg-muted/50"}`}
+                        >
+                          <p className="text-sm font-semibold text-foreground">{product.name}</p>
+                          <p className="mt-1 text-sm text-foreground/80">Цвет: {row.color}</p>
+                          <p className="mt-1 text-sm text-foreground/70">{row.description}</p>
+                          <p className="mt-2 text-sm font-semibold text-primary">{formatPrice(row.price, unit)}</p>
+                        </article>
+                      ));
+                    })}
+                  </div>
+
+                  <div className="hidden md:block overflow-x-auto print-visible-block">
+                    <table className="w-full border-collapse print-price-table">
                       <thead>
                         <tr className="bg-muted">
-                          <th className="text-left p-4 text-sm font-semibold text-foreground">
-                            Наименование
-                          </th>
-                          <th className="text-left p-4 text-sm font-semibold text-foreground">
-                            Цвет
-                          </th>
-                          <th className="text-left p-4 text-sm font-semibold text-foreground">
-                            Описание
-                          </th>
+                          <th className="text-left p-4 text-sm font-semibold text-foreground">Наименование</th>
+                          <th className="text-left p-4 text-sm font-semibold text-foreground">Цвет</th>
+                          <th className="text-left p-4 text-sm font-semibold text-foreground">Описание</th>
                           <th className="text-right p-4 text-sm font-semibold text-foreground whitespace-nowrap">
                             {linear ? "Цена за м.п." : "Цена за м²"}
                           </th>
@@ -58,10 +224,6 @@ const Prices = () => {
                         {category.products.flatMap((product, pIdx) => {
                           const linearP = isLinearProduct(product.name);
                           const unit = linearP ? "м.п." : "м²";
-                          const fmt = (n: number | null) =>
-                            n === null || n <= 0
-                              ? "По запросу"
-                              : `${n.toLocaleString("ru-RU")} руб/${unit}`;
                           const rows =
                             product.colors && product.colors.length > 0
                               ? product.colors.map((c) => ({
@@ -77,31 +239,18 @@ const Prices = () => {
                                   {
                                     color: "—",
                                     description: product.description,
-                                    price: computeUnitPrice(
-                                      product.name,
-                                      product.description,
-                                      product.price
-                                    ),
+                                    price: computeUnitPrice(product.name, product.description, product.price),
                                   },
                                 ];
                           return rows.map((row, rIdx) => {
                             const idx = pIdx + rIdx;
                             return (
-                              <tr
-                                key={`${product.id}-${rIdx}`}
-                                className={idx % 2 === 0 ? "bg-card" : "bg-muted/50"}
-                              >
-                                <td className="p-4 text-sm font-medium text-foreground">
-                                  {rIdx === 0 ? product.name : ""}
-                                </td>
-                                <td className="p-4 text-sm text-foreground/80">
-                                  {row.color}
-                                </td>
-                                <td className="p-4 text-sm text-foreground/70">
-                                  {row.description}
-                                </td>
+                              <tr key={`${product.id}-${rIdx}`} className={idx % 2 === 0 ? "bg-card" : "bg-muted/50"}>
+                                <td className="p-4 text-sm font-medium text-foreground">{rIdx === 0 ? product.name : ""}</td>
+                                <td className="p-4 text-sm text-foreground/80">{row.color}</td>
+                                <td className="p-4 text-sm text-foreground/70">{row.description}</td>
                                 <td className="p-4 text-sm font-semibold text-primary text-right whitespace-nowrap">
-                                  {fmt(row.price)}
+                                  {formatPrice(row.price, unit)}
                                 </td>
                               </tr>
                             );
@@ -115,10 +264,9 @@ const Prices = () => {
             })}
           </div>
 
-          <div className="mt-12 p-6 bg-muted rounded-xl text-center">
+          <div className="mt-12 p-6 bg-muted rounded-xl text-center no-print">
             <p className="text-foreground/70 text-sm mb-4">
-              Цены указаны ориентировочно и могут зависеть от объёма заказа.
-              Свяжитесь с нами для точного расчёта стоимости.
+              Цены указаны ориентировочно и могут зависеть от объёма заказа. Свяжитесь с нами для точного расчёта стоимости.
             </p>
             <a
               href="tel:+79161335056"
