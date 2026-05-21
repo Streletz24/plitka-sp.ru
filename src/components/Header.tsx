@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
+import { normalizeSectionId, scrollToSection } from "@/lib/scrollToSection";
 
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
@@ -10,7 +11,7 @@ const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Укладка плитки", href: "tiling", route: "/tiling" },
   { label: "Галерея", href: "gallery" },
   { label: "Отзывы", href: "reviews" },
-  { label: "Контакты", href: "contact" },
+  { label: "Контакты", href: "contacts" },
 ];
 
 const Header = () => {
@@ -25,6 +26,9 @@ const Header = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLElement>, sectionId: string) => {
     e.preventDefault();
+    const normalizedId = normalizeSectionId(sectionId);
+    setMenuOpen(false);
+
     if (location.pathname !== "/") {
       navigate("/", { state: { scrollTo: sectionId } });
     } else {
@@ -35,7 +39,6 @@ const Header = () => {
         window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       }
     }
-    setMenuOpen(false);
   };
 
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -54,7 +57,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-20 lg:h-24 w-auto"
+            className="h-14 sm:h-16 lg:h-24 w-auto"
             data-no-zoom
           />
         </Link>
@@ -109,19 +112,19 @@ const Header = () => {
 
         <div className="lg:hidden flex items-center gap-2">
           <CartButton />
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="lg:hidden p-2 text-foreground"
-          aria-label="Меню"
-        >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="lg:hidden p-2 text-foreground"
+            aria-label="Меню"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
 
