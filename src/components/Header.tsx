@@ -30,9 +30,9 @@ const Header = () => {
     setMenuOpen(false);
 
     if (location.pathname !== "/") {
-      navigate("/#" + normalizedId);
+      navigate("/", { state: { scrollTo: sectionId } });
     } else {
-      window.history.replaceState(null, "", `/#${sectionId}`);
+      window.history.replaceState(null, "", `#${sectionId}`);
       const el = document.getElementById(sectionId);
       if (el) {
         const y = el.getBoundingClientRect().top + window.scrollY - 120;

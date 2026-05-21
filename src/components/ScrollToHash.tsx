@@ -7,11 +7,12 @@ const ScrollToHash = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (!location.hash) {
+    const stateTarget = (location.state as { scrollTo?: string } | null)?.scrollTo;
+    const id = stateTarget ?? location.hash.replace("#", "");
+
+    if (!id) {
       return;
     }
-
-    const id = location.hash.replace("#", "");
 
     const scrollToSection = () => {
       const el = document.getElementById(id);
