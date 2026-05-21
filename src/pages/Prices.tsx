@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
+import logo from "@/assets/logo-transparent.png";
 
 const Prices = () => {
   useEffect(() => {
