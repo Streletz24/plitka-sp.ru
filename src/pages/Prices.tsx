@@ -14,8 +14,8 @@ const Prices = () => {
   const formatPrice = (n: number | null, unit: string) =>
     n === null || n <= 0 ? "По запросу" : `${n.toLocaleString("ru-RU")} руб/${unit}`;
 
-  const csvData = useMemo(() => {
-    const rows = [["Категория", "Наименование", "Цвет", "Описание", "Цена"]];
+  const priceRows = useMemo(() => {
+    const rows: Array<{ category: string; product: string; color: string; description: string; price: string }> = [];
 
     for (const category of catalogCategories) {
       for (const product of category.products) {
@@ -41,13 +41,13 @@ const Prices = () => {
               ];
 
         for (const row of variants) {
-          rows.push([
-            category.title,
-            product.name,
-            row.color,
-            row.description,
-            formatPrice(row.price, unit),
-          ]);
+          rows.push({
+            category: category.title,
+            product: product.name,
+            color: row.color,
+            description: row.description,
+            price: formatPrice(row.price, unit),
+          });
         }
       }
     }
@@ -55,17 +55,57 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const handleDownload = () => {
-    const csv = csvData
-      .map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(";"))
-      .join("\n");
+  const handleDownloadExcel = () => {
+    const tableRows = priceRows
+      .map(
+        (row) => `
+          <tr>
+            <td>${row.category}</td>
+            <td>${row.product}</td>
+            <td>${row.color}</td>
+            <td>${row.description}</td>
+            <td>${row.price}</td>
+          </tr>`
+      )
+      .join("");
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="UTF-8" />
+        <style>
+          body { font-family: Arial, sans-serif; }
+          h1 { text-align: center; color: #1f3a33; margin: 12px 0 20px; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #c8c8c8; padding: 8px 10px; font-size: 12px; }
+          th { background: #e9f0ee; color: #1f3a33; font-weight: 700; }
+          tr:nth-child(even) td { background: #f7f7f7; }
+          td:last-child { font-weight: 700; color: #a3522c; white-space: nowrap; }
+        </style>
+      </head>
+      <body>
+        <h1>Прайс-лист «Удачная Плитка»</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Категория</th>
+              <th>Наименование</th>
+              <th>Цвет</th>
+              <th>Описание</th>
+              <th>Цена</th>
+            </tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </body>
+      </html>`;
 
     const bom = "\uFEFF";
-    const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([bom + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "ceny-udachnaya-plitka.csv";
+    link.download = "ceny-udachnaya-plitka.xls";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -73,25 +113,25 @@ const Prices = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen prices-page">
       <Header />
-      <main className="pt-48 pb-20">
+      <main className="pt-48 pb-20 print-main">
         <div className="container mx-auto px-4 lg:px-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-primary hover:underline mb-8 no-print">
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
 
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8 no-print">
             <h1 className="text-3xl lg:text-4xl font-bold text-foreground">Наши цены</h1>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={handleDownload}
+                onClick={handleDownloadExcel}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
                 <Download className="h-4 w-4" />
-                Скачать цены
+                Скачать Excel
               </button>
               <button
                 type="button"
@@ -99,7 +139,7 @@ const Prices = () => {
                 className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
               >
                 <Printer className="h-4 w-4" />
-                Печать
+                Печать прайса
               </button>
             </div>
           </div>
@@ -109,7 +149,7 @@ const Prices = () => {
               const linear = category.products.some((p) => isLinearProduct(p.name));
               return (
                 <div key={category.slug}>
-                  <h2 className="text-2xl font-bold text-foreground mb-6 border-b border-border pb-3">{category.title}</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6 border-b border-border pb-3 print-section-title">{category.title}</h2>
 
                   <div className="space-y-3 md:hidden">
                     {category.products.flatMap((product, pIdx) => {
@@ -147,8 +187,8 @@ const Prices = () => {
                     })}
                   </div>
 
-                  <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full border-collapse">
+                  <div className="hidden md:block overflow-x-auto print-visible-block">
+                    <table className="w-full border-collapse print-price-table">
                       <thead>
                         <tr className="bg-muted">
                           <th className="text-left p-4 text-sm font-semibold text-foreground">Наименование</th>
@@ -203,7 +243,7 @@ const Prices = () => {
             })}
           </div>
 
-          <div className="mt-12 p-6 bg-muted rounded-xl text-center">
+          <div className="mt-12 p-6 bg-muted rounded-xl text-center no-print">
             <p className="text-foreground/70 text-sm mb-4">
               Цены указаны ориентировочно и могут зависеть от объёма заказа. Свяжитесь с нами для точного расчёта стоимости.
             </p>

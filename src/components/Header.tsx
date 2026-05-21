@@ -57,7 +57,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-14 sm:h-16 lg:h-24 w-auto"
+            className="h-24 lg:h-28 xl:h-32 w-auto"
             data-no-zoom
           />
         </Link>
