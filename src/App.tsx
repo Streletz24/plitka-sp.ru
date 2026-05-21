@@ -12,16 +12,17 @@ import NotFound from "./pages/NotFound.tsx";
 import ImageLightbox from "./components/ImageLightbox.tsx";
 import { CartProvider } from "./contexts/CartContext.tsx";
 import CartDrawer from "./components/CartDrawer.tsx";
+import ScrollToHash from "./components/ScrollToHash.tsx";
 
 const queryClient = new QueryClient();
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <CartProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <ScrollToHash />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/catalog/:slug" element={<CatalogDetail />} />
