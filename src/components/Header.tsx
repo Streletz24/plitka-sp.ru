@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
@@ -18,14 +18,21 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname, location.hash]);
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
     if (location.pathname !== "/") {
       navigate("/#" + sectionId);
     } else {
+      window.history.replaceState(null, "", `/#${sectionId}`);
       const el = document.getElementById(sectionId);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        const y = el.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       }
     }
     setMenuOpen(false);
