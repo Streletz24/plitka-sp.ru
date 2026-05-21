@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
+import { normalizeSectionId, scrollToSection } from "@/lib/scrollToSection";
 
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
@@ -10,7 +11,7 @@ const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Укладка плитки", href: "tiling", route: "/tiling" },
   { label: "Галерея", href: "gallery" },
   { label: "Отзывы", href: "reviews" },
-  { label: "Контакты", href: "contact" },
+  { label: "Контакты", href: "contacts" },
 ];
 
 const Header = () => {
@@ -25,8 +26,11 @@ const Header = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
+    const normalizedId = normalizeSectionId(sectionId);
+    setMenuOpen(false);
+
     if (location.pathname !== "/") {
-      navigate("/#" + sectionId);
+      navigate("/#" + normalizedId);
     } else {
       window.history.replaceState(null, "", `/#${sectionId}`);
       const el = document.getElementById(sectionId);
@@ -35,7 +39,6 @@ const Header = () => {
         window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       }
     }
-    setMenuOpen(false);
   };
 
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -49,12 +52,12 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4 lg:px-8 gap-6">
+      <div className="container mx-auto flex items-center justify-between py-2 lg:py-3 px-4 lg:px-8 gap-6">
         <a href="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-20 lg:h-24 w-auto"
+            className="h-14 sm:h-16 lg:h-24 w-auto"
             data-no-zoom
           />
         </a>
@@ -99,8 +102,8 @@ const Header = () => {
             Наши цены
           </Link>
           <a
-            href={`/#contact`}
-            onClick={(e) => handleNavClick(e, "contact")}
+            href={`/#contacts`}
+            onClick={(e) => handleNavClick(e, "contacts")}
             className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
@@ -110,19 +113,19 @@ const Header = () => {
 
         <div className="lg:hidden flex items-center gap-2">
           <CartButton />
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="lg:hidden p-2 text-foreground"
-          aria-label="Меню"
-        >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="lg:hidden p-2 text-foreground"
+            aria-label="Меню"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -168,8 +171,8 @@ const Header = () => {
               Наши цены
             </Link>
             <a
-              href={`/#contact`}
-              onClick={(e) => handleNavClick(e, "contact")}
+              href={`/#contacts`}
+              onClick={(e) => handleNavClick(e, "contacts")}
               className="inline-flex items-center justify-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm"
             >
               Консультация
