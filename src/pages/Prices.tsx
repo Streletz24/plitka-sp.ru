@@ -130,16 +130,22 @@ const Prices = () => {
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.setAttribute("href", url);
-    a.setAttribute("download", fileName);
+    a.href = url;
+    a.download = fileName;
     a.style.display = "none";
     document.body.appendChild(a);
-    a.click();
+
+    const supportsDownloadAttr = "download" in HTMLAnchorElement.prototype;
+    if (supportsDownloadAttr) {
+      a.click();
+    } else {
+      window.location.assign(url);
+    }
 
     window.setTimeout(() => {
       URL.revokeObjectURL(url);
       a.remove();
-    }, 2000);
+    }, 2500);
   };
 
   return (
