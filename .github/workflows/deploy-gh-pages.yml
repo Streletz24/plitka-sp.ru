@@ -38,7 +38,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: /${{ github.event.repository.name }}/
+          GH_PAGES_BASE: /
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
