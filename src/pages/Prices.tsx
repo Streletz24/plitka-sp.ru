@@ -135,11 +135,10 @@ const Prices = () => {
     a.style.display = "none";
     document.body.appendChild(a);
 
-    try {
-      a.click();
-    } catch {
-      window.location.assign(url);
-    }
+    // Primary trigger
+    a.click();
+    // Secondary trigger for stricter browsers
+    a.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
 
     window.setTimeout(() => {
       URL.revokeObjectURL(url);
