@@ -50,32 +50,43 @@ const CartDrawer = () => {
   };
 
   const buildOrderHtml = (dateText: string, logoSrc: string) => `<!doctype html><html><head><meta charset="utf-8" /><style>
-    body{font-family:Arial,sans-serif;color:#1f3a33;padding:18px}
-    .head{display:flex;gap:14px;align-items:flex-start;border-bottom:2px solid #1f3a33;padding-bottom:10px;margin-bottom:12px}
+    body{font-family:Arial,sans-serif;color:#143a3a;padding:18px;margin:0}
+    .doc{max-width:860px}
+    .head-top{font-size:11px;color:#3d4b4b;margin-bottom:8px}
+    .head{display:flex;gap:14px;align-items:flex-start;border-bottom:3px solid #1f4a48;padding:8px 0 10px;margin-bottom:10px}
     .head img{height:3cm;width:auto;object-fit:contain}
-    .firm{font-size:20px;font-weight:700;line-height:1.2}
-    .meta{font-size:12px;color:#37443f;line-height:1.4}
-    .title{font-size:18px;font-weight:700;margin:10px 0 8px}
-    table{border-collapse:collapse;width:100%;margin-top:8px}
-    th,td{border:1px solid #c8d0cd;padding:7px;font-size:12px;vertical-align:top}
-    th{background:#dce9e4}
-    .photo{width:56px;height:56px;object-fit:cover;border-radius:4px;border:1px solid #d7dfdc}
-    .product-cell{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .sum{margin-top:12px;font-size:16px;font-weight:700}
+    .firm{font-size:30px;font-weight:700;line-height:1;letter-spacing:.2px}
+    .meta{font-size:12px;color:#2f3f3f;line-height:1.45}
+    .title{font-size:26px;font-weight:700;margin:10px 0 8px}
+    table{border-collapse:collapse;width:100%;margin-top:6px}
+    th,td{border:1px solid #9fb0b0;padding:8px;font-size:12px;vertical-align:top}
+    th{background:#eef3f3;font-weight:700;text-align:center}
+    .num{width:44px;text-align:center}
+    .sum{margin-top:14px;font-size:28px;font-weight:700}
+    .photo{width:56px;height:56px;object-fit:cover;border:1px solid #c7d2d2}
+    .product-cell{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
   </style></head><body>
-    <div class="head">
-      <img src="${logoSrc}" alt="logo"/>
-      <div>
-        <div class="firm">УДАЧНАЯ ПЛИТКА</div>
-        <div class="meta">Адрес: г. Москва, ул. Примерная, д. 1</div>
-        <div class="meta">Тел.: +7 (916) 133-50-56</div>
-        <div class="meta">E-mail: info@udachnaya-plitka.ru</div>
-        <div class="meta">Дата заказа: ${dateText}</div>
+    <div class="doc">
+      <div class="head-top">${dateText}</div>
+      <div class="head">
+        <img src="${logoSrc}" alt="logo"/>
+        <div>
+          <div class="firm">УДАЧНАЯ ПЛИТКА</div>
+          <div class="meta">Адрес: г. Москва, ул. Примерная, д. 1</div>
+          <div class="meta">Тел.: +7 (916) 133-50-56</div>
+          <div class="meta">E-mail: info@udachnaya-plitka.ru</div>
+          <div class="meta">Дата заказа: ${dateText}</div>
+        </div>
       </div>
+      <div class="title">Бланк заказа</div>
+      <table>
+        <thead>
+          <tr><th class="num">№</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Сумма</th></tr>
+        </thead>
+        <tbody>${items.map((i,idx)=>`<tr><td class="num">${idx+1}</td><td><div class="product-cell"><span>${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody>
+      </table>
+      <div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div>
     </div>
-    <div class="title">Бланк заказа</div>
-    <table><thead><tr><th style="width:42px">№</th><th>Товар</th><th style="width:110px">Цвет</th><th style="width:130px">Количество</th><th style="width:70px">Ед.</th><th style="width:120px">Сумма</th></tr></thead><tbody>${items.map((i,idx)=>`<tr><td>${idx+1}</td><td><div class="product-cell"><span>${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody></table>
-    <div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div>
   </body></html>`;
 
   const getLogoDataUrl = async () => {
