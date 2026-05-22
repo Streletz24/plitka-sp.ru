@@ -121,7 +121,7 @@ const Prices = () => {
 </html>`;
 
     const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.doc`;
-    const blob = new Blob(["﻿", html], { type: "application/msword;charset=utf-8" });
+    const blob = new Blob(["﻿", html], { type: "application/octet-stream" });
     const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
     if (typeof nav.msSaveOrOpenBlob === "function") {
       nav.msSaveOrOpenBlob(blob, fileName);
@@ -132,6 +132,8 @@ const Prices = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = fileName;
+    a.target = "_self";
+    a.rel = "noopener";
     document.body.appendChild(a);
     a.click();
     a.remove();
