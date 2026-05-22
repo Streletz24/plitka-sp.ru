@@ -20,7 +20,8 @@ const Index = () => {
     }
 
     const sectionId = normalizeSectionId(window.location.hash);
-    window.history.replaceState(null, "", `/#${sectionId}`);
+    const basePath = window.location.pathname || "/";
+    window.history.replaceState(null, "", `${basePath}#${sectionId}`);
 
     const timeoutId = window.setTimeout(() => {
       scrollToSection(sectionId, "auto");

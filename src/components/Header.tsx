@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import logo from "@/assets/logo-transparent.png";
+import logo from "@/assets/logo.png";
 import CartButton from "./CartButton";
-import { normalizeSectionId, scrollToSection } from "@/lib/scrollToSection";
+import { normalizeSectionId } from "@/lib/scrollToSection";
+
+
+const contactLine = "+7 (916) 133-50-56 · plitka-sp.ru@yandex.ru · Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А";
 
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
@@ -30,10 +33,10 @@ const Header = () => {
     setMenuOpen(false);
 
     if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: sectionId } });
+      navigate("/", { state: { scrollTo: normalizedId } });
     } else {
-      window.history.replaceState(null, "", `#${sectionId}`);
-      const el = document.getElementById(sectionId);
+      window.history.replaceState(null, "", `#${normalizedId}`);
+      const el = document.getElementById(normalizedId);
       if (el) {
         const y = el.getBoundingClientRect().top + window.scrollY - 120;
         window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
@@ -52,12 +55,14 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-32 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
-        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
+      <div className="container mx-auto h-full flex flex-col justify-center px-4 lg:px-8 gap-2">
+        <div className="hidden lg:block text-[11px] text-foreground/70 whitespace-nowrap overflow-hidden text-ellipsis">{contactLine}</div>
+        <div className="flex items-center justify-between gap-6">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-full w-auto md:scale-[1.08] lg:scale-[1.18] origin-left"
+            className="h-12 md:h-14 lg:h-16 w-auto object-contain"
             data-no-zoom
           />
         </Link>
@@ -102,7 +107,7 @@ const Header = () => {
           </Link>
           <button
             type="button"
-            onClick={(e) => handleNavClick(e, "contact")}
+            onClick={(e) => handleNavClick(e, "contacts")}
             className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
@@ -126,10 +131,12 @@ const Header = () => {
             </svg>
           </button>
         </div>
+        </div>
       </div>
 
       {menuOpen && (
         <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2">
+          <p className="text-[11px] text-foreground/70 leading-snug">{contactLine}</p>
           {navLinks.map((link) =>
             link.route ? (
               <Link
@@ -170,7 +177,7 @@ const Header = () => {
             </Link>
             <button
               type="button"
-              onClick={(e) => handleNavClick(e, "contact")}
+              onClick={(e) => handleNavClick(e, "contacts")}
               className="inline-flex items-center justify-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm"
             >
               Консультация
