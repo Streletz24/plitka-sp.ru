@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -12,11 +13,31 @@ import { Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+
+  const handleRemoveItem = (id: string) => {
+    const removingLastItem = items.length === 1;
+    removeItem(id);
+
+    if (removingLastItem) {
+      close();
+      if (location.pathname !== "/") {
+        navigate("/", { state: { scrollTo: "catalog" } });
+      } else {
+        const target = document.getElementById("catalog");
+        if (target) {
+          const y = target.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+        }
+      }
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -107,7 +128,7 @@ const CartDrawer = () => {
               </div>
               <button
                 type="button"
-                onClick={() => removeItem(item.id)}
+                onClick={() => handleRemoveItem(item.id)}
                 aria-label="Удалить"
                 className="text-muted-foreground hover:text-destructive transition-colors p-1 h-fit"
               >
