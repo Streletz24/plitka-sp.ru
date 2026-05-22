@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
-import logo from "@/assets/logo-transparent.png";
 
 const Prices = () => {
   useEffect(() => {
@@ -56,7 +55,7 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const handleDownloadExcel = async () => {
+  const handleDownloadExcel = () => {
     const exportDate = new Date().toLocaleString("ru-RU", {
       day: "2-digit",
       month: "2-digit",
@@ -64,13 +63,14 @@ const Prices = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const esc = (value: string) =>
       value
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
-        .replaceAll("'", "&apos;");
+        .replaceAll("'", "&#39;");
 
     const rowsXml = priceRows
       .map(
@@ -94,6 +94,7 @@ const Prices = () => {
   <Styles>
     <Style ss:ID="Title"><Font ss:Bold="1" ss:Size="16" ss:Color="#1f3a33"/><Alignment ss:Horizontal="Center"/></Style>
     <Style ss:ID="Meta"><Font ss:Size="10" ss:Color="#5b6b66"/><Alignment ss:Horizontal="Right"/></Style>
+    <Style ss:ID="Brand"><Font ss:Bold="1" ss:Size="12" ss:Color="#1f3a33"/><Interior ss:Color="#eef4f1" ss:Pattern="Solid"/></Style>
     <Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#1f3a33"/><Interior ss:Color="#dce9e4" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
     <Style ss:ID="BodyEven"><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
     <Style ss:ID="BodyOdd"><Interior ss:Color="#F7F9F8" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
@@ -102,12 +103,9 @@ const Prices = () => {
   </Styles>
   <Worksheet ss:Name="Прайс-лист">
     <Table>
-      <Column ss:Width="180"/>
-      <Column ss:Width="220"/>
-      <Column ss:Width="110"/>
-      <Column ss:Width="280"/>
-      <Column ss:Width="130"/>
+      <Column ss:Width="180"/><Column ss:Width="220"/><Column ss:Width="110"/><Column ss:Width="330"/><Column ss:Width="130"/>
       <Row><Cell ss:MergeAcross="4" ss:StyleID="Title"><Data ss:Type="String">Прайс-лист «Удачная Плитка»</Data></Cell></Row>
+      <Row><Cell ss:MergeAcross="4" ss:StyleID="Brand"><Data ss:Type="String">Логотип компании: УДАЧНАЯ ПЛИТКА</Data></Cell></Row>
       <Row><Cell ss:MergeAcross="4" ss:StyleID="Meta"><Data ss:Type="String">Дата выгрузки: ${esc(exportDate)}</Data></Cell></Row>
       <Row></Row>
       <Row>
@@ -116,22 +114,44 @@ const Prices = () => {
         <Cell ss:StyleID="Header"><Data ss:Type="String">Цвет</Data></Cell>
         <Cell ss:StyleID="Header"><Data ss:Type="String">Описание</Data></Cell>
         <Cell ss:StyleID="Header"><Data ss:Type="String">Цена</Data></Cell>
-      </Row>
-      ${rowsXml}
+      </Row>${rowsXml}
     </Table>
   </Worksheet>
 </Workbook>`;
 
-    const bom = "\uFEFF";
-    const blob = new Blob([bom + xml], { type: "application/xml;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "ceny-udachnaya-plitka.xml";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
+    const blob = new Blob(["\uFEFF", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+
+    const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
+    if (typeof nav.msSaveOrOpenBlob === "function") {
+      nav.msSaveOrOpenBlob(blob, fileName);
+      return;
+    }
+
+    const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
+
+    const triggerDownload = (href: string) => {
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = fileName;
+      a.style.display = "none";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
+    try {
+      triggerDownload(dataUri);
+      return;
+    } catch {
+      const url = URL.createObjectURL(blob);
+      try {
+        triggerDownload(url);
+      } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
+    }
   };
 
   return (
@@ -149,7 +169,7 @@ const Prices = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => void handleDownloadExcel()}
+                onClick={handleDownloadExcel}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
                 <Download className="h-4 w-4" />
