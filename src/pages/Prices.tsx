@@ -128,31 +128,30 @@ const Prices = () => {
       return;
     }
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    link.rel = "noopener";
-    link.style.display = "none";
-    document.body.appendChild(link);
+    const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
+
+    const triggerDownload = (href: string) => {
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = fileName;
+      a.style.display = "none";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
 
     try {
-      link.click();
+      triggerDownload(dataUri);
+      return;
     } catch {
-      const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
-      const fallbackLink = document.createElement("a");
-      fallbackLink.href = dataUri;
-      fallbackLink.download = fileName;
-      fallbackLink.style.display = "none";
-      document.body.appendChild(fallbackLink);
-      fallbackLink.click();
-      fallbackLink.remove();
+      const url = URL.createObjectURL(blob);
+      try {
+        triggerDownload(url);
+      } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
     }
-
-    setTimeout(() => {
-      link.remove();
-      URL.revokeObjectURL(url);
-    }, 1200);
   };
 
   return (
