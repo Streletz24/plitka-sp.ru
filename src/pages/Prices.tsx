@@ -135,17 +135,16 @@ const Prices = () => {
     a.style.display = "none";
     document.body.appendChild(a);
 
-    const supportsDownloadAttr = "download" in HTMLAnchorElement.prototype;
-    if (supportsDownloadAttr) {
+    try {
       a.click();
-    } else {
+    } catch {
       window.location.assign(url);
     }
 
     window.setTimeout(() => {
       URL.revokeObjectURL(url);
       a.remove();
-    }, 2500);
+    }, 3000);
   };
 
   return (
