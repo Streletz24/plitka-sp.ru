@@ -56,6 +56,7 @@ const Prices = () => {
   }, []);
 
   const downloadExcelPriceList = () => {
+    try {
     const exportDate = new Date().toLocaleString("ru-RU", {
       day: "2-digit",
       month: "2-digit",
@@ -119,7 +120,7 @@ const Prices = () => {
   </Worksheet>
 </Workbook>`;
 
-    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
+    const fileName = `price-udachnaya-plitka-${new Date().toISOString().slice(0, 10)}.xls`;
     const blob = new Blob(["﻿", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
 
     const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
@@ -140,10 +141,22 @@ const Prices = () => {
     // Secondary trigger for stricter browsers
     a.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
 
+      requestAnimationFrame(() => {
+        try {
+          a.click();
+        } catch {
+          window.location.href = url;
+        }
+      });
+
     window.setTimeout(() => {
       URL.revokeObjectURL(url);
       a.remove();
     }, 3000);
+    } catch (error) {
+      console.error("Excel download failed", error);
+      alert("Не удалось скачать Excel-файл. Попробуйте еще раз.");
+    }
   };
 
   return (
