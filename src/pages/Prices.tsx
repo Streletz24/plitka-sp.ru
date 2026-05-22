@@ -133,9 +133,16 @@ const Prices = () => {
     a.href = url;
     a.download = fileName;
     a.rel = "noopener";
+    a.target = "_self";
     a.style.display = "none";
     document.body.appendChild(a);
-    a.click();
+
+    try {
+      a.click();
+    } catch {
+      const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
+      window.location.href = dataUri;
+    }
 
     setTimeout(() => {
       a.remove();
