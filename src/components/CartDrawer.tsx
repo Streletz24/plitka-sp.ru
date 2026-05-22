@@ -38,6 +38,20 @@ const CartDrawer = () => {
       }
     }
   };
+
+  const handleClearCart = () => {
+    clear();
+    close();
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: "catalog" } });
+    } else {
+      const target = document.getElementById("catalog");
+      if (target) {
+        const y = target.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      }
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -180,7 +194,7 @@ const CartDrawer = () => {
               </button>
               <button
                 type="button"
-                onClick={clear}
+                onClick={handleClearCart}
                 className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
               >
                 Очистить корзину
