@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
@@ -20,37 +20,32 @@ const CartDrawer = () => {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const goToCatalog = () => {
+    close();
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: "catalog" } });
+      return;
+    }
+
+    const target = document.getElementById("catalog");
+    if (target) {
+      const y = target.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
 
   const handleRemoveItem = (id: string) => {
     const removingLastItem = items.length === 1;
     removeItem(id);
 
     if (removingLastItem) {
-      close();
-      if (location.pathname !== "/") {
-        navigate("/", { state: { scrollTo: "catalog" } });
-      } else {
-        const target = document.getElementById("catalog");
-        if (target) {
-          const y = target.getBoundingClientRect().top + window.scrollY - 120;
-          window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-        }
-      }
+      goToCatalog();
     }
   };
 
   const handleClearCart = () => {
     clear();
-    close();
-    if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: "catalog" } });
-    } else {
-      const target = document.getElementById("catalog");
-      if (target) {
-        const y = target.getBoundingClientRect().top + window.scrollY - 120;
-        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-      }
-    }
+    goToCatalog();
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,6 +95,16 @@ const CartDrawer = () => {
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
+          <div className="sm:hidden mb-2">
+            <button
+              type="button"
+              onClick={goToCatalog}
+              className="inline-flex items-center gap-2 h-11 px-3 rounded-md border border-border bg-background text-foreground hover:text-primary hover:border-primary/50 active:scale-[0.99] transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Продолжить покупки</span>
+            </button>
+          </div>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
             {items.length > 0
