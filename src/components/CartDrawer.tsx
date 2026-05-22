@@ -49,7 +49,34 @@ const CartDrawer = () => {
     goToCatalog();
   };
 
-  const buildOrderHtml = (dateText: string, logoSrc: string) => `<!doctype html><html><head><meta charset="utf-8" /><style>body{font-family:Arial,sans-serif;color:#1f3a33;padding:20px}.head{display:flex;gap:14px;align-items:center;border-bottom:2px solid #1f3a33;padding-bottom:10px;margin-bottom:14px}.head img{width:120px}.firm{font-size:22px;font-weight:700}.meta{font-size:12px;color:#5b6b66}table{border-collapse:collapse;width:100%;margin-top:10px}th,td{border:1px solid #c8d0cd;padding:8px;font-size:12px;text-align:left}th{background:#dce9e4}.sum{margin-top:12px;font-size:16px;font-weight:700}</style></head><body><div class="head"><img src="${logoSrc}" alt="logo"/><div><div class="firm">УДАЧНАЯ ПЛИТКА</div><div class="meta">+7 (916) 133-50-56 · streletz24.github.io/plitka-sp.ru</div><div class="meta">Дата: ${dateText}</div></div></div><h2>Бланк заказа</h2><table><thead><tr><th>Товар</th><th>Цвет</th><th>Кол-во</th><th>Ед.</th><th>Цена</th></tr></thead><tbody>${items.map((i)=>`<tr><td>${i.productName}</td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody></table><div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div></body></html>`;
+  const buildOrderHtml = (dateText: string, logoSrc: string) => `<!doctype html><html><head><meta charset="utf-8" /><style>
+    body{font-family:Arial,sans-serif;color:#1f3a33;padding:18px}
+    .head{display:flex;gap:14px;align-items:flex-start;border-bottom:2px solid #1f3a33;padding-bottom:10px;margin-bottom:12px}
+    .head img{height:3cm;width:auto;object-fit:contain}
+    .firm{font-size:20px;font-weight:700;line-height:1.2}
+    .meta{font-size:12px;color:#37443f;line-height:1.4}
+    .title{font-size:18px;font-weight:700;margin:10px 0 8px}
+    table{border-collapse:collapse;width:100%;margin-top:8px}
+    th,td{border:1px solid #c8d0cd;padding:7px;font-size:12px;vertical-align:top}
+    th{background:#dce9e4}
+    .photo{width:56px;height:56px;object-fit:cover;border-radius:4px;border:1px solid #d7dfdc}
+    .product-cell{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .sum{margin-top:12px;font-size:16px;font-weight:700}
+  </style></head><body>
+    <div class="head">
+      <img src="${logoSrc}" alt="logo"/>
+      <div>
+        <div class="firm">УДАЧНАЯ ПЛИТКА</div>
+        <div class="meta">Адрес: г. Москва, ул. Примерная, д. 1</div>
+        <div class="meta">Тел.: +7 (916) 133-50-56</div>
+        <div class="meta">E-mail: info@udachnaya-plitka.ru</div>
+        <div class="meta">Дата заказа: ${dateText}</div>
+      </div>
+    </div>
+    <div class="title">Бланк заказа</div>
+    <table><thead><tr><th style="width:42px">№</th><th>Товар</th><th style="width:110px">Цвет</th><th style="width:130px">Количество</th><th style="width:70px">Ед.</th><th style="width:120px">Сумма</th></tr></thead><tbody>${items.map((i,idx)=>`<tr><td>${idx+1}</td><td><div class="product-cell"><span>${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody></table>
+    <div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div>
+  </body></html>`;
 
   const getLogoDataUrl = async () => {
     const blob = await fetch(logo).then((r) => r.blob());
@@ -77,11 +104,12 @@ const CartDrawer = () => {
 
   const handlePrintOrder = async () => {
     if (items.length === 0) return;
+    const w = window.open("", "_blank", "width=900,height=800");
+    if (!w) return;
+    w.document.write("<html><body style='font-family:Arial;padding:20px'>Подготовка бланка заказа...</body></html>");
     const dateText = new Date().toLocaleString("ru-RU");
     const logoSrc = await getLogoDataUrl();
     const html = buildOrderHtml(dateText, logoSrc);
-    const w = window.open("", "_blank", "noopener,noreferrer,width=900,height=800");
-    if (!w) return;
     w.document.open();
     w.document.write(html);
     w.document.close();
