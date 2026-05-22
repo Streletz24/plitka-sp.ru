@@ -55,7 +55,7 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const handleDownloadExcel = async () => {
+  const handleDownloadExcel = () => {
     const exportDate = new Date().toLocaleString("ru-RU", {
       day: "2-digit",
       month: "2-digit",
@@ -119,19 +119,27 @@ const Prices = () => {
   </Worksheet>
 </Workbook>`;
 
-    const blob = new Blob(["﻿", xml], { type: "application/vnd.ms-excel" });
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
+    const blob = new Blob(["\uFEFF", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+
+    const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
+    if (typeof nav.msSaveOrOpenBlob === "function") {
+      nav.msSaveOrOpenBlob(blob, fileName);
+      return;
+    }
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
+    link.download = fileName;
     link.rel = "noopener";
     link.style.display = "none";
     document.body.appendChild(link);
-    link.click();
+    link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
     setTimeout(() => {
       link.remove();
       URL.revokeObjectURL(url);
-    }, 500);
+    }, 1000);
   };
 
   return (
@@ -149,7 +157,7 @@ const Prices = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => void handleDownloadExcel()}
+                onClick={handleDownloadExcel}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
                 <Download className="h-4 w-4" />
