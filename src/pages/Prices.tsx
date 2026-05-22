@@ -145,11 +145,11 @@ const Prices = () => {
 </html>`;
 
     const bom = "﻿";
-    const blob = new Blob([bom + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const blob = new Blob([bom + html], { type: "application/vnd.ms-excel" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "price-udachnaya-plitka.xls";
+    link.download = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0,10)}.xls`;
     document.body.appendChild(link);
     link.click();
     link.remove();
