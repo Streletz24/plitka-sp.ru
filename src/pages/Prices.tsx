@@ -3,9 +3,8 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
-import { ArrowLeft, Download, Printer } from "lucide-react";
+import { ArrowLeft, FileText, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
-import logo from "@/assets/logo-transparent.png";
 
 const Prices = () => {
   useEffect(() => {
@@ -56,7 +55,7 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const handleDownloadExcel = async () => {
+  const downloadWordPriceList = () => {
     const exportDate = new Date().toLocaleString("ru-RU", {
       day: "2-digit",
       month: "2-digit",
@@ -64,74 +63,81 @@ const Prices = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const esc = (value: string) =>
       value
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
-        .replaceAll("'", "&apos;");
+        .replaceAll("'", "&#39;");
 
-    const rowsXml = priceRows
+    const rowsHtml = priceRows
       .map(
         (row, idx) => `
-      <Row>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.category)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.product)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.color)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.description)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "PriceEven" : "PriceOdd"}"><Data ss:Type="String">${esc(row.price)}</Data></Cell>
-      </Row>`
+          <tr style="background:${idx % 2 === 0 ? "#ffffff" : "#f7f9f8"};">
+            <td>${esc(row.category)}</td>
+            <td>${esc(row.product)}</td>
+            <td>${esc(row.color)}</td>
+            <td>${esc(row.description)}</td>
+            <td style="font-weight:700;color:#8D3F1E;">${esc(row.price)}</td>
+          </tr>`
       )
       .join("");
 
-    const xml = `<?xml version="1.0"?>
-<?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
- xmlns:o="urn:schemas-microsoft-com:office:office"
- xmlns:x="urn:schemas-microsoft-com:office:excel"
- xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-  <Styles>
-    <Style ss:ID="Title"><Font ss:Bold="1" ss:Size="16" ss:Color="#1f3a33"/><Alignment ss:Horizontal="Center"/></Style>
-    <Style ss:ID="Meta"><Font ss:Size="10" ss:Color="#5b6b66"/><Alignment ss:Horizontal="Right"/></Style>
-    <Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#1f3a33"/><Interior ss:Color="#dce9e4" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
-    <Style ss:ID="BodyEven"><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
-    <Style ss:ID="BodyOdd"><Interior ss:Color="#F7F9F8" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
-    <Style ss:ID="PriceEven"><Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/><Font ss:Bold="1" ss:Color="#8D3F1E"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
-    <Style ss:ID="PriceOdd"><Interior ss:Color="#F7F9F8" ss:Pattern="Solid"/><Font ss:Bold="1" ss:Color="#8D3F1E"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D0CD"/></Borders></Style>
-  </Styles>
-  <Worksheet ss:Name="Прайс-лист">
-    <Table>
-      <Column ss:Width="180"/>
-      <Column ss:Width="220"/>
-      <Column ss:Width="110"/>
-      <Column ss:Width="280"/>
-      <Column ss:Width="130"/>
-      <Row><Cell ss:MergeAcross="4" ss:StyleID="Title"><Data ss:Type="String">Прайс-лист «Удачная Плитка»</Data></Cell></Row>
-      <Row><Cell ss:MergeAcross="4" ss:StyleID="Meta"><Data ss:Type="String">Дата выгрузки: ${esc(exportDate)}</Data></Cell></Row>
-      <Row></Row>
-      <Row>
-        <Cell ss:StyleID="Header"><Data ss:Type="String">Категория</Data></Cell>
-        <Cell ss:StyleID="Header"><Data ss:Type="String">Наименование</Data></Cell>
-        <Cell ss:StyleID="Header"><Data ss:Type="String">Цвет</Data></Cell>
-        <Cell ss:StyleID="Header"><Data ss:Type="String">Описание</Data></Cell>
-        <Cell ss:StyleID="Header"><Data ss:Type="String">Цена</Data></Cell>
-      </Row>
-      ${rowsXml}
-    </Table>
-  </Worksheet>
-</Workbook>`;
+    const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: Arial, sans-serif; color: #1f3a33; }
+  .letterhead { border-bottom: 3px solid #1f3a33; padding-bottom: 12px; margin-bottom: 14px; }
+  .company { font-size: 24px; font-weight: 700; letter-spacing: .4px; }
+  .meta { font-size: 12px; color: #5b6b66; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #c8d0cd; padding: 8px; font-size: 12px; vertical-align: top; }
+  th { background: #dce9e4; text-align: left; }
+</style>
+</head>
+<body>
+  <div class="letterhead">
+    <div class="company">УДАЧНАЯ ПЛИТКА</div>
+    <div class="meta">Прайс-лист на продукцию</div>
+    <div class="meta">Дата выгрузки: ${esc(exportDate)}</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Категория</th>
+        <th>Наименование</th>
+        <th>Цвет</th>
+        <th>Описание</th>
+        <th>Цена</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+</body>
+</html>`;
 
-    const bom = "\uFEFF";
-    const blob = new Blob([bom + xml], { type: "application/xml;charset=utf-8;" });
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.doc`;
+    const blob = new Blob(["﻿", html], { type: "application/octet-stream" });
+    const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
+    if (typeof nav.msSaveOrOpenBlob === "function") {
+      nav.msSaveOrOpenBlob(blob, fileName);
+      return;
+    }
+
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "ceny-udachnaya-plitka.xml";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.target = "_self";
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
   };
 
   return (
@@ -149,11 +155,11 @@ const Prices = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => void handleDownloadExcel()}
+                onClick={downloadWordPriceList}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
-                <Download className="h-4 w-4" />
-                Скачать Excel
+                <FileText className="h-4 w-4" />
+                Скачать прайс Word
               </button>
               <button
                 type="button"
