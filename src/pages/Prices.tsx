@@ -135,11 +135,24 @@ const Prices = () => {
     link.rel = "noopener";
     link.style.display = "none";
     document.body.appendChild(link);
-    link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+
+    try {
+      link.click();
+    } catch {
+      const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
+      const fallbackLink = document.createElement("a");
+      fallbackLink.href = dataUri;
+      fallbackLink.download = fileName;
+      fallbackLink.style.display = "none";
+      document.body.appendChild(fallbackLink);
+      fallbackLink.click();
+      fallbackLink.remove();
+    }
+
     setTimeout(() => {
       link.remove();
       URL.revokeObjectURL(url);
-    }, 1000);
+    }, 1200);
   };
 
   return (
