@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -8,14 +9,124 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, ShoppingBag } from "lucide-react";
+import logo from "@/assets/logo.png";
+import { ArrowLeft, Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const goToCatalog = () => {
+    close();
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: "catalog" } });
+      return;
+    }
+
+    const target = document.getElementById("catalog");
+    if (target) {
+      const y = target.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
+
+  const handleRemoveItem = (id: string) => {
+    const removingLastItem = items.length === 1;
+    removeItem(id);
+
+    if (removingLastItem) {
+      goToCatalog();
+    }
+  };
+
+  const handleClearCart = () => {
+    clear();
+    goToCatalog();
+  };
+
+  const buildOrderHtml = (dateText: string, logoSrc: string) => `<!doctype html><html><head><meta charset="utf-8" /><style>
+    body{font-family:Arial,sans-serif;color:#143a3a;padding:16px;margin:0;background:#fff}
+    .doc{max-width:780px}
+    .head-top{font-size:11px;color:#3d4b4b;margin-bottom:6px}
+    .head{display:flex;gap:12px;align-items:flex-start;border-bottom:3px solid #1f4a48;padding:8px 0 10px;margin-bottom:10px}
+    .head img{height:3cm;width:auto;object-fit:contain}
+    .firm{font-size:34px;font-weight:700;line-height:1;letter-spacing:.2px}
+    .meta{font-size:12px;color:#2f3f3f;line-height:1.35}
+    .title{font-size:34px;font-weight:700;margin:10px 0 8px}
+    table{border-collapse:collapse;width:100%;margin-top:6px}
+    th,td{border:1px solid #9fb0b0;padding:8px;font-size:12px;vertical-align:top}
+    th{background:#eef3f3;font-weight:700;text-align:center}
+    .num{width:42px;text-align:center}
+    .sum{margin-top:14px;font-size:30px;font-weight:700}
+    .photo{width:54px;height:54px;object-fit:cover;border:1px solid #c7d2d2}
+    .product-cell{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  </style></head><body>
+    <div class="doc">
+      <div class="head-top">${dateText}</div>
+      <div class="head">
+        <img src="${logoSrc}" alt="logo"/>
+        <div>
+          <div class="firm">УДАЧНАЯ ПЛИТКА</div>
+          <div class="meta">Адрес: Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</div>
+          <div class="meta">Тел.: +7 (916) 133-50-56</div>
+          <div class="meta">E-mail: plitka-sp.ru@yandex.ru</div>
+          <div class="meta">Дата заказа: ${dateText}</div>
+        </div>
+      </div>
+      <div class="title">Бланк заказа</div>
+      <table>
+        <thead>
+          <tr><th class="num">№</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Сумма</th></tr>
+        </thead>
+        <tbody>${items.map((i,idx)=>`<tr><td class="num">${idx+1}</td><td><div class="product-cell"><span>${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody>
+      </table>
+      <div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div>
+    </div>
+  </body></html>`;
+
+  const getLogoDataUrl = async () => {
+    const blob = await fetch(logo).then((r) => r.blob());
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result ?? ""));
+      reader.onerror = () => reject(new Error("logo read failed"));
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const handleDownloadOrder = async () => {
+    if (items.length === 0) return;
+    const dateText = new Date().toLocaleString("ru-RU");
+    const logoSrc = await getLogoDataUrl();
+    const html = buildOrderHtml(dateText, logoSrc);
+    const blob = new Blob(["\uFEFF", html], { type: "application/msword;charset=utf-8" });
+    const fileName = `Заказ-Удачная-Плитка-${new Date().toISOString().slice(0,10)}.doc`;
+    const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
+    if (typeof nav.msSaveOrOpenBlob === "function") { nav.msSaveOrOpenBlob(blob, fileName); return; }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  };
+
+  const handlePrintOrder = async () => {
+    if (items.length === 0) return;
+    const w = window.open("", "_blank", "width=900,height=800");
+    if (!w) return;
+    w.document.write("<html><body style='font-family:Arial;padding:20px'>Подготовка бланка заказа...</body></html>");
+    const dateText = new Date().toLocaleString("ru-RU");
+    const logoSrc = await getLogoDataUrl();
+    const html = buildOrderHtml(dateText, logoSrc);
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    w.print();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +176,16 @@ const CartDrawer = () => {
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
+          <div className="sm:hidden mb-2">
+            <button
+              type="button"
+              onClick={goToCatalog}
+              className="inline-flex w-full items-center justify-start gap-2 h-11 px-3 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 active:scale-[0.99] transition-all shadow-sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Продолжить покупки</span>
+            </button>
+          </div>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
             {items.length > 0
@@ -107,7 +228,7 @@ const CartDrawer = () => {
               </div>
               <button
                 type="button"
-                onClick={() => removeItem(item.id)}
+                onClick={() => handleRemoveItem(item.id)}
                 aria-label="Удалить"
                 className="text-muted-foreground hover:text-destructive transition-colors p-1 h-fit"
               >
@@ -124,6 +245,14 @@ const CartDrawer = () => {
               <span className="text-lg font-bold text-primary">
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
+                <Download className="w-4 h-4" /> Скачать заказ
+              </button>
+              <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
+                <Printer className="w-4 h-4" /> Распечатать заказ
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input
@@ -159,7 +288,7 @@ const CartDrawer = () => {
               </button>
               <button
                 type="button"
-                onClick={clear}
+                onClick={handleClearCart}
                 className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
               >
                 Очистить корзину
