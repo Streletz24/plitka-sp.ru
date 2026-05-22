@@ -72,16 +72,16 @@ const Prices = () => {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
 
-    const rowsXml = priceRows
+    const rowsHtml = priceRows
       .map(
         (row, idx) => `
-      <Row>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.category)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.product)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.color)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "BodyEven" : "BodyOdd"}"><Data ss:Type="String">${esc(row.description)}</Data></Cell>
-        <Cell ss:StyleID="${idx % 2 === 0 ? "PriceEven" : "PriceOdd"}"><Data ss:Type="String">${esc(row.price)}</Data></Cell>
-      </Row>`
+        <tr class="${idx % 2 === 0 ? "row-even" : "row-odd"}">
+          <td>${esc(row.category)}</td>
+          <td>${esc(row.product)}</td>
+          <td>${esc(row.color)}</td>
+          <td>${esc(row.description)}</td>
+          <td class="price">${esc(row.price)}</td>
+        </tr>`
       )
       .join("");
 
