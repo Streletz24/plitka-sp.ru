@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import logo from "@/assets/logo-transparent.png";
+import logo from "@/assets/logo.png";
 import CartButton from "./CartButton";
 import { normalizeSectionId } from "@/lib/scrollToSection";
 
@@ -53,11 +53,11 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-32 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
-        <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0 h-full overflow-hidden">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-14 md:h-16 lg:h-20 w-auto max-w-[180px] md:max-w-[220px] lg:max-w-[280px] object-contain origin-left"
+            className="h-12 md:h-14 lg:h-16 w-auto object-contain"
             data-no-zoom
           />
         </Link>
