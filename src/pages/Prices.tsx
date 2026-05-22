@@ -75,19 +75,6 @@ const Prices = () => {
     const rowsHtml = priceRows
       .map(
         (row, idx) => `
-        <tr class="${idx % 2 === 0 ? "row-even" : "row-odd"}">
-          <td>${esc(row.category)}</td>
-          <td>${esc(row.product)}</td>
-          <td>${esc(row.color)}</td>
-          <td>${esc(row.description)}</td>
-          <td class="price">${esc(row.price)}</td>
-        </tr>`
-      )
-      .join("");
-
-    const rowsHtml = priceRows
-      .map(
-        (row, idx) => `
           <tr style="background:${idx % 2 === 0 ? "#ffffff" : "#f7f9f8"};">
             <td>${esc(row.category)}</td>
             <td>${esc(row.product)}</td>
@@ -133,7 +120,7 @@ const Prices = () => {
 </body>
 </html>`;
 
-    const fileName = `price-udachnaya-plitka-${new Date().toISOString().slice(0, 10)}.doc`;
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.doc`;
     const blob = new Blob(["﻿", html], { type: "application/msword;charset=utf-8" });
     const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
     if (typeof nav.msSaveOrOpenBlob === "function") {
@@ -170,7 +157,7 @@ const Prices = () => {
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
                 <FileText className="h-4 w-4" />
-                Скачать Word
+                Скачать прайс Word
               </button>
               <button
                 type="button"
