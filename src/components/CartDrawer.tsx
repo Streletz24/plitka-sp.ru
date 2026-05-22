@@ -50,11 +50,12 @@ const CartDrawer = () => {
   };
 
   const buildOrderHtml = (dateText: string, logoSrc: string) => `<!doctype html><html><head><meta charset="utf-8" /><style>
-    body{font-family:Arial,sans-serif;color:#143a3a;padding:16px;margin:0;background:#fff}
-    .doc{max-width:780px}
+    @page{size:A4 portrait;margin:12mm}
+    body{font-family:Arial,sans-serif;color:#143a3a;padding:0;margin:0;background:#fff}
+    .doc{max-width:780px;margin:0 auto}
     .head-top{font-size:11px;color:#3d4b4b;margin-bottom:6px}
     .head{display:flex;gap:12px;align-items:flex-start;border-bottom:3px solid #1f4a48;padding:8px 0 10px;margin-bottom:10px}
-    .head img{height:3cm;width:auto;object-fit:contain}
+    .head img{height:3cm;width:auto;object-fit:contain;display:block}
     .firm{font-size:34px;font-weight:700;line-height:1;letter-spacing:.2px}
     .meta{font-size:12px;color:#2f3f3f;line-height:1.35}
     .title{font-size:34px;font-weight:700;margin:10px 0 8px}
@@ -63,8 +64,9 @@ const CartDrawer = () => {
     th{background:#eef3f3;font-weight:700;text-align:center}
     .num{width:42px;text-align:center}
     .sum{margin-top:14px;font-size:30px;font-weight:700}
-    .photo{width:54px;height:54px;object-fit:cover;border:1px solid #c7d2d2}
+    .photo{width:54px;height:54px;object-fit:cover;border:1px solid #c7d2d2;flex:0 0 auto}
     .product-cell{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .product-title{display:inline-block;max-width:220px;word-break:break-word}
   </style></head><body>
     <div class="doc">
       <div class="head-top">${dateText}</div>
@@ -83,7 +85,7 @@ const CartDrawer = () => {
         <thead>
           <tr><th class="num">№</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Сумма</th></tr>
         </thead>
-        <tbody>${items.map((i,idx)=>`<tr><td class="num">${idx+1}</td><td><div class="product-cell"><span>${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? '—'}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody>
+        <tbody>${items.map((i,idx)=>`<tr><td class="num">${idx+1}</td><td><div class="product-cell"><span class="product-title">${i.productName}</span><img class="photo" src="${i.image}" alt="${i.productName}" /></div></td><td>${i.colorName ?? "—"}</td><td>${i.area}${i.pieces!==null?` · ${i.pieces} шт`:''}</td><td>${i.unit}</td><td>${i.total.toLocaleString('ru-RU')} руб</td></tr>`).join('')}</tbody>
       </table>
       <div class="sum">Итого: ${totalSum.toLocaleString('ru-RU')} руб</div>
     </div>
@@ -100,17 +102,85 @@ const CartDrawer = () => {
   };
 
   const handleDownloadOrder = async () => {
-    if (items.length === 0) return;
-    const dateText = new Date().toLocaleString("ru-RU");
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы скачать бланк заказа." });
+      return;
+    }
+
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm"),
+      import("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm"),
+    ]);
+
+    const date = new Date();
+    const dateText = date.toLocaleString("ru-RU");
     const logoSrc = await getLogoDataUrl();
     const html = buildOrderHtml(dateText, logoSrc);
-    const blob = new Blob(["\uFEFF", html], { type: "application/msword;charset=utf-8" });
-    const fileName = `Заказ-Удачная-Плитка-${new Date().toISOString().slice(0,10)}.doc`;
-    const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
-    if (typeof nav.msSaveOrOpenBlob === "function") { nav.msSaveOrOpenBlob(blob, fileName); return; }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "fixed";
+    wrapper.style.left = "-99999px";
+    wrapper.style.top = "0";
+    wrapper.style.width = "794px";
+    wrapper.style.padding = "40px";
+    wrapper.style.background = "#fff";
+    wrapper.style.zIndex = "-1";
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
+
+    try {
+      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+
+      const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+      const pageWidthMm = 210;
+      const pageHeightMm = 297;
+      const marginMm = 10;
+      const printableWidthMm = pageWidthMm - marginMm * 2;
+      const printableHeightMm = pageHeightMm - marginMm * 2;
+      const pageHeightPx = Math.floor((canvas.width * printableHeightMm) / printableWidthMm);
+
+      let renderedPx = 0;
+      let pageIndex = 0;
+
+      while (renderedPx < canvas.height) {
+        const sliceHeight = Math.min(pageHeightPx, canvas.height - renderedPx);
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+
+        const ctx = pageCanvas.getContext("2d");
+        if (!ctx) break;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(
+          canvas,
+          0,
+          renderedPx,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.96);
+        const renderedHeightMm = (sliceHeight * printableWidthMm) / canvas.width;
+
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(imgData, "JPEG", marginMm, marginMm, printableWidthMm, renderedHeightMm);
+
+        renderedPx += sliceHeight;
+        pageIndex += 1;
+      }
+
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const fileName = `blank-zakaza-${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}-${pad(date.getHours())}-${pad(date.getMinutes())}.pdf`;
+      pdf.save(fileName);
+    } finally {
+      wrapper.remove();
+    }
   };
 
   const handlePrintOrder = async () => {
@@ -248,7 +318,7 @@ const CartDrawer = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
-                <Download className="w-4 h-4" /> Скачать заказ
+                <Download className="w-4 h-4" /> Скачать бланк заказа
               </button>
               <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
                 <Printer className="w-4 h-4" /> Распечатать заказ
