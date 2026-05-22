@@ -103,6 +103,8 @@ const Prices = () => {
   <div class="letterhead">
     <div class="company">УДАЧНАЯ ПЛИТКА</div>
     <div class="meta">Прайс-лист на продукцию</div>
+    <div class="meta">+7 (916) 133-50-56 · plitka-sp.ru@yandex.ru</div>
+    <div class="meta">Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</div>
     <div class="meta">Дата выгрузки: ${esc(exportDate)}</div>
   </div>
   <table>

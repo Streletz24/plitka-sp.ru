@@ -72,9 +72,9 @@ const CartDrawer = () => {
         <img src="${logoSrc}" alt="logo"/>
         <div>
           <div class="firm">УДАЧНАЯ ПЛИТКА</div>
-          <div class="meta">Адрес: г. Москва, ул. Примерная, д. 1</div>
+          <div class="meta">Адрес: Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</div>
           <div class="meta">Тел.: +7 (916) 133-50-56</div>
-          <div class="meta">E-mail: info@udachnaya-plitka.ru</div>
+          <div class="meta">E-mail: plitka-sp.ru@yandex.ru</div>
           <div class="meta">Дата заказа: ${dateText}</div>
         </div>
       </div>
