@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isGitHubPagesBuild = process.env.GITHUB_PAGES === "true";
-  const pagesBase = process.env.GH_PAGES_BASE ?? "/";
+  const pagesBase = process.env.GH_PAGES_BASE ?? "./";
 
   return ({
   server: {
