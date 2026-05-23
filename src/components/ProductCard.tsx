@@ -87,7 +87,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
+    <div
+      id={`product-card-${product.id}`}
+      data-product-id={product.id}
+      className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col"
+    >
       <div className="overflow-hidden aspect-[4/3] bg-muted flex items-center justify-center">
         <img
           src={currentImage}
@@ -195,4 +199,3 @@ const ProductCard = ({ product }: ProductCardProps) => {
 };
 
 export default ProductCard;
-
