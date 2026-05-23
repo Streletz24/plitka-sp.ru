@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabaseClient, supabaseEnvStatus } from "@/integrations/supabase/client";
 
 export interface RequestBase {
   name: string;
@@ -33,9 +33,25 @@ export interface ContactRequest extends RequestBase {
 
 export type SiteRequestPayload = CartOrderRequest | ContactRequest;
 
+const logTechError = (code: string) => {
+  console.warn(`[send_site_request] ${code}`);
+};
+
 export const sendSiteRequest = async (payload: SiteRequestPayload) => {
   if (payload.honeypot?.trim()) {
+    logTechError("spam_detected");
     throw new Error("spam_detected");
+  }
+
+  if (!supabaseEnvStatus.configured) {
+    logTechError("missing_env");
+    throw new Error("missing_env");
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    logTechError("function_not_configured");
+    throw new Error("function_not_configured");
   }
 
   const { error } = await supabase.functions.invoke("send-order-request", {
@@ -48,6 +64,18 @@ export const sendSiteRequest = async (payload: SiteRequestPayload) => {
   });
 
   if (error) {
-    throw new Error(error.message || "send_failed");
+    const lowerMessage = error.message?.toLowerCase() ?? "";
+    if (lowerMessage.includes("cors")) {
+      logTechError("cors_error");
+      throw new Error("cors_error");
+    }
+
+    if (lowerMessage.includes("email") || lowerMessage.includes("resend")) {
+      logTechError("email_provider_error");
+      throw new Error("email_provider_error");
+    }
+
+    logTechError("function_invoke_failed");
+    throw new Error("function_invoke_failed");
   }
 };
