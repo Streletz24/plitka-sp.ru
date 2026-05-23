@@ -1,4 +1,4 @@
-import { supabase, supabaseConfigError } from "@/integrations/supabase/client";
+import { getSupabaseClient, supabaseEnvStatus } from "@/integrations/supabase/client";
 
 export interface RequestBase {
   name: string;
@@ -33,43 +33,25 @@ export interface ContactRequest extends RequestBase {
 
 export type SiteRequestPayload = CartOrderRequest | ContactRequest;
 
-export type SiteRequestErrorCode =
-  | "missing_env"
-  | "function_not_configured"
-  | "function_invoke_failed"
-  | "email_provider_error"
-  | "cors_error"
-  | "unknown_error"
-  | "spam_detected";
-
-export class SiteRequestError extends Error {
-  constructor(public readonly code: SiteRequestErrorCode, message?: string) {
-    super(message ?? code);
-    this.name = "SiteRequestError";
-  }
-}
-
-const normalizeErrorCode = (errorMessage: string): SiteRequestErrorCode => {
-  const normalized = errorMessage.toLowerCase();
-  if (normalized.includes("email sending is not configured")) return "function_not_configured";
-  if (normalized.includes("email_provider_error")) return "email_provider_error";
-  if (normalized.includes("cors") || normalized.includes("failed to fetch")) return "cors_error";
-  if (normalized.includes("function") && normalized.includes("not found")) return "function_not_configured";
-  return "function_invoke_failed";
-};
-
-const debugLog = (code: SiteRequestErrorCode) => {
-  console.error(`[sendSiteRequest] code=${code}`);
+const logTechError = (code: string) => {
+  console.warn(`[send_site_request] ${code}`);
 };
 
 export const sendSiteRequest = async (payload: SiteRequestPayload) => {
   if (payload.honeypot?.trim()) {
-    throw new SiteRequestError("spam_detected");
+    logTechError("spam_detected");
+    throw new Error("spam_detected");
   }
 
-  if (supabaseConfigError || !supabase) {
-    debugLog("missing_env");
-    throw new SiteRequestError("missing_env", "Supabase client is not configured");
+  if (!supabaseEnvStatus.configured) {
+    logTechError("missing_env");
+    throw new Error("missing_env");
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    logTechError("function_not_configured");
+    throw new Error("function_not_configured");
   }
 
   const { error } = await supabase.functions.invoke("send-order-request", {
@@ -82,8 +64,18 @@ export const sendSiteRequest = async (payload: SiteRequestPayload) => {
   });
 
   if (error) {
-    const code = normalizeErrorCode(error.message || "");
-    debugLog(code);
-    throw new SiteRequestError(code, error.message || "send_failed");
+    const lowerMessage = error.message?.toLowerCase() ?? "";
+    if (lowerMessage.includes("cors")) {
+      logTechError("cors_error");
+      throw new Error("cors_error");
+    }
+
+    if (lowerMessage.includes("email") || lowerMessage.includes("resend")) {
+      logTechError("email_provider_error");
+      throw new Error("email_provider_error");
+    }
+
+    logTechError("function_invoke_failed");
+    throw new Error("function_invoke_failed");
   }
 };
