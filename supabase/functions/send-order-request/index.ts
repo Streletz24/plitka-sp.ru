@@ -30,6 +30,8 @@ interface RequestPayload {
 }
 
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const jsonResponse = (status: number, body: Record<string, unknown>) =>
+  new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
 const jsonResponse = (body: Record<string, unknown>, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -56,6 +58,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders, status: 204 });
   if (req.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
 
+  let payload: RequestPayload;
   try {
     const payload = (await req.json()) as RequestPayload;
 
@@ -106,4 +109,6 @@ Deno.serve(async (req) => {
     console.error("send_order_request_unhandled", error);
     return jsonResponse({ error: "internal_error" }, 500);
   }
+
+  return jsonResponse(200, { success: true });
 });
