@@ -80,24 +80,34 @@ Deno.serve(async (req) => {
     ? `<h2>${subject}</h2><p><b>Имя:</b> ${escape(payload.name)}</p><p><b>Телефон:</b> ${escape(payload.phone)}</p><p><b>Email:</b> ${escape(payload.email || "—")}</p><p><b>Адрес:</b> ${escape(payload.deliveryAddress || "—")}</p><p><b>Комментарий:</b> ${escape(payload.comment || "—")}</p><p><b>Источник:</b> ${escape(payload.source || "сайт")}</p><p><b>Страница:</b> ${escape(payload.pageUrl || "—")}</p><table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;"><tr><th>#</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Цена</th><th>Сумма</th></tr>${(payload.items || []).map((i, idx) => `<tr><td>${idx + 1}</td><td>${escape(i.product)}</td><td>${escape(i.color || "—")}</td><td>${i.pieces || "—"}</td><td>${escape(i.unit || "шт")}</td><td>${escape(i.price || "—")}</td><td>${(i.total || 0).toLocaleString("ru-RU")} руб</td></tr>`).join("")}</table><p><b>Итого:</b> ${(payload.total || 0).toLocaleString("ru-RU")} руб</p><p><b>Дата:</b> ${escape(payload.sentAt || new Date().toISOString())}</p>`
     : `<h2>${subject}</h2><p><b>Имя:</b> ${escape(payload.name)}</p><p><b>Телефон:</b> ${escape(payload.phone)}</p><p><b>Email:</b> ${escape(payload.email || "—")}</p><p><b>Комментарий:</b> ${escape(payload.comment || "—")}</p><p><b>Источник:</b> ${escape(payload.source || "сайт")}</p><p><b>Страница:</b> ${escape(payload.pageUrl || "—")}</p><p><b>Дата:</b> ${escape(payload.sentAt || new Date().toISOString())}</p>`;
 
+  const resendPayload: Record<string, unknown> = {
+    from: FROM_EMAIL,
+    to: [COMPANY_CONTACT_EMAIL],
+    subject,
+    html,
+    text: toText(payload),
+  };
+
+  const replyTo = payload.email?.trim();
+  if (replyTo) resendPayload.reply_to = replyTo;
+
   const resendResponse = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      from: FROM_EMAIL,
-      to: [COMPANY_CONTACT_EMAIL],
-      reply_to: payload.email,
-      subject,
-      html,
-      text: toText(payload),
-    }),
+    body: JSON.stringify(resendPayload),
   });
 
   if (!resendResponse.ok) {
-    return jsonResponse(502, { error: "email_provider_error", provider: "resend" });
+    const providerBody = await resendResponse.text();
+    return jsonResponse(502, {
+      error: "email_provider_error",
+      provider: "resend",
+      status: resendResponse.status,
+      details: providerBody || undefined,
+    });
   }
 
   return jsonResponse(200, { success: true });
