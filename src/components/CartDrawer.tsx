@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +12,20 @@ import { toast } from "@/hooks/use-toast";
 import { Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
-  const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
+  const {
+    items,
+    isOpen,
+    close,
+    removeItem,
+    clear,
+    totalSum,
+    lastAddedProductId,
+    lastCatalogPath,
+    lastCatalogScrollY,
+    lastAddedProductAnchor,
+  } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -59,6 +73,40 @@ const CartDrawer = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleContinueShopping = () => {
+    close();
+    const targetPath = lastCatalogPath || "/";
+    const anchor = lastAddedProductAnchor || (lastAddedProductId ? `product-card-${lastAddedProductId}` : null);
+
+    if (`${location.pathname}${location.search}` !== targetPath) {
+      navigate(targetPath, {
+        state: {
+          restoreCatalogPosition: true,
+          lastAddedProductId,
+          lastAddedProductAnchor: anchor,
+          lastCatalogScrollY,
+        },
+      });
+      return;
+    }
+
+    const catalogFallback = document.getElementById("catalog");
+    const target = anchor ? document.getElementById(anchor) : null;
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (typeof lastCatalogScrollY === "number") {
+      window.scrollTo({ top: Math.max(0, lastCatalogScrollY), behavior: "smooth" });
+      return;
+    }
+    if (catalogFallback) {
+      catalogFallback.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    navigate("/");
   };
 
   return (
@@ -119,6 +167,13 @@ const CartDrawer = () => {
 
         {items.length > 0 && (
           <div className="border-t border-border pt-4 space-y-3">
+            <button
+              type="button"
+              onClick={handleContinueShopping}
+              className="w-full text-sm border border-border bg-background py-2 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+            >
+              Вернуться к покупкам
+            </button>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Итого:</span>
               <span className="text-lg font-bold text-primary">
