@@ -54,15 +54,15 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-32 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto h-full flex flex-col justify-center px-4 lg:px-8 gap-2">
+    <header className="fixed top-0 left-0 right-0 z-50 min-h-[92px] lg:min-h-[136px] bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto h-full flex flex-col justify-center px-4 lg:px-8 py-2 gap-2">
         <div className="hidden lg:block text-[11px] text-foreground/70 whitespace-nowrap overflow-hidden text-ellipsis">{contactLine}</div>
         <div className="flex items-center justify-between gap-6">
         <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-12 md:h-14 lg:h-16 w-auto object-contain"
+            className="h-10 sm:h-11 md:h-14 lg:h-16 w-auto object-contain"
             data-no-zoom
           />
         </Link>
@@ -119,7 +119,7 @@ const Header = () => {
           <CartButton />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden p-2 text-foreground"
+            className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-md text-foreground hover:bg-muted/60 active:scale-95 transition-all"
             aria-label="Меню"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -244,7 +244,7 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="w-full sm:max-w-md flex flex-col pb-[max(1rem,env(safe-area-inset-bottom))]">
         <SheetHeader>
           <div className="sm:hidden mb-2">
             <button
@@ -317,10 +317,10 @@ const CartDrawer = () => {
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
+              <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 min-h-11 px-3 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
                 <Download className="w-4 h-4" /> Скачать бланк заказа
               </button>
-              <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
+              <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 min-h-11 px-3 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
                 <Printer className="w-4 h-4" /> Распечатать заказ
               </button>
             </div>
@@ -331,7 +331,7 @@ const CartDrawer = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full min-h-11 px-3 py-2.5 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="tel"
@@ -339,7 +339,7 @@ const CartDrawer = () => {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full min-h-11 px-3 py-2.5 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="email"
@@ -347,7 +347,7 @@ const CartDrawer = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full min-h-11 px-3 py-2.5 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="submit"
