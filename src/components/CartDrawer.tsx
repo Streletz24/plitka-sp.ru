@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { sendSiteRequest } from "@/lib/sendSiteRequest";
 import { Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
@@ -30,44 +31,61 @@ const CartDrawer = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары перед отправкой заявки.", variant: "destructive" });
+      return;
+    }
+
+    const digits = phone.replace(/\D/g, "");
+    if (!name.trim()) {
+      toast({ title: "Ошибка", description: "Укажите имя.", variant: "destructive" });
+      return;
+    }
+    if (digits.length < 10) {
+      toast({ title: "Ошибка", description: "Введите корректный телефон.", variant: "destructive" });
+      return;
+    }
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast({ title: "Ошибка", description: "Проверьте email.", variant: "destructive" });
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.functions.invoke("send-order-request", {
-        body: {
-          name,
-          phone,
-          email,
-          items: items.map((i) => ({
-            product: i.productName,
-            color: i.colorName,
-            area: i.area,
-            unit: i.unit,
-            pieces: i.pieces,
-            price: i.unitPrice,
-            total: i.total,
-          })),
-          total: totalSum,
-        },
+      await sendSiteRequest({
+        type: "cart_order",
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || undefined,
+        honeypot,
+        total: totalSum,
+        items: items.map((i) => ({
+          product: i.productName,
+          color: i.colorName,
+          area: i.area,
+          unit: i.unit,
+          pieces: i.pieces,
+          price: i.unitPrice,
+          total: i.total,
+        })),
       });
-      if (error) throw error;
-      clear();
       setName("");
       setPhone("");
       setEmail("");
+      setHoneypot("");
       close();
       toast({
-        title: "Заявка отправлена!",
+        title: "Спасибо! Заявка отправлена.",
         description: "Мы свяжемся с вами в ближайшее время.",
       });
-    } catch (err) {
+    } catch {
       toast({
         title: "Ошибка отправки",
-        description: "Попробуйте позже или позвоните нам.",
+        description: "Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь с нами по телефону.",
         variant: "destructive",
       });
     } finally {
@@ -181,6 +199,7 @@ const CartDrawer = () => {
               </span>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">
+              <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Ваше имя"
@@ -200,7 +219,6 @@ const CartDrawer = () => {
               <input
                 type="email"
                 placeholder="Электронная почта"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -210,7 +228,7 @@ const CartDrawer = () => {
                 disabled={submitting}
                 className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
               >
-                {submitting ? "Отправка..." : "Отправить заявку"}
+                {submitting ? "Отправляем..." : "Отправить заявку"}
               </button>
               <button
                 type="button"

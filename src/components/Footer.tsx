@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { normalizeSectionId, scrollToSection } from "@/lib/scrollToSection";
+import { COMPANY_CONTACTS } from "@/config/company";
 
 const footerNavLinks = [
   { label: "Преимущества", href: "advantages" },
@@ -48,9 +49,9 @@ const Footer = () => {
           <div>
             <h4 className="text-primary-foreground font-bold mb-4">Контакты</h4>
             <div className="space-y-2 text-primary-foreground/60 text-sm">
-              <p>+7 (916) 133-50-56</p>
-              <p>plitka-sp.ru@yandex.ru</p>
-              <p>Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</p>
+              <p>{COMPANY_CONTACTS.phone}</p>
+              <p>{COMPANY_CONTACTS.email}</p>
+              <p>{COMPANY_CONTACTS.address}</p>
             </div>
           </div>
 
