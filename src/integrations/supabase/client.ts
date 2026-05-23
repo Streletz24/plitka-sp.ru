@@ -2,16 +2,27 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const readEnv = (value?: string) => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === 'undefined' || trimmed.includes('your_')) return null;
+  return trimmed;
+};
+
+const SUPABASE_URL = readEnv(import.meta.env.VITE_SUPABASE_URL);
+const SUPABASE_KEY = readEnv(import.meta.env.VITE_SUPABASE_ANON_KEY) ?? readEnv(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+
+export const supabaseConfigError = !SUPABASE_URL || !SUPABASE_KEY;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
-});
+export const supabase = supabaseConfigError
+  ? null
+  : createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        storage: localStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+      }
+    });
