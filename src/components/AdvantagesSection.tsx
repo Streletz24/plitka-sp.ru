@@ -56,6 +56,15 @@ const AdvantagesSection = () => {
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-3">{item.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+                {item.extraBottomText?.length ? (
+                  <div className="mt-4 pt-4 border-t border-border/70 space-y-2">
+                    {item.extraBottomText.map((line) => (
+                      <p key={line} className="text-muted-foreground leading-relaxed">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </AnimateOnScroll>
           ))}
