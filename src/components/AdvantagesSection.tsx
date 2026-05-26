@@ -14,6 +14,7 @@ const advantages: Array<{
     icon: "💎",
     title: "Качественные материалы",
     desc: "Используем только проверенные компоненты для долговечного результата",
+    extraBottomText: "Плитка выдерживает перепады температур, нагрузки и служит десятилетиями",
   },
   {
     icon: "✨",
@@ -56,14 +57,8 @@ const AdvantagesSection = () => {
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-3">{item.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
-                {item.extraBottomText?.length ? (
-                  <div className="mt-4 pt-4 border-t border-border/70 space-y-2">
-                    {item.extraBottomText.map((line) => (
-                      <p key={line} className="text-muted-foreground leading-relaxed">
-                        {line}
-                      </p>
-                    ))}
-                  </div>
+                {item.extraBottomText ? (
+                  <p className="text-muted-foreground leading-relaxed mt-3">{item.extraBottomText}</p>
                 ) : null}
               </div>
             </AnimateOnScroll>
