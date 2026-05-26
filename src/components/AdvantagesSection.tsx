@@ -1,6 +1,11 @@
 import { AnimateOnScroll } from "./AnimateOnScroll";
 
-const advantages = [
+const advantages: Array<{
+  icon: string;
+  title: string;
+  desc: string;
+  extraBottomText?: string;
+}> = [
   {
     icon: "🏭",
     title: "Собственное производство",
@@ -10,11 +15,7 @@ const advantages = [
     icon: "💎",
     title: "Качественные материалы",
     desc: "Используем только проверенные компоненты для долговечного результата",
-  },
-  {
-    icon: "🛡️",
-    title: "Долговечность",
-    desc: "Плитка выдерживает перепады температур, нагрузки и служит десятилетиями",
+    extraBottomText: "Плитка выдерживает перепады температур, нагрузки и служит десятилетиями",
   },
   {
     icon: "✨",
@@ -48,15 +49,18 @@ const AdvantagesSection = () => {
           </div>
         </AnimateOnScroll>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
           {advantages.map((item, i) => (
             <AnimateOnScroll key={i} delay={i * 100}>
-              <div className="bg-background rounded-xl p-8 hover:shadow-lg transition-all duration-500 hover:-translate-y-1 border border-border group">
+              <div className="w-full max-w-sm h-full bg-background rounded-xl p-8 hover:shadow-lg transition-all duration-500 hover:-translate-y-1 border border-border group flex flex-col">
                 <div className="text-4xl mb-5 group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-3">{item.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+                {item.extraBottomText ? (
+                  <p className="text-muted-foreground leading-relaxed mt-3">{item.extraBottomText}</p>
+                ) : null}
               </div>
             </AnimateOnScroll>
           ))}
