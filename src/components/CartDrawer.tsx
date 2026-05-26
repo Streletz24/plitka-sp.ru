@@ -129,7 +129,7 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="w-full sm:max-w-md flex flex-col h-[100dvh] pb-[env(safe-area-inset-bottom)]">
         <SheetHeader>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
@@ -139,7 +139,7 @@ const CartDrawer = () => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4 space-y-3 overscroll-contain">
           {items.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <ShoppingBag className="w-12 h-12 mx-auto mb-3 opacity-40" />
@@ -188,7 +188,7 @@ const CartDrawer = () => {
             <button
               type="button"
               onClick={handleContinueShopping}
-              className="w-full text-sm border border-border bg-background py-2 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              className="w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
             >
               Вернуться к покупкам
             </button>
@@ -206,7 +206,7 @@ const CartDrawer = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="tel"
@@ -214,26 +214,26 @@ const CartDrawer = () => {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="email"
                 placeholder="Электронная почта"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
+                className="w-full bg-primary text-primary-foreground min-h-12 rounded-md font-semibold text-base hover:opacity-90 transition-all duration-300 disabled:opacity-60"
               >
                 {submitting ? "Отправляем..." : "Отправить заявку"}
               </button>
               <button
                 type="button"
                 onClick={clear}
-                className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
+                className="w-full text-sm text-muted-foreground hover:text-foreground min-h-11"
               >
                 Очистить корзину
               </button>
