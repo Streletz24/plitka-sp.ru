@@ -4,7 +4,6 @@ const advantages: Array<{
   icon: string;
   title: string;
   desc: string;
-  extraBottomText?: string[];
 }> = [
   {
     icon: "🏭",
@@ -14,10 +13,7 @@ const advantages: Array<{
   {
     icon: "💎",
     title: "Качественные материалы",
-    desc: "Плитка выдерживает перепады температур, нагрузки и служит десятилетиями",
-    extraBottomText: [
-      "Плитка выдерживает перепады температур, нагрузки и служит десятилетиями",
-    ],
+    desc: "Используем только проверенные компоненты для долговечного результата",
   },
   {
     icon: "✨",
