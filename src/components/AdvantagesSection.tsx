@@ -4,6 +4,7 @@ const advantages: Array<{
   icon: string;
   title: string;
   desc: string;
+  extraBottomText?: string;
 }> = [
   {
     icon: "🏭",
