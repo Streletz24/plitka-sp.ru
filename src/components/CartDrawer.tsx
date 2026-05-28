@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const {
@@ -31,6 +32,7 @@ const CartDrawer = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [downloadingBlank, setDownloadingBlank] = useState(false);
   const [honeypot, setHoneypot] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,6 +92,46 @@ const CartDrawer = () => {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDownloadBlank = async () => {
+    if (items.length === 0) {
+      toast({
+        title: "Корзина пуста",
+        description: "Добавьте товары, чтобы скачать бланк заказа.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDownloadingBlank(true);
+    try {
+      await downloadOrderDocx(items, totalSum);
+    } catch {
+      toast({
+        title: "Не удалось скачать бланк",
+        description: "Попробуйте ещё раз или распечатайте заказ.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingBlank(false);
+    }
+  };
+
+  const handlePrintOrder = () => {
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы распечатать заказ.", variant: "destructive" });
+      return;
+    }
+
+    const opened = printOrderBlank(items, totalSum);
+    if (!opened) {
+      toast({
+        title: "Не удалось открыть печать",
+        description: "Разрешите всплывающие окна для сайта и попробуйте снова.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -197,6 +239,25 @@ const CartDrawer = () => {
               <span className="text-lg font-bold text-primary">
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handlePrintOrder}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Printer className="h-4 w-4" />
+                Распечатать заказ
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadBlank}
+                disabled={downloadingBlank}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" />
+                {downloadingBlank ? "Готовим Word..." : "Скачать бланк заказа Word"}
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
