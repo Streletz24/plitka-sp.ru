@@ -48,10 +48,8 @@ const AdvantagesSection = () => {
         </AnimateOnScroll>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-          {advantages
-            .filter((item) => item.title !== "Долговечность" && !item.desc.includes("Плитка выдерживает перепады температур, нагрузки и служит десятилетиями") && item.icon !== "🛡️")
-            .map((item, i) => (
-            <AnimateOnScroll key={i} delay={i * 100}>
+          {advantages.map((item, i) => (
+            <AnimateOnScroll key={item.title} delay={i * 100}>
               <div className="w-full max-w-sm h-full bg-background rounded-xl p-8 hover:shadow-lg transition-all duration-500 hover:-translate-y-1 border border-border group flex flex-col">
                 <div className="text-4xl mb-5 group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
