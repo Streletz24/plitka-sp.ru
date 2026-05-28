@@ -24,14 +24,14 @@ const INVALID_ENV_VALUES = new Set([
 
 const isValidEnv = (value?: string) => Boolean(value) && !INVALID_ENV_VALUES.has(value!.toLowerCase());
 
-const hasValidSupabaseEnv = isValidEnv(SUPABASE_URL) && isValidEnv(SUPABASE_ANON_KEY);
+const hasValidSupabaseEnv = isValidEnv(SUPABASE_URL || undefined) && isValidEnv(SUPABASE_KEY || undefined);
 
 export const getSupabaseClient = () => {
   if (!hasValidSupabaseEnv) {
     return null;
   }
 
-  return createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+  return createClient<Database>(SUPABASE_URL!, SUPABASE_KEY!, {
     auth: {
       storage: localStorage,
       persistSession: true,
@@ -43,5 +43,5 @@ export const getSupabaseClient = () => {
 export const supabaseEnvStatus = {
   configured: hasValidSupabaseEnv,
   missingUrl: !isValidEnv(SUPABASE_URL),
-  missingAnonKey: !isValidEnv(SUPABASE_ANON_KEY),
+  missingAnonKey: !isValidEnv(SUPABASE_KEY || undefined),
 };
