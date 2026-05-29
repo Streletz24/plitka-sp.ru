@@ -4,9 +4,6 @@ import logo from "@/assets/logo.png";
 import CartButton from "./CartButton";
 import { normalizeSectionId } from "@/lib/scrollToSection";
 
-
-const contactLine = "+7 (916) 133-50-56 · plitka-sp.ru@yandex.ru · Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А";
-
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
   { label: "Каталог", href: "catalog" },
@@ -54,15 +51,13 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 min-h-[92px] lg:min-h-[136px] bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto h-full flex flex-col justify-center px-4 lg:px-8 py-2 gap-2">
-        <div className="hidden lg:block text-[11px] text-foreground/70 whitespace-nowrap overflow-hidden text-ellipsis">{contactLine}</div>
-        <div className="flex items-center justify-between gap-6">
+    <header className="fixed top-0 left-0 right-0 z-50 h-32 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
         <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-10 sm:h-11 md:h-14 lg:h-16 w-auto object-contain"
+            className="h-12 md:h-14 lg:h-16 w-auto object-contain"
             data-no-zoom
           />
         </Link>
