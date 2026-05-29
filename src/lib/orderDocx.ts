@@ -8,6 +8,8 @@ const PAGE_HEIGHT_TWIPS = 16838;
 const PAGE_MARGIN_TWIPS = 1134;
 
 const textEncoder = new TextEncoder();
+const ZIP_SIGNATURE = "PK";
+const PDF_SIGNATURE = "%PDF";
 
 const escapeXml = (value: string | number | null | undefined) =>
   String(value ?? "—")
@@ -257,6 +259,18 @@ const fetchLogoBytes = async () => {
   }
 };
 
+const verifyDocxPackage = (bytes: Uint8Array, fileName: string) => {
+  const signature = String.fromCharCode(...bytes.slice(0, 4));
+
+  if (!fileName.endsWith(".docx")) {
+    throw new Error("invalid_docx_filename");
+  }
+
+  if (!signature.startsWith(ZIP_SIGNATURE) || signature.startsWith(PDF_SIGNATURE)) {
+    throw new Error("invalid_docx_package");
+  }
+};
+
 const downloadBlob = (blob: Blob, fileName: string) => {
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
@@ -283,9 +297,12 @@ export const downloadOrderDocx = async (items: CartItem[], totalSum: number) => 
   }
 
   const docxBytes = createZip(files);
+  const fileName = `blank-zakaza-${formatFileDate(createdAt)}.docx`;
+  verifyDocxPackage(docxBytes, fileName);
+
   const docxBuffer = new ArrayBuffer(docxBytes.byteLength);
   new Uint8Array(docxBuffer).set(docxBytes);
-  downloadBlob(new Blob([docxBuffer], { type: DOCX_MIME }), `blank-zakaza-${formatFileDate(createdAt)}.docx`);
+  downloadBlob(new Blob([docxBuffer], { type: DOCX_MIME }), fileName);
 };
 
 export const printOrderBlank = (items: CartItem[], totalSum: number) => {
