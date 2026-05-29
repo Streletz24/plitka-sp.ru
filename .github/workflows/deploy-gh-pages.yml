@@ -39,6 +39,27 @@ jobs:
         env:
           GITHUB_PAGES: true
           GH_PAGES_BASE: /${{ github.event.repository.name }}/
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+
+      - name: Verify DOCX download marker in build
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const marker = 'DOCX_DOWNLOAD_ENABLED_V2';
+          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+            const fullPath = path.join(dir, entry.name);
+            return entry.isDirectory() ? walk(fullPath) : [fullPath];
+          });
+          const found = walk('dist').some((file) => fs.readFileSync(file, 'utf8').includes(marker));
+          if (!found) {
+            console.error(`${marker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
+            process.exit(1);
+          }
+          console.log(`${marker} found in dist.`);
+          NODE
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
