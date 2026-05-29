@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const {
@@ -31,6 +32,7 @@ const CartDrawer = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [downloadingBlank, setDownloadingBlank] = useState(false);
   const [honeypot, setHoneypot] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,6 +95,46 @@ const CartDrawer = () => {
     }
   };
 
+  const handleDownloadBlank = async () => {
+    if (items.length === 0) {
+      toast({
+        title: "Корзина пуста",
+        description: "Добавьте товары, чтобы скачать бланк заказа.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDownloadingBlank(true);
+    try {
+      await downloadOrderDocx(items, totalSum);
+    } catch {
+      toast({
+        title: "Не удалось скачать бланк",
+        description: "Попробуйте ещё раз или распечатайте заказ.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingBlank(false);
+    }
+  };
+
+  const handlePrintOrder = () => {
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы распечатать заказ.", variant: "destructive" });
+      return;
+    }
+
+    const opened = printOrderBlank(items, totalSum);
+    if (!opened) {
+      toast({
+        title: "Не удалось открыть печать",
+        description: "Разрешите всплывающие окна для сайта и попробуйте снова.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleContinueShopping = () => {
     close();
     const targetPath = lastCatalogPath || "/";
@@ -129,7 +171,7 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="w-full sm:max-w-md flex flex-col h-[100dvh] pb-[env(safe-area-inset-bottom)]">
         <SheetHeader>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
@@ -139,7 +181,7 @@ const CartDrawer = () => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4 space-y-3 overscroll-contain">
           {items.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <ShoppingBag className="w-12 h-12 mx-auto mb-3 opacity-40" />
@@ -188,7 +230,7 @@ const CartDrawer = () => {
             <button
               type="button"
               onClick={handleContinueShopping}
-              className="w-full text-sm border border-border bg-background py-2 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              className="w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
             >
               Вернуться к покупкам
             </button>
@@ -198,6 +240,25 @@ const CartDrawer = () => {
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handlePrintOrder}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Printer className="h-4 w-4" />
+                Распечатать заказ
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadBlank}
+                disabled={downloadingBlank}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" />
+                {downloadingBlank ? "Готовим Word..." : "Скачать бланк заказа Word"}
+              </button>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <input
@@ -206,7 +267,7 @@ const CartDrawer = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="tel"
@@ -214,26 +275,26 @@ const CartDrawer = () => {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <input
                 type="email"
                 placeholder="Электронная почта"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-300 disabled:opacity-60"
+                className="w-full bg-primary text-primary-foreground min-h-12 rounded-md font-semibold text-base hover:opacity-90 transition-all duration-300 disabled:opacity-60"
               >
                 {submitting ? "Отправляем..." : "Отправить заявку"}
               </button>
               <button
                 type="button"
                 onClick={clear}
-                className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
+                className="w-full text-sm text-muted-foreground hover:text-foreground min-h-11"
               >
                 Очистить корзину
               </button>
