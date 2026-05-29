@@ -1,0 +1,3 @@
+DOCX_DOWNLOAD_ENABLED_V3
+format=docx
+button=Скачать Word-бланк заказа (.docx)
