@@ -114,7 +114,7 @@ const Header = () => {
           <CartButton />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden p-2 text-foreground"
+            className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-md text-foreground hover:bg-muted/60 active:scale-95 transition-all"
             aria-label="Меню"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,10 +126,12 @@ const Header = () => {
             </svg>
           </button>
         </div>
+        </div>
       </div>
 
       {menuOpen && (
         <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2">
+          <p className="text-[11px] text-foreground/70 leading-snug">{contactLine}</p>
           {navLinks.map((link) =>
             link.route ? (
               <Link
