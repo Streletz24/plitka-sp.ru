@@ -13,6 +13,8 @@ import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
 import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
+const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V2";
+
 const CartDrawer = () => {
   const {
     items,
@@ -253,6 +255,8 @@ const CartDrawer = () => {
                 type="button"
                 onClick={handleDownloadBlank}
                 disabled={downloadingBlank}
+                data-docx-version={DOCX_DOWNLOAD_VERSION}
+                data-download-format="docx"
                 className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
               >
                 <Download className="h-4 w-4" />
