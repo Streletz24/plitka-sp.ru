@@ -245,22 +245,22 @@ const CartDrawer = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
+                onClick={handleDownloadBlank}
+                disabled={downloadingBlank}
+                data-docx-version={DOCX_DOWNLOAD_VERSION}
+                data-download-format="docx"
+                className="inline-flex items-center justify-center gap-2 w-full text-base bg-primary text-primary-foreground min-h-11 rounded-md font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" />
+                {downloadingBlank ? "Готовим Word..." : "Скачать Word-бланк заказа"}
+              </button>
+              <button
+                type="button"
                 onClick={handlePrintOrder}
                 className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
               >
                 <Printer className="h-4 w-4" />
                 Распечатать заказ
-              </button>
-              <button
-                type="button"
-                onClick={handleDownloadBlank}
-                disabled={downloadingBlank}
-                data-docx-version={DOCX_DOWNLOAD_VERSION}
-                data-download-format="docx"
-                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
-              >
-                <Download className="h-4 w-4" />
-                {downloadingBlank ? "Готовим Word..." : "Скачать бланк заказа Word"}
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">
