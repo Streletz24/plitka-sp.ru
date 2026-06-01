@@ -87,7 +87,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <div className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col">
+    <div
+      id={`product-card-${product.id}`}
+      data-product-id={product.id}
+      className="rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl transition-all duration-500 group flex flex-col"
+    >
       <div className="overflow-hidden aspect-[4/3] bg-muted flex items-center justify-center">
         <img
           src={currentImage}
@@ -98,7 +102,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
-        <div className="text-muted-foreground text-sm leading-relaxed space-y-1">
+        <div className="text-muted-foreground text-sm leading-relaxed">
           <p className="break-words">
             {currentPrice && (
               <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
@@ -161,7 +165,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
                 placeholder={isLinear ? "Длина" : "Площадь"}
-                className="flex-1 min-w-0 px-3 py-2.5 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="flex-1 min-w-0 px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <span className="text-sm text-muted-foreground shrink-0">{unitLabel}</span>
             </div>
@@ -181,7 +185,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="w-full mt-2 bg-primary text-primary-foreground min-h-11 py-2.5 rounded-md text-sm font-semibold hover:opacity-90 transition-all duration-300"
+                  className="w-full mt-2 bg-primary text-primary-foreground min-h-11 px-3 rounded-md text-base font-semibold hover:opacity-90 transition-all duration-300"
                 >
                   Добавить в корзину
                 </button>
