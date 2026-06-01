@@ -7,7 +7,6 @@ const PAGE_WIDTH_TWIPS = 11906;
 const PAGE_HEIGHT_TWIPS = 16838;
 const PAGE_MARGIN_TWIPS = 1134;
 
-const textEncoder = new TextEncoder();
 const ZIP_SIGNATURE = "PK";
 const PDF_SIGNATURE = "%PDF";
 
@@ -247,7 +246,24 @@ const createZip = (files: Array<{ name: string; data: Uint8Array }>) => {
   return concatBytes([...localParts, centralDirectory, endOfCentralDirectory]);
 };
 
-const toBytes = (value: string) => textEncoder.encode(value);
+const toBytes = (value: string) => {
+  if (typeof TextEncoder !== "undefined") {
+    return new TextEncoder().encode(value);
+  }
+
+  const encoded = encodeURIComponent(value);
+  const bytes: number[] = [];
+  for (let index = 0; index < encoded.length; index += 1) {
+    if (encoded[index] === "%") {
+      bytes.push(Number.parseInt(encoded.slice(index + 1, index + 3), 16));
+      index += 2;
+    } else {
+      bytes.push(encoded.charCodeAt(index));
+    }
+  }
+
+  return new Uint8Array(bytes);
+};
 
 const fetchLogoBytes = async () => {
   try {
