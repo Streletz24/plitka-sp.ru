@@ -48,7 +48,7 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const path = require('path');
-          const marker = 'DOCX_DOWNLOAD_ENABLED_V3';
+          const marker = 'DOCX_DOWNLOAD_ENABLED_V4';
           const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
             const fullPath = path.join(dir, entry.name);
             return entry.isDirectory() ? walk(fullPath) : [fullPath];
@@ -62,8 +62,8 @@ jobs:
               process.exit(1);
             }
           }
-          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf/.test(allText)) {
-            console.error('ERROR: PDF order blank still exists in production build.');
+          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf|Распечатать заказ|printOrderBlank/.test(allText)) {
+            console.error('ERROR: PDF/print order blank still exists in production build.');
             process.exit(1);
           }
           console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);

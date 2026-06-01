@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
+import { downloadOrderDocx } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
+import { Download, Trash2, ShoppingBag } from "lucide-react";
 
-const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V3";
+const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
 
 const CartDrawer = () => {
   const {
@@ -118,22 +118,6 @@ const CartDrawer = () => {
       });
     } finally {
       setDownloadingBlank(false);
-    }
-  };
-
-  const handlePrintOrder = () => {
-    if (items.length === 0) {
-      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы распечатать заказ.", variant: "destructive" });
-      return;
-    }
-
-    const opened = printOrderBlank(items, totalSum);
-    if (!opened) {
-      toast({
-        title: "Не удалось открыть печать",
-        description: "Разрешите всплывающие окна для сайта и попробуйте снова.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -242,28 +226,18 @@ const CartDrawer = () => {
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={handleDownloadBlank}
-                disabled={downloadingBlank}
-                data-docx-version={DOCX_DOWNLOAD_VERSION}
-                data-download-format="docx"
-                className="inline-flex items-center justify-center gap-2 w-full text-base bg-primary text-primary-foreground min-h-11 rounded-md font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
-              >
-                <Download className="h-4 w-4" />
-                {downloadingBlank ? "Готовим Word..." : "Скачать Word-бланк заказа (.docx)"}
-              </button>
-              <button
-                type="button"
-                onClick={handlePrintOrder}
-                data-action="print-order"
-                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
-              >
-                <Printer className="h-4 w-4" />
-                Распечатать заказ
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleDownloadBlank}
+              disabled={downloadingBlank}
+              data-docx-version={DOCX_DOWNLOAD_VERSION}
+              data-download-format="docx"
+              data-action="download-order-docx"
+              className="inline-flex items-center justify-center gap-2 w-full text-base bg-primary text-primary-foreground min-h-11 rounded-md font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
+            >
+              <Download className="h-4 w-4" />
+              {downloadingBlank ? "Готовим Word..." : "Скачать Word-бланк заказа (.docx)"}
+            </button>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <input
