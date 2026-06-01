@@ -126,6 +126,7 @@ const Header = () => {
             </svg>
           </button>
         </div>
+        </div>
       </div>
 
       {menuOpen && (
