@@ -25,18 +25,18 @@ const HeroSection = () => {
           <p className="text-base sm:text-lg md:text-xl text-primary-foreground/80 mb-10 leading-relaxed max-w-lg">
             Решения для частных домов, коттеджей и участков. Собственное производство, качественные материалы, помощь с выбором.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <a
               href="/#catalog"
               onClick={(e) => handleSectionClick(e, "catalog")}
-              className="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-base font-bold hover:opacity-90 transition-all duration-300 hover:scale-105 text-center"
+              className="bg-accent text-accent-foreground px-6 sm:px-8 py-3.5 min-h-11 rounded-lg text-sm sm:text-base font-bold hover:opacity-90 transition-all duration-300 hover:scale-105 text-center"
             >
               Смотреть каталог
             </a>
             <a
               href="/#contacts"
               onClick={(e) => handleSectionClick(e, "contacts")}
-              className="border-2 border-primary-foreground/40 text-primary-foreground px-8 py-4 rounded-lg text-base font-bold hover:bg-primary-foreground/10 transition-all duration-300 hover:scale-105 text-center"
+              className="border-2 border-primary-foreground/40 text-primary-foreground px-6 sm:px-8 py-3.5 min-h-11 rounded-lg text-sm sm:text-base font-bold hover:bg-primary-foreground/10 transition-all duration-300 hover:scale-105 text-center"
             >
               Получить консультацию
             </a>
