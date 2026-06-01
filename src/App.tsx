@@ -17,7 +17,7 @@ import AppErrorBoundary from "./components/AppErrorBoundary.tsx";
 
 const queryClient = new QueryClient();
 const isGitHubPagesHost = typeof window !== "undefined" && window.location.hostname.endsWith("github.io");
-const Router = import.meta.env.PROD || isGitHubPagesHost ? HashRouter : BrowserRouter;
+const Router = isGitHubPagesHost ? HashRouter : BrowserRouter;
 
 const App = () => (
   <AppErrorBoundary>
