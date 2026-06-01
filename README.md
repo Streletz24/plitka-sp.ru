@@ -26,3 +26,5 @@ npm run dev
 ### Важно для custom domain
 
 Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+
+Артефакт Pages также должен содержать `CNAME` со значением `plitka-sp.ru` и `.nojekyll`; workflow проверяет это после сборки. Если `https://plitka-sp.ru/` показывает старый сайт или белый экран, проверьте DNS домена и убедитесь, что GitHub Pages настроен на этот custom domain.

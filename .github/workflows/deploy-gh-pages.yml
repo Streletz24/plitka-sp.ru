@@ -65,6 +65,15 @@ jobs:
           const files = walk('dist');
           const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
+          const cname = fs.existsSync('dist/CNAME') ? fs.readFileSync('dist/CNAME', 'utf8').trim() : '';
+          if (cname !== 'plitka-sp.ru') {
+            console.error(`ERROR: dist/CNAME must contain plitka-sp.ru for the custom domain. Current value: ${cname || '<missing>'}`);
+            process.exit(1);
+          }
+          if (!fs.existsSync('dist/.nojekyll')) {
+            console.error('ERROR: dist/.nojekyll is missing. Keep it in the Pages artifact to prevent Jekyll processing.');
+            process.exit(1);
+          }
           const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
             console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
