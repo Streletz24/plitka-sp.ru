@@ -36,12 +36,12 @@ jobs:
 
       - name: Resolve Pages base path
         run: |
-          # Use relative asset URLs so the same artifact works on the custom
-          # domain (https://plitka-sp.ru/) and on the repository Pages URL.
+          # This site is opened from the Pages root/custom domain, so build
+          # assets from /assets/... instead of a repository-prefixed path.
           # A repository-prefixed base such as /plitka-sp.ru/ makes the
-          # custom domain request JS/CSS from a non-existent path and renders
-          # a blank white page.
-          echo "GH_PAGES_BASE=./" >> "$GITHUB_ENV"
+          # browser request JS/CSS from a non-existent path and renders a
+          # blank white page.
+          echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
 
       - name: Build
         run: npm run build
