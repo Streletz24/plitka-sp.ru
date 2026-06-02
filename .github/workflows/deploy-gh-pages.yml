@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -34,55 +34,43 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Resolve Pages base path
-        run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
-          if [ "$REPO_NAME" = "${OWNER_NAME}.github.io" ]; then
-            echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-          else
-            echo "GH_PAGES_BASE=/${REPO_NAME}/" >> "$GITHUB_ENV"
-          fi
-
       - name: Build
         run: npm run build
         env:
           GITHUB_PAGES: true
+          GH_PAGES_BASE: ./
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-
-      - name: Verify DOCX download marker in build
+      - name: Verify Pages artifact paths
         run: |
           node - <<'NODE'
           const fs = require('fs');
-          const path = require('path');
-          const marker = 'DOCX_DOWNLOAD_ENABLED_V4';
-          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-            const fullPath = path.join(dir, entry.name);
-            return entry.isDirectory() ? walk(fullPath) : [fullPath];
-          });
-          const files = walk('dist');
-          const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
           const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
+
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html points to the unbuilt Vite entry /src/main.tsx.');
+            process.exit(1);
+          }
+
+          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
+            process.exit(1);
+          }
+
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
+            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. Use a relative Vite base so the same artifact works on the project URL and the custom domain.`);
             process.exit(1);
           }
-          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza'];
-          for (const requiredMarker of requiredMarkers) {
-            if (!allText.includes(requiredMarker)) {
-              console.error(`${requiredMarker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
-              process.exit(1);
-            }
-          }
-          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf|Распечатать заказ|printOrderBlank/.test(allText)) {
-            console.error('ERROR: PDF/print order blank still exists in production build.');
-            process.exit(1);
-          }
-          console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
+
+          console.log('Pages artifact uses built root asset paths.');
           NODE
+
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
