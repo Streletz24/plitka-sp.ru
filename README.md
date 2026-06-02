@@ -11,7 +11,7 @@ npm run dev
 
 В репозитории добавлен workflow `.github/workflows/deploy-gh-pages.yml`, который:
 
-1. Запускается при пуше в ветку `main` и вручную через **Run workflow**.
+1. Запускается при пуше в ветки репозитория и вручную через **Run workflow**.
 2. Собирает проект (`npm install` + `npm run build`) с флагом `GITHUB_PAGES=true`.
 3. Публикует собранный `dist` в GitHub Pages через официальный `actions/deploy-pages`.
 
@@ -19,10 +19,10 @@ npm run dev
 
 1. Откройте **Settings → Pages**.
 2. В разделе **Build and deployment** выберите **Source: GitHub Actions**.
-3. Убедитесь, что основная ветка проекта — `main`.
+3. Убедитесь, что нужная ветка с исправлениями запушена в репозиторий.
 
-После следующего пуша в `main` сайт будет опубликован на GitHub Pages.
+После следующего пуша workflow соберёт и опубликует сайт на GitHub Pages.
 
-### Важно для custom domain
+### Важно для GitHub Pages
 
-Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+Сайт публикуется из корня GitHub Pages/custom domain, поэтому сборка использует Vite `base` `/` и загружает JS/CSS из `/assets/...`. Не используйте `/<repo>/` как `GH_PAGES_BASE` для этого сайта: браузер будет искать бандлы в неверной папке и покажет пустой экран.
