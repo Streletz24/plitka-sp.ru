@@ -9,27 +9,16 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import { downloadOrderDocx } from "@/lib/orderDocx";
+import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
 import { ArrowLeft, Download, Trash2, ShoppingBag } from "lucide-react";
 
 const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
 
 const CartDrawer = () => {
-  const {
-    items,
-    isOpen,
-    close,
-    removeItem,
-    clear,
-    totalSum,
-    lastAddedProductId,
-    lastCatalogPath,
-    lastCatalogScrollY,
-    lastAddedProductAnchor,
-  } = useCart();
-  const navigate = useNavigate();
+  const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -149,6 +138,22 @@ const CartDrawer = () => {
     }
   };
 
+  const handlePrintOrder = () => {
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы распечатать заказ.", variant: "destructive" });
+      return;
+    }
+
+    const opened = printOrderBlank(items, totalSum);
+    if (!opened) {
+      toast({
+        title: "Не удалось открыть печать",
+        description: "Разрешите всплывающие окна для сайта и попробуйте снова.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleContinueShopping = () => {
     close();
     const targetPath = lastCatalogPath || "/";
@@ -187,16 +192,6 @@ const CartDrawer = () => {
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
       <SheetContent className="w-full sm:max-w-md flex flex-col h-[100dvh] pb-[env(safe-area-inset-bottom)]">
         <SheetHeader>
-          <div className="sm:hidden mb-2">
-            <button
-              type="button"
-              onClick={goToCatalog}
-              className="inline-flex w-full items-center justify-start gap-2 h-11 px-3 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 active:scale-[0.99] transition-all shadow-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-medium">Продолжить покупки</span>
-            </button>
-          </div>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
             {items.length > 0
@@ -239,7 +234,7 @@ const CartDrawer = () => {
               </div>
               <button
                 type="button"
-                onClick={() => handleRemoveItem(item.id)}
+                onClick={() => removeItem(item.id)}
                 aria-label="Удалить"
                 className="text-muted-foreground hover:text-destructive transition-colors p-1 h-fit"
               >
@@ -264,18 +259,25 @@ const CartDrawer = () => {
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
             </div>
-            <button
-              type="button"
-              onClick={handleDownloadBlank}
-              disabled={downloadingBlank}
-              data-docx-version={DOCX_DOWNLOAD_VERSION}
-              data-download-format="docx"
-              data-action="download-order-docx"
-              className="inline-flex items-center justify-center gap-2 w-full text-base bg-primary text-primary-foreground min-h-11 rounded-md font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
-            >
-              <Download className="h-4 w-4" />
-              {downloadingBlank ? "Готовим Word..." : "Скачать Word-бланк заказа (.docx)"}
-            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handlePrintOrder}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Printer className="h-4 w-4" />
+                Распечатать заказ
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadBlank}
+                disabled={downloadingBlank}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" />
+                {downloadingBlank ? "Готовим Word..." : "Скачать бланк заказа Word"}
+              </button>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <input
@@ -310,8 +312,8 @@ const CartDrawer = () => {
               </button>
               <button
                 type="button"
-                onClick={clear}
-                className="w-full text-sm text-muted-foreground hover:text-foreground min-h-11"
+                onClick={handleClearCart}
+                className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
               >
                 Очистить корзину
               </button>

@@ -8,8 +8,6 @@ const PAGE_HEIGHT_TWIPS = 16838;
 const PAGE_MARGIN_TWIPS = 1134;
 
 const textEncoder = new TextEncoder();
-const ZIP_SIGNATURE = "PK";
-const PDF_SIGNATURE = "%PDF";
 
 const escapeXml = (value: string | number | null | undefined) =>
   String(value ?? "—")
@@ -44,7 +42,7 @@ const paragraph = (text: string, options: { bold?: boolean; size?: number; spaci
 };
 
 const tableCell = (content: string, width: number, shading?: string) =>
-  `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/><w:vAlign w:val="top"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tcMar>${shading ? `<w:shd w:fill="${shading}"/>` : ""}</w:tcPr>${content}</w:tc>`;
+  `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shading ? `<w:shd w:fill="${shading}"/>` : ""}</w:tcPr>${content}</w:tc>`;
 
 const tableBorders =
   '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="D9D2C7"/><w:left w:val="single" w:sz="4" w:color="D9D2C7"/><w:bottom w:val="single" w:sz="4" w:color="D9D2C7"/><w:right w:val="single" w:sz="4" w:color="D9D2C7"/><w:insideH w:val="single" w:sz="4" w:color="D9D2C7"/><w:insideV w:val="single" w:sz="4" w:color="D9D2C7"/></w:tblBorders>';
@@ -60,14 +58,14 @@ const buildDocumentXml = (items: CartItem[], totalSum: number, orderDate: Date, 
     <w:tbl>
       <w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr>
       <w:tr>
-        ${tableCell(headerLogo(hasLogo), 1500)}
+        ${tableCell(headerLogo(hasLogo), 1800)}
         ${tableCell(`
-          ${paragraph("УДАЧНАЯ ПЛИТКА", { bold: true, size: 28, spacingAfter: 220, color: "1F3A33" })}
-          ${paragraph(`Адрес: ${COMPANY_CONTACTS.address}`, { size: 20, spacingAfter: 90 })}
-          ${paragraph(`Телефон: ${COMPANY_CONTACTS.phone}`, { size: 20, spacingAfter: 90 })}
-          ${paragraph(`Email: ${COMPANY_CONTACTS.email}`, { size: 20, spacingAfter: 90 })}
-          ${paragraph(`Дата заказа: ${orderDateText}`, { size: 20 })}
-        `, 8100)}
+          ${paragraph("УДАЧНАЯ ПЛИТКА", { bold: true, size: 32, spacingAfter: 160, color: "1F3A33" })}
+          ${paragraph(`Адрес: ${COMPANY_CONTACTS.address}`, { size: 22, spacingAfter: 80 })}
+          ${paragraph(`Телефон: ${COMPANY_CONTACTS.phone}`, { size: 22, spacingAfter: 80 })}
+          ${paragraph(`Email: ${COMPANY_CONTACTS.email}`, { size: 22, spacingAfter: 80 })}
+          ${paragraph(`Дата заказа: ${orderDateText}`, { size: 22 })}
+        `, 7800)}
       </w:tr>
     </w:tbl>`;
 
@@ -259,18 +257,6 @@ const fetchLogoBytes = async () => {
   }
 };
 
-const verifyDocxPackage = (bytes: Uint8Array, fileName: string) => {
-  const signature = String.fromCharCode(...bytes.slice(0, 4));
-
-  if (!fileName.endsWith(".docx")) {
-    throw new Error("invalid_docx_filename");
-  }
-
-  if (!signature.startsWith(ZIP_SIGNATURE) || signature.startsWith(PDF_SIGNATURE)) {
-    throw new Error("invalid_docx_package");
-  }
-};
-
 const downloadBlob = (blob: Blob, fileName: string) => {
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
@@ -297,10 +283,45 @@ export const downloadOrderDocx = async (items: CartItem[], totalSum: number) => 
   }
 
   const docxBytes = createZip(files);
-  const fileName = `blank-zakaza-${formatFileDate(createdAt)}.docx`;
-  verifyDocxPackage(docxBytes, fileName);
-
   const docxBuffer = new ArrayBuffer(docxBytes.byteLength);
   new Uint8Array(docxBuffer).set(docxBytes);
-  downloadBlob(new Blob([docxBuffer], { type: DOCX_MIME }), fileName);
+  downloadBlob(new Blob([docxBuffer], { type: DOCX_MIME }), `blank-zakaza-${formatFileDate(createdAt)}.docx`);
+};
+
+export const printOrderBlank = (items: CartItem[], totalSum: number) => {
+  const createdAt = new Date();
+  const rows = items
+    .map((item, index) => {
+      const quantity = item.pieces !== null ? item.pieces : item.area;
+      const unit = item.pieces !== null ? "шт" : item.unit;
+      return `<tr><td>${index + 1}</td><td>${escapeXml(item.productName)}</td><td>${escapeXml(item.colorName || "—")}</td><td>${escapeXml(quantity)}</td><td>${escapeXml(unit)}</td><td>${escapeXml(formatMoney(item.total))}</td></tr>`;
+    })
+    .join("");
+
+  const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8"/><title>Бланк заказа</title><style>
+    body{font-family:Arial,sans-serif;color:#1f2d2a;margin:32px;background:#fff;}
+    .header{display:grid;grid-template-columns:96px 1fr;gap:24px;align-items:start;margin-bottom:28px;}
+    .logo{width:72px;height:72px;object-fit:contain;}
+    .company{font-size:22px;font-weight:700;margin:0 0 12px;color:#1f3a33;letter-spacing:.04em;}
+    .contacts{font-size:13px;line-height:1.6;margin:0;color:#4b5754;}
+    h1{text-align:center;font-size:24px;margin:24px 0;color:#1f3a33;}
+    table{width:100%;border-collapse:collapse;margin-top:16px;}
+    th,td{border:1px solid #d9d2c7;padding:9px 10px;font-size:13px;text-align:left;vertical-align:top;}
+    th{background:#efe8dc;font-weight:700;}
+    .total{text-align:right;font-size:18px;font-weight:700;margin-top:18px;}
+  </style></head><body>
+    <div class="header"><img class="logo" src="${logoUrl}" alt="Удачная Плитка"/><div><p class="company">УДАЧНАЯ ПЛИТКА</p><p class="contacts">Адрес: ${escapeXml(COMPANY_CONTACTS.address)}<br/>Телефон: ${escapeXml(COMPANY_CONTACTS.phone)}<br/>Email: ${escapeXml(COMPANY_CONTACTS.email)}<br/>Дата заказа: ${escapeXml(formatOrderDate(createdAt))}</p></div></div>
+    <h1>Бланк заказа</h1>
+    <table><thead><tr><th>№</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Сумма</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="total">Итого: ${escapeXml(formatMoney(totalSum))}</p>
+  </body></html>`;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return false;
+  printWindow.document.open();
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  return true;
 };
