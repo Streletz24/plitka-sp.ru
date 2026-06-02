@@ -11,8 +11,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  # Keep runs from different branches from canceling each other during checkout.
+  # The previous shared `pages` group canceled PR/build runs as soon as another
+  # branch started a Pages workflow, leaving GitHub with "operation was canceled".
+  group: pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
