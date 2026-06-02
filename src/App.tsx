@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -18,31 +19,37 @@ import AppErrorBoundary from "./components/AppErrorBoundary.tsx";
 const queryClient = new QueryClient();
 const Router = BrowserRouter;
 
-const App = () => (
-  <AppErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CartProvider>
-          <Toaster />
-          <Sonner />
-          <Router>
-            <ScrollToHash />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/catalog/:slug" element={<CatalogDetail />} />
-              <Route path="/prices" element={<Prices />} />
-              <Route path="/sale" element={<Sale />} />
-              <Route path="/tiling" element={<Tiling />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <ImageLightbox />
-            <CartDrawer />
-          </Router>
-        </CartProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </AppErrorBoundary>
-);
+const App = () => {
+  useEffect(() => {
+    document.documentElement.dataset.appMounted = "true";
+  }, []);
+
+  return (
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <CartProvider>
+            <Toaster />
+            <Sonner />
+            <Router>
+              <ScrollToHash />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/catalog/:slug" element={<CatalogDetail />} />
+                <Route path="/prices" element={<Prices />} />
+                <Route path="/sale" element={<Sale />} />
+                <Route path="/tiling" element={<Tiling />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <ImageLightbox />
+              <CartDrawer />
+            </Router>
+          </CartProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
+  );
+};
 
 export default App;
