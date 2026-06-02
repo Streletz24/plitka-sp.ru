@@ -34,6 +34,22 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Verify source is React app
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const indexHtml = fs.readFileSync('index.html', 'utf8');
+          if (indexHtml.includes('static-fallback') || indexHtml.includes('Если интерактивная версия')) {
+            console.error('ERROR: source index.html contains the stale static fallback instead of the React root.');
+            process.exit(1);
+          }
+          if (!indexHtml.includes('<div id="root"></div>') || !indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: source index.html does not contain the normal React/Vite entry.');
+            process.exit(1);
+          }
+          console.log('Source index.html contains the normal React root and no stale fallback.');
+          NODE
+
       - name: Build
         run: npm run build
         env:
@@ -41,6 +57,14 @@ jobs:
           GH_PAGES_BASE: /
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Write deployment marker
+        run: |
+          {
+            echo "sha=${GITHUB_SHA}"
+            echo "ref=${GITHUB_REF}"
+            date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
+          } > dist/deploy-version.txt
 
       - name: Verify Pages artifact
         run: |
