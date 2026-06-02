@@ -77,6 +77,11 @@ jobs:
           console.log('Pages artifact is built for the root/custom domain without the stale fallback.');
           NODE
 
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
+
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
 
