@@ -25,4 +25,4 @@ npm run dev
 
 ### Важно для custom domain
 
-Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+Сборка использует корневой Vite `base` (`/`), потому что сайт открывается с корня GitHub Pages/custom domain (`https://streletz24.github.io/` и `https://plitka-sp.ru/`). Не задавайте `GH_PAGES_BASE=/<repo>/`: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
