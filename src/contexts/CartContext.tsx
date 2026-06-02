@@ -97,13 +97,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const removeItem = useCallback((id: string) => {
-    setItems((prev) => {
-      const next = prev.filter((i) => i.id !== id);
-      if (next.length === 0) {
-        setIsOpen(false);
-      }
-      return next;
-    });
+    setItems((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
