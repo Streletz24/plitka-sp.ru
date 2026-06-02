@@ -79,7 +79,7 @@ jobs:
             console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
             process.exit(1);
           }
-          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza'];
+          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza', 'WHITE_SCREEN_FALLBACK_V1'];
           for (const requiredMarker of requiredMarkers) {
             if (!allText.includes(requiredMarker)) {
               console.error(`${requiredMarker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
