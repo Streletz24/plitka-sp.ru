@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const pagesBase = process.env.GH_PAGES_BASE ?? "./";
+  const pagesBase = process.env.GH_PAGES_BASE ?? "/";
 
   return ({
   server: {

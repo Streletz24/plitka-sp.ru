@@ -16,6 +16,29 @@
   </head>
 
   <body>
+    <style>
+      html[data-app-mounted="true"] #static-fallback { display: none !important; }
+      #static-fallback { min-height: 100vh; display: flex; align-items: center; padding: 32px; background: #f7f4ef; color: #243b35; font-family: Arial, sans-serif; box-sizing: border-box; }
+      #static-fallback section { max-width: 760px; margin: 0 auto; }
+      #static-fallback .eyebrow { margin: 0 0 12px; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: #9a5b35; font-weight: 700; }
+      #static-fallback h1 { margin: 0 0 16px; font-size: clamp(32px, 6vw, 64px); line-height: 1.05; }
+      #static-fallback .lead { margin: 0 0 24px; font-size: 18px; line-height: 1.6; color: #53625e; }
+      #static-fallback .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+      #static-fallback a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 10px; color: #fff; text-decoration: none; font-weight: 700; }
+      #static-fallback .catalog { background: #8d4a2b; }
+      #static-fallback .phone { background: #243b35; }
+    </style>
+    <div id="static-fallback" role="status" aria-live="polite">
+      <section>
+        <p class="eyebrow">Удачная Плитка</p>
+        <h1>Тротуарная плитка для благоустройства двора</h1>
+        <p class="lead">Сайт загружается. Если экран не обновился автоматически, откройте каталог или свяжитесь с нами по телефону.</p>
+        <div class="actions">
+          <a class="catalog" href="/#catalog">Смотреть каталог</a>
+          <a class="phone" href="tel:+79161335056">+7 (916) 133-50-56</a>
+        </div>
+      </section>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
