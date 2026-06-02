@@ -83,6 +83,11 @@ jobs:
           console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
           NODE
 
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
+
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
 
