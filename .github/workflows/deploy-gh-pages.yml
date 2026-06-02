@@ -36,13 +36,12 @@ jobs:
 
       - name: Resolve Pages base path
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
-          if [ "$REPO_NAME" = "${OWNER_NAME}.github.io" ]; then
-            echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-          else
-            echo "GH_PAGES_BASE=/${REPO_NAME}/" >> "$GITHUB_ENV"
-          fi
+          # Use relative asset URLs so the same artifact works on the custom
+          # domain (https://plitka-sp.ru/) and on the repository Pages URL.
+          # A repository-prefixed base such as /plitka-sp.ru/ makes the
+          # custom domain request JS/CSS from a non-existent path and renders
+          # a blank white page.
+          echo "GH_PAGES_BASE=./" >> "$GITHUB_ENV"
 
       - name: Build
         run: npm run build
