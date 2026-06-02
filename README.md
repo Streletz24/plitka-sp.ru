@@ -25,4 +25,4 @@ npm run dev
 
 ### Важно для custom domain
 
-Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+Сайт сейчас публикуется из корня GitHub Pages/custom domain (`https://streletz24.github.io/` и `https://plitka-sp.ru/`), поэтому workflow собирает Vite с `GH_PAGES_BASE=/`. Если собрать artifact с `/<repo>/`, браузер будет искать JS/CSS по неверному пути и вместо React-приложения останется старый статический экран.
