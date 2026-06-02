@@ -9,11 +9,9 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import { downloadOrderDocx } from "@/lib/orderDocx";
+import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { ArrowLeft, Download, Trash2, ShoppingBag } from "lucide-react";
-
-const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
+import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
   const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
@@ -25,34 +23,6 @@ const CartDrawer = () => {
   const [submitting, setSubmitting] = useState(false);
   const [downloadingBlank, setDownloadingBlank] = useState(false);
   const [honeypot, setHoneypot] = useState("");
-
-  const goToCatalog = () => {
-    close();
-    if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: "catalog" } });
-      return;
-    }
-
-    const target = document.getElementById("catalog");
-    if (target) {
-      const y = target.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-    }
-  };
-
-  const handleRemoveItem = (id: string) => {
-    const removingLastItem = items.length === 1;
-    removeItem(id);
-
-    if (removingLastItem) {
-      goToCatalog();
-    }
-  };
-
-  const handleClearCart = () => {
-    clear();
-    goToCatalog();
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +108,22 @@ const CartDrawer = () => {
     }
   };
 
+  const handlePrintOrder = () => {
+    if (items.length === 0) {
+      toast({ title: "Корзина пуста", description: "Добавьте товары, чтобы распечатать заказ.", variant: "destructive" });
+      return;
+    }
+
+    const opened = printOrderBlank(items, totalSum);
+    if (!opened) {
+      toast({
+        title: "Не удалось открыть печать",
+        description: "Разрешите всплывающие окна для сайта и попробуйте снова.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleContinueShopping = () => {
     close();
     const targetPath = lastCatalogPath || "/";
@@ -176,16 +162,6 @@ const CartDrawer = () => {
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : close())}>
       <SheetContent className="w-full sm:max-w-md flex flex-col h-[100dvh] pb-[env(safe-area-inset-bottom)]">
         <SheetHeader>
-          <div className="sm:hidden mb-2">
-            <button
-              type="button"
-              onClick={goToCatalog}
-              className="inline-flex w-full items-center justify-start gap-2 h-11 px-3 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 active:scale-[0.99] transition-all shadow-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-medium">Продолжить покупки</span>
-            </button>
-          </div>
           <SheetTitle>Корзина</SheetTitle>
           <SheetDescription>
             {items.length > 0
@@ -228,7 +204,7 @@ const CartDrawer = () => {
               </div>
               <button
                 type="button"
-                onClick={() => handleRemoveItem(item.id)}
+                onClick={() => removeItem(item.id)}
                 aria-label="Удалить"
                 className="text-muted-foreground hover:text-destructive transition-colors p-1 h-fit"
               >
@@ -254,11 +230,22 @@ const CartDrawer = () => {
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
-                <Download className="w-4 h-4" /> Скачать заказ
+              <button
+                type="button"
+                onClick={handlePrintOrder}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Printer className="h-4 w-4" />
+                Распечатать заказ
               </button>
-              <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
-                <Printer className="w-4 h-4" /> Распечатать заказ
+              <button
+                type="button"
+                onClick={handleDownloadBlank}
+                disabled={downloadingBlank}
+                className="inline-flex items-center justify-center gap-2 w-full text-base border border-border bg-background min-h-11 rounded-md font-medium hover:border-primary/50 hover:text-primary transition-colors disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" />
+                {downloadingBlank ? "Готовим Word..." : "Скачать бланк заказа Word"}
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">

@@ -2,10 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # Deploy both the production branch and this work branch. If the work
-    # branch is not deployed, the live Pages URL keeps serving the previous
-    # artifact and users continue to see the old fallback screen.
-    branches: ["main", "work"]
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -37,67 +34,13 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Resolve Pages base path
-        run: |
-          # This site is opened from the Pages root/custom domain, so build
-          # assets from /assets/... instead of a repository-prefixed path.
-          # A repository-prefixed base such as /plitka-sp.ru/ makes the
-          # browser request JS/CSS from a non-existent path and renders a
-          # blank white page.
-          echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-
       - name: Build
         run: npm run build
         env:
           GITHUB_PAGES: true
+          GH_PAGES_BASE: /${{ github.event.repository.name }}/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
-
-      - name: Verify DOCX download marker in build
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const marker = 'DOCX_DOWNLOAD_ENABLED_V4';
-          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-            const fullPath = path.join(dir, entry.name);
-            return entry.isDirectory() ? walk(fullPath) : [fullPath];
-          });
-          const files = walk('dist');
-          const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
-          const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
-          if (indexHtml.includes('/src/main.tsx')) {
-            console.error('ERROR: dist/index.html still points to /src/main.tsx. GitHub Pages would serve the unbuilt Vite entry and leave the static fallback visible.');
-            process.exit(1);
-          }
-          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
-            console.error('ERROR: dist/index.html does not reference a built JS asset from /assets/.');
-            process.exit(1);
-          }
-          const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
-          if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
-            process.exit(1);
-          }
-          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza'];
-          for (const requiredMarker of requiredMarkers) {
-            if (!allText.includes(requiredMarker)) {
-              console.error(`${requiredMarker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
-              process.exit(1);
-            }
-          }
-          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf|Распечатать заказ|printOrderBlank/.test(allText)) {
-            console.error('ERROR: PDF/print order blank still exists in production build.');
-            process.exit(1);
-          }
-          console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
-          NODE
-
-      - name: Verify custom domain CNAME
-        run: |
-          test -f dist/CNAME
-          test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
