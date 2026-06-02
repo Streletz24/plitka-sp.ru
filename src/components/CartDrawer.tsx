@@ -11,7 +11,9 @@ import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 import { downloadOrderDocx, printOrderBlank } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Download, Trash2, ShoppingBag } from "lucide-react";
+
+const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
 
 const CartDrawer = () => {
   const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
@@ -23,6 +25,34 @@ const CartDrawer = () => {
   const [submitting, setSubmitting] = useState(false);
   const [downloadingBlank, setDownloadingBlank] = useState(false);
   const [honeypot, setHoneypot] = useState("");
+
+  const goToCatalog = () => {
+    close();
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: "catalog" } });
+      return;
+    }
+
+    const target = document.getElementById("catalog");
+    if (target) {
+      const y = target.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
+
+  const handleRemoveItem = (id: string) => {
+    const removingLastItem = items.length === 1;
+    removeItem(id);
+
+    if (removingLastItem) {
+      goToCatalog();
+    }
+  };
+
+  const handleClearCart = () => {
+    clear();
+    goToCatalog();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

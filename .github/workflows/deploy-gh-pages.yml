@@ -38,7 +38,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: /
+          GH_PAGES_BASE: ./
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
@@ -54,13 +54,13 @@ jobs:
             process.exit(1);
           }
 
-          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
-            console.error('ERROR: dist/index.html does not reference a built JS bundle under /assets/.');
+          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
             process.exit(1);
           }
 
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. The site is served from the Pages root/custom domain and must use /assets/.`);
+            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. Use a relative Vite base so the same artifact works on the project URL and the custom domain.`);
             process.exit(1);
           }
 
