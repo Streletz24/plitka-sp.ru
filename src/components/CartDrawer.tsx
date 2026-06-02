@@ -16,20 +16,9 @@ import { ArrowLeft, Download, Trash2, ShoppingBag } from "lucide-react";
 const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
 
 const CartDrawer = () => {
-  const {
-    items,
-    isOpen,
-    close,
-    removeItem,
-    clear,
-    totalSum,
-    lastAddedProductId,
-    lastCatalogPath,
-    lastCatalogScrollY,
-    lastAddedProductAnchor,
-  } = useCart();
-  const navigate = useNavigate();
+  const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -264,18 +253,14 @@ const CartDrawer = () => {
                 {totalSum.toLocaleString("ru-RU")} руб
               </span>
             </div>
-            <button
-              type="button"
-              onClick={handleDownloadBlank}
-              disabled={downloadingBlank}
-              data-docx-version={DOCX_DOWNLOAD_VERSION}
-              data-download-format="docx"
-              data-action="download-order-docx"
-              className="inline-flex items-center justify-center gap-2 w-full text-base bg-primary text-primary-foreground min-h-11 rounded-md font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
-            >
-              <Download className="h-4 w-4" />
-              {downloadingBlank ? "Готовим Word..." : "Скачать Word-бланк заказа (.docx)"}
-            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" onClick={() => void handleDownloadOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-accent text-accent-foreground text-sm font-semibold">
+                <Download className="w-4 h-4" /> Скачать заказ
+              </button>
+              <button type="button" onClick={() => void handlePrintOrder()} className="inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-semibold">
+                <Printer className="w-4 h-4" /> Распечатать заказ
+              </button>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-2">
               <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <input
@@ -310,8 +295,8 @@ const CartDrawer = () => {
               </button>
               <button
                 type="button"
-                onClick={clear}
-                className="w-full text-sm text-muted-foreground hover:text-foreground min-h-11"
+                onClick={handleClearCart}
+                className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
               >
                 Очистить корзину
               </button>
