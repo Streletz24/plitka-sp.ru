@@ -14,20 +14,9 @@ import { sendSiteRequest } from "@/lib/sendSiteRequest";
 import { Download, Printer, Trash2, ShoppingBag } from "lucide-react";
 
 const CartDrawer = () => {
-  const {
-    items,
-    isOpen,
-    close,
-    removeItem,
-    clear,
-    totalSum,
-    lastAddedProductId,
-    lastCatalogPath,
-    lastCatalogScrollY,
-    lastAddedProductAnchor,
-  } = useCart();
-  const navigate = useNavigate();
+  const { items, isOpen, close, removeItem, clear, totalSum } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -111,7 +100,7 @@ const CartDrawer = () => {
     } catch {
       toast({
         title: "Не удалось скачать бланк",
-        description: "Попробуйте ещё раз или распечатайте заказ.",
+        description: "Попробуйте ещё раз или свяжитесь с нами по телефону.",
         variant: "destructive",
       });
     } finally {
@@ -293,8 +282,8 @@ const CartDrawer = () => {
               </button>
               <button
                 type="button"
-                onClick={clear}
-                className="w-full text-sm text-muted-foreground hover:text-foreground min-h-11"
+                onClick={handleClearCart}
+                className="w-full text-xs text-muted-foreground hover:text-foreground py-1"
               >
                 Очистить корзину
               </button>
