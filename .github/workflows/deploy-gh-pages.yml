@@ -11,7 +11,6 @@ permissions:
   id-token: write
 
 concurrency:
-  # Do not let a PR/work branch cancel a main deployment (or vice versa).
   group: pages-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
@@ -39,8 +38,6 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          # The site is opened from the Pages root/custom domain, so assets
-          # must be built as /assets/... rather than /plitka-sp.ru/assets/...
           GH_PAGES_BASE: /
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -53,7 +50,12 @@ jobs:
           const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
 
           if (indexHtml.includes('/src/main.tsx')) {
-            console.error('ERROR: dist/index.html still points to the unbuilt Vite entry /src/main.tsx.');
+            console.error('ERROR: dist/index.html still points to /src/main.tsx instead of a built Vite bundle.');
+            process.exit(1);
+          }
+
+          if (indexHtml.includes('static-fallback')) {
+            console.error('ERROR: dist/index.html contains the old static fallback page.');
             process.exit(1);
           }
 
@@ -63,7 +65,7 @@ jobs:
           }
 
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. That path breaks the Pages root/custom domain.`);
+            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. That breaks the Pages root/custom domain.`);
             process.exit(1);
           }
 
@@ -72,7 +74,7 @@ jobs:
             process.exit(1);
           }
 
-          console.log('Pages artifact is built for the root/custom domain.');
+          console.log('Pages artifact is built for the root/custom domain without the stale fallback.');
           NODE
 
       - name: Verify custom domain CNAME
