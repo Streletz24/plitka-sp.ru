@@ -25,4 +25,4 @@ npm run dev
 
 ### Важно для GitHub Pages
 
-Сборка использует относительный Vite `base` (`./`), чтобы один и тот же artifact корректно открывался и на GitHub Pages URL проекта, и на custom domain `https://plitka-sp.ru/`. Не задавайте `GH_PAGES_BASE=/<repo>/` или `/`: при смене URL браузер может искать JS/CSS в неверной папке и показать пустой экран.
+Сайт открывается из корня GitHub Pages/custom domain (`https://streletz24.github.io/` и `https://plitka-sp.ru/`), поэтому workflow собирает Vite с `GH_PAGES_BASE=/`. Если собрать artifact с `/<repo>/`, браузер будет искать JS/CSS по неверному пути и вместо React-приложения останется пустой/статический экран.

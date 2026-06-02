@@ -11,8 +11,9 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  # Do not let a PR/work branch cancel a main deployment (or vice versa).
+  group: pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -38,11 +39,13 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: ./
+          # The site is opened from the Pages root/custom domain, so assets
+          # must be built as /assets/... rather than /plitka-sp.ru/assets/...
+          GH_PAGES_BASE: /
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Verify Pages artifact paths
+      - name: Verify Pages artifact
         run: |
           node - <<'NODE'
           const fs = require('fs');
@@ -50,21 +53,26 @@ jobs:
           const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
 
           if (indexHtml.includes('/src/main.tsx')) {
-            console.error('ERROR: dist/index.html points to the unbuilt Vite entry /src/main.tsx.');
+            console.error('ERROR: dist/index.html still points to the unbuilt Vite entry /src/main.tsx.');
             process.exit(1);
           }
 
-          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
-            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
+          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle from /assets/.');
             process.exit(1);
           }
 
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. Use a relative Vite base so the same artifact works on the project URL and the custom domain.`);
+            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. That path breaks the Pages root/custom domain.`);
             process.exit(1);
           }
 
-          console.log('Pages artifact uses built root asset paths.');
+          if (!fs.existsSync('dist/CNAME') || fs.readFileSync('dist/CNAME', 'utf8').trim() !== 'plitka-sp.ru') {
+            console.error('ERROR: dist/CNAME is missing or does not contain plitka-sp.ru.');
+            process.exit(1);
+          }
+
+          console.log('Pages artifact is built for the root/custom domain.');
           NODE
 
       - name: Verify custom domain CNAME
