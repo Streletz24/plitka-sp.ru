@@ -23,11 +23,30 @@ interface CartContextValue {
   removeItem: (id: string) => void;
   clear: () => void;
   totalSum: number;
+  lastAddedProductId: string | null;
+  lastCatalogPath: string | null;
+  lastCatalogScrollY: number | null;
+  lastAddedProductAnchor: string | null;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 const STORAGE_KEY = "udachnaya-plitka-cart";
+const LAST_ADDED_CONTEXT_KEY = "udachnaya-plitka-last-added-context";
+
+interface LastAddedContext {
+  lastAddedProductId: string | null;
+  lastCatalogPath: string | null;
+  lastCatalogScrollY: number | null;
+  lastAddedProductAnchor: string | null;
+}
+
+const emptyLastAddedContext: LastAddedContext = {
+  lastAddedProductId: null,
+  lastCatalogPath: null,
+  lastCatalogScrollY: null,
+  lastAddedProductAnchor: null,
+};
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -40,6 +59,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [lastAddedContext, setLastAddedContext] = useState<LastAddedContext>(() => {
+    if (typeof window === "undefined") return emptyLastAddedContext;
+    try {
+      const raw = localStorage.getItem(LAST_ADDED_CONTEXT_KEY);
+      return raw ? { ...emptyLastAddedContext, ...JSON.parse(raw) } : emptyLastAddedContext;
+    } catch {
+      return emptyLastAddedContext;
+    }
+  });
 
   useEffect(() => {
     try {
@@ -47,9 +75,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } catch {}
   }, [items]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_ADDED_CONTEXT_KEY, JSON.stringify(lastAddedContext));
+    } catch {}
+  }, [lastAddedContext]);
+
   const addItem = useCallback((item: Omit<CartItem, "id">) => {
     const id = `${item.productId}-${item.colorName ?? "default"}-${Date.now()}`;
     setItems((prev) => [...prev, { ...item, id }]);
+    if (typeof window !== "undefined") {
+      const anchor = `product-card-${item.productId}`;
+      setLastAddedContext({
+        lastAddedProductId: item.productId,
+        lastCatalogPath: `${window.location.pathname}${window.location.search}`,
+        lastCatalogScrollY: window.scrollY,
+        lastAddedProductAnchor: anchor,
+      });
+    }
     setIsOpen(true);
   }, []);
 
@@ -79,6 +122,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         removeItem,
         clear,
         totalSum,
+        lastAddedProductId: lastAddedContext.lastAddedProductId,
+        lastCatalogPath: lastAddedContext.lastCatalogPath,
+        lastCatalogScrollY: lastAddedContext.lastCatalogScrollY,
+        lastAddedProductAnchor: lastAddedContext.lastAddedProductAnchor,
       }}
     >
       {children}

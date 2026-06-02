@@ -101,7 +101,7 @@ const Header = () => {
           </Link>
           <Link
             to="/prices"
-            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-flex items-center min-h-11 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Наши цены
           </Link>
@@ -119,7 +119,7 @@ const Header = () => {
           <CartButton />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden p-2 text-foreground"
+            className="lg:hidden min-h-11 min-w-11 inline-flex items-center justify-center text-foreground"
             aria-label="Меню"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
