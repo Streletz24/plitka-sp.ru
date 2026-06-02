@@ -2,7 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    # Deploy both the production branch and this work branch. If the work
+    # branch is not deployed, the live Pages URL keeps serving the previous
+    # artifact and users continue to see the old fallback screen.
+    branches: ["main", "work"]
   workflow_dispatch:
 
 permissions:
@@ -36,13 +39,12 @@ jobs:
 
       - name: Resolve Pages base path
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
-          if [ "$REPO_NAME" = "${OWNER_NAME}.github.io" ]; then
-            echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-          else
-            echo "GH_PAGES_BASE=/${REPO_NAME}/" >> "$GITHUB_ENV"
-          fi
+          # This site is opened from the Pages root/custom domain, so build
+          # assets from /assets/... instead of a repository-prefixed path.
+          # A repository-prefixed base such as /plitka-sp.ru/ makes the
+          # browser request JS/CSS from a non-existent path and renders a
+          # blank white page.
+          echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
 
       - name: Build
         run: npm run build
@@ -65,6 +67,14 @@ jobs:
           const files = walk('dist');
           const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html still points to /src/main.tsx. GitHub Pages would serve the unbuilt Vite entry and leave the static fallback visible.');
+            process.exit(1);
+          }
+          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS asset from /assets/.');
+            process.exit(1);
+          }
           const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
           if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
             console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
@@ -83,6 +93,11 @@ jobs:
           }
           console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
           NODE
+
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
