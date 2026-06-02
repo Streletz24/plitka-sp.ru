@@ -38,9 +38,39 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: /${{ github.event.repository.name }}/
+          GH_PAGES_BASE: /
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Verify Pages artifact paths
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
+          const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
+
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html points to the unbuilt Vite entry /src/main.tsx.');
+            process.exit(1);
+          }
+
+          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under /assets/.');
+            process.exit(1);
+          }
+
+          if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
+            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. The site is served from the Pages root/custom domain and must use /assets/.`);
+            process.exit(1);
+          }
+
+          console.log('Pages artifact uses built root asset paths.');
+          NODE
+
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
