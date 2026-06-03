@@ -115,6 +115,11 @@ jobs:
           console.log('Pages artifact contains the built React app, CNAME, and no stale fallback.');
           NODE
 
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
+
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
 
