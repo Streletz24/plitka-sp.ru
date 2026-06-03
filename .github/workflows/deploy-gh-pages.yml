@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -31,61 +31,172 @@ jobs:
       - name: Configure npm registry
         run: npm config set registry https://registry.npmjs.org/
 
+      - name: Ensure Pages source is GitHub Actions
+        env:
+          PAGES_ADMIN_TOKEN: ${{ secrets.GH_PAGES_ADMIN_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
+          AUTH_HEADER="Authorization: Bearer ${PAGES_ADMIN_TOKEN}"
+          API_VERSION_HEADER="X-GitHub-Api-Version: 2022-11-28"
+
+          get_pages() {
+            curl -fsSL \
+              -H "Accept: application/vnd.github+json" \
+              -H "$AUTH_HEADER" \
+              -H "$API_VERSION_HEADER" \
+              "$API_URL"
+          }
+
+          pages_json="$(get_pages)"
+          build_type="$(PAGES_JSON="$pages_json" node -e 'const pages = JSON.parse(process.env.PAGES_JSON); console.log(pages.build_type || "legacy")')"
+
+          if [ "$build_type" != "workflow" ]; then
+            echo "GitHub Pages is currently build_type=$build_type. Switching to GitHub Actions workflow publishing."
+            curl -fsSL \
+              -X PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "$AUTH_HEADER" \
+              -H "$API_VERSION_HEADER" \
+              "$API_URL" \
+              -d '{"build_type":"workflow","cname":null}'
+          fi
+
+          pages_json="$(get_pages)"
+          build_type="$(PAGES_JSON="$pages_json" node -e 'const pages = JSON.parse(process.env.PAGES_JSON); console.log(pages.build_type || "legacy")')"
+          if [ "$build_type" != "workflow" ]; then
+            echo "ERROR: GitHub Pages source is still $build_type. In Settings → Pages set Build and deployment → Source = GitHub Actions."
+            exit 1
+          fi
+
+          echo "GitHub Pages source is GitHub Actions."
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Resolve Pages base path
+      - name: Verify source is React app
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
-          if [ "$REPO_NAME" = "${OWNER_NAME}.github.io" ]; then
-            echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-          else
-            echo "GH_PAGES_BASE=/${REPO_NAME}/" >> "$GITHUB_ENV"
-          fi
+          node - <<'NODE'
+          const fs = require('fs');
+          const indexHtml = fs.readFileSync('index.html', 'utf8');
+          if (indexHtml.includes('static-fallback') || indexHtml.includes('Если интерактивная версия')) {
+            console.error('ERROR: source index.html contains the stale static fallback instead of the React root.');
+            process.exit(1);
+          }
+          if (!indexHtml.includes('<div id="root"></div>') || !indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: source index.html does not contain the normal React/Vite entry.');
+            process.exit(1);
+          }
+          console.log('Source index.html contains the normal React root and no stale fallback.');
+          NODE
 
       - name: Build
         run: npm run build
         env:
           GITHUB_PAGES: true
+          GH_PAGES_BASE: /plitka-sp.ru/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-
-      - name: Verify DOCX download marker in build
+      - name: Write deployment marker
         run: |
+          {
+            echo "sha=${GITHUB_SHA}"
+            echo "ref=${GITHUB_REF}"
+            echo "base=/plitka-sp.ru/"
+            echo "target_url=https://streletz24.github.io/plitka-sp.ru/"
+            echo "marker=REACT_SITE_BUILD_NO_FALLBACK_V1"
+            date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
+          } > dist/deploy-version.txt
+
+      - name: Verify Pages artifact
+        run: |
+          set -euo pipefail
+
+          if grep -R "Если интерактивная версия сайта" dist; then
+            echo "ERROR: fallback text found in dist"
+            exit 1
+          fi
+
+          if grep -R "static-fallback" dist; then
+            echo "ERROR: static fallback found in dist"
+            exit 1
+          fi
+
+          if grep -R "/src/main.tsx" dist/index.html; then
+            echo "ERROR: raw Vite entry found in dist"
+            exit 1
+          fi
+
+          if ! find dist/assets -name "*.js" | grep -q .; then
+            echo "ERROR: no built JS assets found"
+            exit 1
+          fi
+
+          if ! find dist/assets -name "*.css" | grep -q .; then
+            echo "ERROR: no built CSS assets found"
+            exit 1
+          fi
+
+          if ! grep -q "/plitka-sp.ru/assets/" dist/index.html; then
+            echo "ERROR: wrong base path in dist/index.html"
+            exit 1
+          fi
+
           node - <<'NODE'
           const fs = require('fs');
           const path = require('path');
-          const marker = 'DOCX_DOWNLOAD_ENABLED_V4';
-          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-            const fullPath = path.join(dir, entry.name);
-            return entry.isDirectory() ? walk(fullPath) : [fullPath];
-          });
-          const files = walk('dist');
-          const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
-          const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
-          if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
+          const fallbackMarkers = [
+            'static-fallback',
+            'Если интерактивная версия сайта',
+            'интерактивная версия',
+            'временно не загрузилась',
+            'эта страница остаётся доступной',
+          ];
+
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html still points to /src/main.tsx instead of a built Vite bundle.');
             process.exit(1);
           }
-          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza'];
-          for (const requiredMarker of requiredMarkers) {
-            if (!allText.includes(requiredMarker)) {
-              console.error(`${requiredMarker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
+
+          for (const marker of fallbackMarkers) {
+            if (indexHtml.includes(marker)) {
+              console.error(`ERROR: dist/index.html contains stale fallback marker: ${marker}`);
               process.exit(1);
             }
           }
-          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf|Распечатать заказ|printOrderBlank/.test(allText)) {
-            console.error('ERROR: PDF/print order blank still exists in production build.');
+
+          if (!/\/plitka-sp\.ru\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under /plitka-sp.ru/assets/.');
             process.exit(1);
           }
-          console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
+
+          const assetsDir = path.join('dist', 'assets');
+          const assetFiles = fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : [];
+          const jsAssets = assetFiles.filter((file) => file.endsWith('.js'));
+          const cssAssets = assetFiles.filter((file) => file.endsWith('.css'));
+          if (jsAssets.length === 0) {
+            console.error('ERROR: dist/assets does not contain any built JS files.');
+            process.exit(1);
+          }
+          if (cssAssets.length === 0) {
+            console.error('ERROR: dist/assets does not contain any built CSS files.');
+            process.exit(1);
+          }
+
+          if (fs.existsSync('dist/CNAME')) {
+            console.error('ERROR: dist/CNAME must not be present while publishing the development project URL.');
+            process.exit(1);
+          }
+
+          console.log('Pages artifact targets https://streletz24.github.io/plitka-sp.ru/ and contains the built React app with no stale fallback.');
           NODE
 
       - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -105,3 +216,53 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify published project URL
+        run: |
+          set -euo pipefail
+          TARGET_URL="https://streletz24.github.io/plitka-sp.ru/"
+          MARKER_URL="${TARGET_URL}deploy-version.txt"
+
+          curl -fsSL --retry 8 --retry-delay 5 --retry-all-errors "$TARGET_URL" -o /tmp/live-index.html
+          curl -fsSL --retry 8 --retry-delay 5 --retry-all-errors "$MARKER_URL" -o /tmp/deploy-version.txt
+
+          if grep -q "Если интерактивная версия сайта" /tmp/live-index.html; then
+            echo "ERROR: fallback text is still present on the live project URL"
+            exit 1
+          fi
+
+          if grep -q "static-fallback" /tmp/live-index.html; then
+            echo "ERROR: static fallback marker is still present on the live project URL"
+            exit 1
+          fi
+
+          if grep -q "/src/main.tsx" /tmp/live-index.html; then
+            echo "ERROR: live project URL serves the raw Vite entry instead of the built app"
+            exit 1
+          fi
+
+          if ! grep -q "/plitka-sp.ru/assets/" /tmp/live-index.html; then
+            echo "ERROR: live project URL does not reference /plitka-sp.ru/assets/"
+            exit 1
+          fi
+
+          LIVE_ASSETS=$(grep -oE '/plitka-sp\.ru/assets/[^"'"'"']+\.(js|css)' /tmp/live-index.html | sort -u)
+          if ! printf '%s\n' "$LIVE_ASSETS" | grep -q '\.js$'; then
+            echo "ERROR: live project URL does not reference a JS asset"
+            exit 1
+          fi
+          if ! printf '%s\n' "$LIVE_ASSETS" | grep -q '\.css$'; then
+            echo "ERROR: live project URL does not reference a CSS asset"
+            exit 1
+          fi
+
+          printf '%s\n' "$LIVE_ASSETS" | while IFS= read -r asset_path; do
+            [ -n "$asset_path" ] || continue
+            curl -fsSI --retry 8 --retry-delay 5 --retry-all-errors "https://streletz24.github.io${asset_path}" >/dev/null
+          done
+
+          grep -q "sha=${GITHUB_SHA}" /tmp/deploy-version.txt
+          grep -q "base=/plitka-sp.ru/" /tmp/deploy-version.txt
+          grep -q "target_url=https://streletz24.github.io/plitka-sp.ru/" /tmp/deploy-version.txt
+          grep -q "marker=REACT_SITE_BUILD_NO_FALLBACK_V1" /tmp/deploy-version.txt
+          echo "Published project URL is serving the built React app for ${GITHUB_SHA}."
