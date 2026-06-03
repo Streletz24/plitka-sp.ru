@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -33,6 +33,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+          echo "GitHub Pages source is GitHub Actions."
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
 
       - name: Build
         run: npm run build
@@ -85,3 +90,53 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify published project URL
+        run: |
+          set -euo pipefail
+          TARGET_URL="https://streletz24.github.io/plitka-sp.ru/"
+          MARKER_URL="${TARGET_URL}deploy-version.txt"
+
+          curl -fsSL --retry 8 --retry-delay 5 --retry-all-errors "$TARGET_URL" -o /tmp/live-index.html
+          curl -fsSL --retry 8 --retry-delay 5 --retry-all-errors "$MARKER_URL" -o /tmp/deploy-version.txt
+
+          if grep -q "Если интерактивная версия сайта" /tmp/live-index.html; then
+            echo "ERROR: fallback text is still present on the live project URL"
+            exit 1
+          fi
+
+          if grep -q "static-fallback" /tmp/live-index.html; then
+            echo "ERROR: static fallback marker is still present on the live project URL"
+            exit 1
+          fi
+
+          if grep -q "/src/main.tsx" /tmp/live-index.html; then
+            echo "ERROR: live project URL serves the raw Vite entry instead of the built app"
+            exit 1
+          fi
+
+          if ! grep -q "/plitka-sp.ru/assets/" /tmp/live-index.html; then
+            echo "ERROR: live project URL does not reference /plitka-sp.ru/assets/"
+            exit 1
+          fi
+
+          LIVE_ASSETS=$(grep -oE '/plitka-sp\.ru/assets/[^"'"'"']+\.(js|css)' /tmp/live-index.html | sort -u)
+          if ! printf '%s\n' "$LIVE_ASSETS" | grep -q '\.js$'; then
+            echo "ERROR: live project URL does not reference a JS asset"
+            exit 1
+          fi
+          if ! printf '%s\n' "$LIVE_ASSETS" | grep -q '\.css$'; then
+            echo "ERROR: live project URL does not reference a CSS asset"
+            exit 1
+          fi
+
+          printf '%s\n' "$LIVE_ASSETS" | while IFS= read -r asset_path; do
+            [ -n "$asset_path" ] || continue
+            curl -fsSI --retry 8 --retry-delay 5 --retry-all-errors "https://streletz24.github.io${asset_path}" >/dev/null
+          done
+
+          grep -q "sha=${GITHUB_SHA}" /tmp/deploy-version.txt
+          grep -q "base=/plitka-sp.ru/" /tmp/deploy-version.txt
+          grep -q "target_url=https://streletz24.github.io/plitka-sp.ru/" /tmp/deploy-version.txt
+          grep -q "marker=REACT_SITE_BUILD_NO_FALLBACK_V1" /tmp/deploy-version.txt
+          echo "Published project URL is serving the built React app for ${GITHUB_SHA}."
