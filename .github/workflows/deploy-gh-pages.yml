@@ -65,11 +65,39 @@ jobs:
             echo "ref=${GITHUB_REF}"
             echo "base=/plitka-sp.ru/"
             echo "target_url=https://streletz24.github.io/plitka-sp.ru/"
+            echo "marker=REACT_SITE_BUILD_NO_FALLBACK_V1"
             date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
           } > dist/deploy-version.txt
 
       - name: Verify Pages artifact
         run: |
+          set -euo pipefail
+
+          if grep -R "Если интерактивная версия сайта" dist; then
+            echo "ERROR: fallback text found in dist"
+            exit 1
+          fi
+
+          if grep -R "static-fallback" dist; then
+            echo "ERROR: static fallback found in dist"
+            exit 1
+          fi
+
+          if grep -R "/src/main.tsx" dist/index.html; then
+            echo "ERROR: raw Vite entry found in dist"
+            exit 1
+          fi
+
+          if ! find dist/assets -name "*.js" | grep -q .; then
+            echo "ERROR: no built JS assets found"
+            exit 1
+          fi
+
+          if ! grep -q "/plitka-sp.ru/assets/" dist/index.html; then
+            echo "ERROR: wrong base path in dist/index.html"
+            exit 1
+          fi
+
           node - <<'NODE'
           const fs = require('fs');
           const path = require('path');
@@ -122,7 +150,9 @@ jobs:
           test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -175,4 +205,5 @@ jobs:
           grep -q "sha=${GITHUB_SHA}" /tmp/deploy-version.txt
           grep -q "base=/plitka-sp.ru/" /tmp/deploy-version.txt
           grep -q "target_url=https://streletz24.github.io/plitka-sp.ru/" /tmp/deploy-version.txt
+          grep -q "marker=REACT_SITE_BUILD_NO_FALLBACK_V1" /tmp/deploy-version.txt
           echo "Published project URL is serving the built React app for ${GITHUB_SHA}."
