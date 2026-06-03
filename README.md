@@ -25,4 +25,4 @@ npm run dev
 
 ### Важно для GitHub Pages
 
-Workflow собирает проект с относительным Vite `base` (`./`), чтобы один и тот же artifact корректно работал и на project site (`https://streletz24.github.io/plitka-sp.ru/`), и на пользовательском домене `https://plitka-sp.ru/`. Важно: адрес `https://streletz24.github.io/` относится к user-site репозиторию `streletz24.github.io`; этот репозиторий `plitka-sp.ru` не может обновить корневую страницу `streletz24.github.io` без перенастройки GitHub Pages или переноса сборки в user-site репозиторий.
+На этапе разработки рабочий адрес проекта — `https://streletz24.github.io/plitka-sp.ru/`, поэтому Vite `base` по умолчанию и `GH_PAGES_BASE` в workflow равны `/plitka-sp.ru/`. Адрес `https://streletz24.github.io/` относится к отдельному user-site репозиторию `streletz24.github.io` и не используется для этого проекта. Custom domain `https://plitka-sp.ru/` временно не подключается: файл `public/CNAME` не должен попадать в artifact до отдельного переключения на домен и `base: "/"`.

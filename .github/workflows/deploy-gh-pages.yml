@@ -54,7 +54,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: ./
+          GH_PAGES_BASE: /plitka-sp.ru/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
@@ -63,7 +63,8 @@ jobs:
           {
             echo "sha=${GITHUB_SHA}"
             echo "ref=${GITHUB_REF}"
-            echo "base=./"
+            echo "base=/plitka-sp.ru/"
+            echo "target_url=https://streletz24.github.io/plitka-sp.ru/"
             date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
           } > dist/deploy-version.txt
 
@@ -93,8 +94,8 @@ jobs:
             }
           }
 
-          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
-            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
+          if (!/\/plitka-sp\.ru\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under /plitka-sp.ru/assets/.');
             process.exit(1);
           }
 
@@ -107,12 +108,12 @@ jobs:
             process.exit(1);
           }
 
-          if (!fs.existsSync('dist/CNAME') || fs.readFileSync('dist/CNAME', 'utf8').trim() !== 'plitka-sp.ru') {
-            console.error('ERROR: dist/CNAME must exist and contain plitka-sp.ru.');
+          if (fs.existsSync('dist/CNAME')) {
+            console.error('ERROR: dist/CNAME must not be present while publishing the development project URL.');
             process.exit(1);
           }
 
-          console.log('Pages artifact contains the built React app, CNAME, and no stale fallback.');
+          console.log('Pages artifact targets https://streletz24.github.io/plitka-sp.ru/ and contains the built React app with no stale fallback.');
           NODE
 
       - name: Verify custom domain CNAME
