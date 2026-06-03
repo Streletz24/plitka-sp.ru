@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { catalogCategories } from "@/data/catalogData";
-import { ArrowLeft, FileText, Printer } from "lucide-react";
+import { ArrowLeft, Download, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
 
 const Prices = () => {
@@ -55,7 +55,7 @@ const Prices = () => {
     return rows;
   }, []);
 
-  const downloadExcelPriceList = () => {
+  const handleDownloadExcel = () => {
     const exportDate = new Date().toLocaleString("ru-RU", {
       day: "2-digit",
       month: "2-digit",
@@ -75,13 +75,13 @@ const Prices = () => {
     const rowsHtml = priceRows
       .map(
         (row, idx) => `
-          <tr style="background:${idx % 2 === 0 ? "#ffffff" : "#f7f9f8"};">
-            <td>${esc(row.category)}</td>
-            <td>${esc(row.product)}</td>
-            <td>${esc(row.color)}</td>
-            <td>${esc(row.description)}</td>
-            <td style="font-weight:700;color:#8D3F1E;">${esc(row.price)}</td>
-          </tr>`
+        <tr class="${idx % 2 === 0 ? "row-even" : "row-odd"}">
+          <td>${esc(row.category)}</td>
+          <td>${esc(row.product)}</td>
+          <td>${esc(row.color)}</td>
+          <td>${esc(row.description)}</td>
+          <td class="price">${esc(row.price)}</td>
+        </tr>`
       )
       .join("");
 
@@ -120,31 +120,40 @@ const Prices = () => {
 </Workbook>`;
 
     const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
-    const blob = new Blob(["﻿", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const blob = new Blob(["\uFEFF", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
 
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.doc`;
+    const blob = new Blob(["﻿", html], { type: "application/octet-stream" });
     const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
     if (typeof nav.msSaveOrOpenBlob === "function") {
       nav.msSaveOrOpenBlob(blob, fileName);
       return;
     }
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    a.style.display = "none";
-    document.body.appendChild(a);
+    const dataUri = `data:application/vnd.ms-excel;charset=utf-8,${encodeURIComponent("\uFEFF" + xml)}`;
+
+    const triggerDownload = (href: string) => {
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = fileName;
+      a.style.display = "none";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
 
     try {
-      a.click();
+      triggerDownload(dataUri);
+      return;
     } catch {
-      window.location.assign(url);
+      const url = URL.createObjectURL(blob);
+      try {
+        triggerDownload(url);
+      } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
     }
-
-    window.setTimeout(() => {
-      URL.revokeObjectURL(url);
-      a.remove();
-    }, 3000);
   };
 
   return (
@@ -162,11 +171,11 @@ const Prices = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={downloadExcelPriceList}
+                onClick={handleDownloadExcel}
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
               >
-                <FileText className="h-4 w-4" />
-                Скачать прайс Word
+                <Download className="h-4 w-4" />
+                Скачать Excel
               </button>
               <button
                 type="button"
