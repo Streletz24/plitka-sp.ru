@@ -13,10 +13,167 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <style>
+      :root {
+        color: #203c35;
+        background: #f6f1ea;
+        font-family: Inter, Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        min-width: 320px;
+      }
+      .site-shell {
+        min-height: 100vh;
+        background: #f6f1ea;
+      }
+      .site-shell__header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px clamp(20px, 5vw, 72px);
+        background: rgba(255, 252, 247, 0.94);
+        border-bottom: 1px solid rgba(32, 60, 53, 0.14);
+        backdrop-filter: blur(10px);
+      }
+      .site-shell__brand {
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .site-shell__phone {
+        color: #203c35;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .site-shell__hero {
+        min-height: calc(100vh - 82px);
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+        gap: clamp(28px, 5vw, 72px);
+        align-items: center;
+        padding: clamp(40px, 8vw, 96px) clamp(20px, 5vw, 72px);
+      }
+      .site-shell__eyebrow {
+        color: #a35a34;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        margin: 0 0 18px;
+        text-transform: uppercase;
+      }
+      .site-shell h1 {
+        max-width: 780px;
+        margin: 0 0 24px;
+        color: #203c35;
+        font-size: clamp(40px, 7vw, 86px);
+        line-height: 0.98;
+      }
+      .site-shell__lead {
+        max-width: 620px;
+        margin: 0 0 32px;
+        color: #445a54;
+        font-size: clamp(18px, 2vw, 24px);
+        line-height: 1.55;
+      }
+      .site-shell__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .site-shell__button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 12px;
+        background: #a35a34;
+        color: #fff;
+        font-weight: 900;
+        text-decoration: none;
+      }
+      .site-shell__button--dark {
+        background: #203c35;
+      }
+      .site-shell__visual {
+        min-height: min(56vw, 520px);
+        border-radius: 28px;
+        background:
+          linear-gradient(120deg, rgba(32, 60, 53, 0.2), rgba(163, 90, 52, 0.18)),
+          url("/plitka-sp.ru/src/assets/hero-house.jpg") center / cover no-repeat;
+        box-shadow: 0 34px 90px rgba(32, 60, 53, 0.18);
+      }
+      .site-shell__cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        padding: 0 clamp(20px, 5vw, 72px) 48px;
+      }
+      .site-shell__card {
+        border-radius: 18px;
+        background: #fffaf3;
+        border: 1px solid rgba(32, 60, 53, 0.12);
+        padding: 20px;
+        box-shadow: 0 18px 50px rgba(32, 60, 53, 0.08);
+      }
+      .site-shell__card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #203c35;
+        font-size: 18px;
+      }
+      .site-shell__card span {
+        color: #54635f;
+        line-height: 1.45;
+      }
+      @media (max-width: 860px) {
+        .site-shell__hero {
+          grid-template-columns: 1fr;
+        }
+        .site-shell__visual {
+          min-height: 300px;
+        }
+        .site-shell__cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="site-shell">
+        <header class="site-shell__header">
+          <div class="site-shell__brand">Удачная Плитка</div>
+          <a class="site-shell__phone" href="tel:+79161335056">+7 (916) 133-50-56</a>
+        </header>
+        <main>
+          <section class="site-shell__hero">
+            <div>
+              <p class="site-shell__eyebrow">Сергиев Посад и область</p>
+              <h1>Тротуарная плитка для красивого и благоустроенного двора</h1>
+              <p class="site-shell__lead">
+                Производство и продажа тротуарной плитки, бордюров и элементов благоустройства. Поможем подобрать форму, цвет и рассчитать количество.
+              </p>
+              <div class="site-shell__actions">
+                <a class="site-shell__button" href="#catalog">Смотреть каталог</a>
+                <a class="site-shell__button site-shell__button--dark" href="tel:+79161335056">Позвонить</a>
+              </div>
+            </div>
+            <div class="site-shell__visual" aria-label="Пример благоустроенного двора с тротуарной плиткой"></div>
+          </section>
+          <section class="site-shell__cards" aria-label="Преимущества">
+            <div class="site-shell__card"><strong>Собственное производство</strong><span>Контролируем качество материалов и геометрию изделий.</span></div>
+            <div class="site-shell__card"><strong>Подбор и расчёт</strong><span>Помогаем выбрать плитку, бордюры и нужный объём.</span></div>
+            <div class="site-shell__card"><strong>Доставка по области</strong><span>Организуем доставку по Сергиеву Посаду и району.</span></div>
+          </section>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

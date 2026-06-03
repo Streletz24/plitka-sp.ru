@@ -103,7 +103,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="p-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-foreground mb-2">{product.name}</h3>
         <div className="text-muted-foreground text-sm leading-relaxed">
-          <p className="break-words">
+          <p className="whitespace-nowrap overflow-hidden text-ellipsis">
             {currentPrice && (
               <span className="font-semibold text-foreground mr-1">Цена: {currentPrice}.</span>
             )}
@@ -111,7 +111,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {currentDescription.includes(".") ? "." : ""}
           </p>
           {currentDescription.split(/\.\s*(.+)/s)[1] && (
-            <p className="break-words">
+            <p className="whitespace-nowrap overflow-hidden text-ellipsis">
               {currentDescription.split(/\.\s*(.+)/s)[1]}
             </p>
           )}
@@ -165,7 +165,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
                 placeholder={isLinear ? "Длина" : "Площадь"}
-                className="flex-1 min-w-0 px-3 min-h-11 rounded-md border border-border bg-background text-base text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="flex-1 min-w-0 px-3 py-2 rounded-md border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <span className="text-sm text-muted-foreground shrink-0">{unitLabel}</span>
             </div>
@@ -185,7 +185,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="w-full mt-2 bg-primary text-primary-foreground min-h-11 px-3 rounded-md text-base font-semibold hover:opacity-90 transition-all duration-300"
+                  className="w-full mt-2 bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 transition-all duration-300"
                 >
                   Добавить в корзину
                 </button>
