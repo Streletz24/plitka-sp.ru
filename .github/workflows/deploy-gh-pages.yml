@@ -31,6 +31,46 @@ jobs:
       - name: Configure npm registry
         run: npm config set registry https://registry.npmjs.org/
 
+      - name: Ensure Pages source is GitHub Actions
+        env:
+          PAGES_ADMIN_TOKEN: ${{ secrets.GH_PAGES_ADMIN_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
+          AUTH_HEADER="Authorization: Bearer ${PAGES_ADMIN_TOKEN}"
+          API_VERSION_HEADER="X-GitHub-Api-Version: 2022-11-28"
+
+          get_pages() {
+            curl -fsSL \
+              -H "Accept: application/vnd.github+json" \
+              -H "$AUTH_HEADER" \
+              -H "$API_VERSION_HEADER" \
+              "$API_URL"
+          }
+
+          pages_json="$(get_pages)"
+          build_type="$(PAGES_JSON="$pages_json" node -e 'const pages = JSON.parse(process.env.PAGES_JSON); console.log(pages.build_type || "legacy")')"
+
+          if [ "$build_type" != "workflow" ]; then
+            echo "GitHub Pages is currently build_type=$build_type. Switching to GitHub Actions workflow publishing."
+            curl -fsSL \
+              -X PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "$AUTH_HEADER" \
+              -H "$API_VERSION_HEADER" \
+              "$API_URL" \
+              -d '{"build_type":"workflow","cname":null}'
+          fi
+
+          pages_json="$(get_pages)"
+          build_type="$(PAGES_JSON="$pages_json" node -e 'const pages = JSON.parse(process.env.PAGES_JSON); console.log(pages.build_type || "legacy")')"
+          if [ "$build_type" != "workflow" ]; then
+            echo "ERROR: GitHub Pages source is still $build_type. In Settings → Pages set Build and deployment → Source = GitHub Actions."
+            exit 1
+          fi
+
+          echo "GitHub Pages source is GitHub Actions."
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
