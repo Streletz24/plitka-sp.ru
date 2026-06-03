@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -192,6 +192,11 @@ jobs:
 
           console.log('Pages artifact targets https://streletz24.github.io/plitka-sp.ru/ and contains the built React app with no stale fallback.');
           NODE
+
+      - name: Verify custom domain CNAME
+        run: |
+          test -f dist/CNAME
+          test "$(cat dist/CNAME)" = "plitka-sp.ru"
 
       - name: Add SPA fallback
         run: |
