@@ -31,6 +31,17 @@ jobs:
       - name: Configure npm registry
         run: npm config set registry https://registry.npmjs.org/
 
+      - name: Verify source entry
+        run: |
+          set -euo pipefail
+          test -f index.html
+          grep -q '<div id="root"' index.html
+          grep -q 'src="/src/main.tsx"' index.html
+          if tr -d '\n' < index.html | grep -Eq '<body>[[:space:]]*</body>'; then
+            echo "ERROR: source index.html has empty body"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
@@ -42,21 +53,9 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Verify dist artifact
-        run: |
-          set -euo pipefail
-          test -f dist/index.html
-          test -d dist/assets
-          find dist/assets -name "*.js" | grep -q .
-          find dist/assets -name "*.css" | grep -q .
-          grep -q "/plitka-sp.ru/assets/" dist/index.html
-          ! grep -q "/src/main.tsx" dist/index.html
-          ! grep -R "Если интерактивная версия сайта" dist
-          ! grep -R "static-fallback" dist
-          ! test -f dist/CNAME
-
       - name: Add Pages files
         run: |
+          set -euo pipefail
           cp dist/index.html dist/404.html
           touch dist/.nojekyll
           {
@@ -67,13 +66,46 @@ jobs:
             date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
           } > dist/deploy-version.txt
 
+      - name: Verify Pages artifact
+        run: |
+          set -euo pipefail
+          echo "Listing dist:"
+          find dist -maxdepth 3 -type f | sort
+
+          test -f dist/index.html
+          test -f dist/404.html
+          test -f dist/.nojekyll
+          test -f dist/deploy-version.txt
+          test -d dist/assets
+
+          find dist/assets -name "*.js" | grep -q .
+          find dist/assets -name "*.css" | grep -q .
+          grep -q '<div id="root"' dist/index.html
+          grep -Eq "/plitka-sp\.ru/assets/[^\"]+\.js" dist/index.html
+          grep -Eq "/plitka-sp\.ru/assets/[^\"]+\.css" dist/index.html
+
+          if tr -d '\n' < dist/index.html | grep -Eq '<body>[[:space:]]*</body>'; then
+            echo "ERROR: dist/index.html has empty body"
+            exit 1
+          fi
+
+          if grep -q '/src/main.tsx' dist/index.html; then
+            echo "ERROR: raw Vite entry found in dist/index.html"
+            exit 1
+          fi
+
+          ! grep -R "Если интерактивная версия сайта" dist
+          ! grep -R "static-fallback" dist
+          ! grep -R "site-shell" dist
+          ! test -f dist/CNAME
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: dist
 
   deploy:
     environment:
