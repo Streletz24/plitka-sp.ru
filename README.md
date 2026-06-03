@@ -26,3 +26,6 @@ npm run dev
 ### Важно для GitHub Pages
 
 На этапе разработки рабочий адрес проекта — `https://streletz24.github.io/plitka-sp.ru/`, поэтому Vite `base` по умолчанию и `GH_PAGES_BASE` в workflow равны `/plitka-sp.ru/`. Адрес `https://streletz24.github.io/` относится к отдельному user-site репозиторию `streletz24.github.io` и не используется для этого проекта. Custom domain `https://plitka-sp.ru/` временно не подключается: файл `public/CNAME` не должен попадать в artifact до отдельного переключения на домен и `base: "/"`.
+
+
+После успешного деплоя проверяйте `https://streletz24.github.io/plitka-sp.ru/deploy-version.txt`: файл должен содержать SHA последнего коммита, `base=/plitka-sp.ru/` и `target_url=https://streletz24.github.io/plitka-sp.ru/`.
