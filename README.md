@@ -23,6 +23,6 @@ npm run dev
 
 После следующего пуша в `main` сайт будет опубликован на GitHub Pages.
 
-### Важно для custom domain
+### Важно для GitHub Pages
 
-Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+На этапе разработки рабочий адрес проекта — `https://streletz24.github.io/plitka-sp.ru/`, поэтому Vite `base` по умолчанию и `GH_PAGES_BASE` в workflow равны `/plitka-sp.ru/`. Адрес `https://streletz24.github.io/` относится к отдельному user-site репозиторию `streletz24.github.io` и не используется для этого проекта. Custom domain `https://plitka-sp.ru/` временно не подключается: файл `public/CNAME` не должен попадать в artifact до отдельного переключения на домен и `base: "/"`.
