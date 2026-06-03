@@ -4,6 +4,9 @@ import logo from "@/assets/logo.png";
 import CartButton from "./CartButton";
 import { normalizeSectionId } from "@/lib/scrollToSection";
 
+
+const contactLine = "+7 (916) 133-50-56 · plitka-sp.ru@yandex.ru · Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А";
+
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
   { label: "Каталог", href: "catalog" },
@@ -51,13 +54,15 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-24 md:h-28 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border pt-[env(safe-area-inset-top)]">
-      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
+    <header className="fixed top-0 left-0 right-0 z-50 h-32 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto h-full flex flex-col justify-center px-4 lg:px-8 gap-2">
+        <div className="hidden lg:block text-[11px] text-foreground/70 whitespace-nowrap overflow-hidden text-ellipsis">{contactLine}</div>
+        <div className="flex items-center justify-between gap-6">
         <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-10 md:h-12 lg:h-16 w-auto object-contain"
+            className="h-12 md:h-14 lg:h-16 w-auto object-contain"
             data-no-zoom
           />
         </Link>
@@ -96,14 +101,14 @@ const Header = () => {
           </Link>
           <Link
             to="/prices"
-            className="inline-flex items-center min-h-11 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Наши цены
           </Link>
           <button
             type="button"
             onClick={(e) => handleNavClick(e, "contacts")}
-            className="inline-flex items-center min-h-11 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
           </button>
@@ -114,7 +119,7 @@ const Header = () => {
           <CartButton />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden min-h-11 min-w-11 inline-flex items-center justify-center text-foreground"
+            className="lg:hidden p-2 text-foreground"
             aria-label="Меню"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,7 +135,8 @@ const Header = () => {
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2 max-h-[calc(100dvh-7rem)] overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2">
+          <p className="text-[11px] text-foreground/70 leading-snug">{contactLine}</p>
           {navLinks.map((link) =>
             link.route ? (
               <Link
