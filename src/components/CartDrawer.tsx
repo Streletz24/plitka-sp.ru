@@ -11,7 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 import { downloadOrderDocx } from "@/lib/orderDocx";
 import { sendSiteRequest } from "@/lib/sendSiteRequest";
-import { Download, Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Download, Trash2, ShoppingBag } from "lucide-react";
 
 const DOCX_DOWNLOAD_VERSION = "DOCX_DOWNLOAD_ENABLED_V4";
 
