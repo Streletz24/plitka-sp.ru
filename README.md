@@ -25,4 +25,4 @@ npm run dev
 
 ### Важно для GitHub Pages
 
-Сайт сейчас публикуется из корня GitHub Pages/custom domain (`https://streletz24.github.io/` и `https://plitka-sp.ru/`), поэтому workflow собирает Vite с `GH_PAGES_BASE=/`. Если собрать artifact с `/<repo>/`, браузер будет искать JS/CSS по неверному пути и вместо React-приложения останется старый статический экран.
+Workflow собирает проект с относительным Vite `base` (`./`), чтобы один и тот же artifact корректно работал и на project site (`https://streletz24.github.io/plitka-sp.ru/`), и на пользовательском домене `https://plitka-sp.ru/`. Важно: адрес `https://streletz24.github.io/` относится к user-site репозиторию `streletz24.github.io`; этот репозиторий `plitka-sp.ru` не может обновить корневую страницу `streletz24.github.io` без перенастройки GitHub Pages или переноса сборки в user-site репозиторий.

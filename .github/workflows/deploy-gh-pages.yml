@@ -54,7 +54,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: true
-          GH_PAGES_BASE: /
+          GH_PAGES_BASE: ./
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
@@ -63,6 +63,7 @@ jobs:
           {
             echo "sha=${GITHUB_SHA}"
             echo "ref=${GITHUB_REF}"
+            echo "base=./"
             date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
           } > dist/deploy-version.txt
 
@@ -70,35 +71,48 @@ jobs:
         run: |
           node - <<'NODE'
           const fs = require('fs');
+          const path = require('path');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
-          const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
+          const fallbackMarkers = [
+            'static-fallback',
+            'Если интерактивная версия сайта',
+            'интерактивная версия',
+            'временно не загрузилась',
+            'эта страница остаётся доступной',
+          ];
 
           if (indexHtml.includes('/src/main.tsx')) {
             console.error('ERROR: dist/index.html still points to /src/main.tsx instead of a built Vite bundle.');
             process.exit(1);
           }
 
-          if (indexHtml.includes('static-fallback')) {
-            console.error('ERROR: dist/index.html contains the old static fallback page.');
+          for (const marker of fallbackMarkers) {
+            if (indexHtml.includes(marker)) {
+              console.error(`ERROR: dist/index.html contains stale fallback marker: ${marker}`);
+              process.exit(1);
+            }
+          }
+
+          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
             process.exit(1);
           }
 
-          if (!/\/assets\/[^"']+\.js/.test(indexHtml)) {
-            console.error('ERROR: dist/index.html does not reference a built JS bundle from /assets/.');
-            process.exit(1);
-          }
-
-          if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains /${repoName}/assets/. That breaks the Pages root/custom domain.`);
+          const assetsDir = path.join('dist', 'assets');
+          const jsAssets = fs.existsSync(assetsDir)
+            ? fs.readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+            : [];
+          if (jsAssets.length === 0) {
+            console.error('ERROR: dist/assets does not contain any built JS files.');
             process.exit(1);
           }
 
           if (!fs.existsSync('dist/CNAME') || fs.readFileSync('dist/CNAME', 'utf8').trim() !== 'plitka-sp.ru') {
-            console.error('ERROR: dist/CNAME is missing or does not contain plitka-sp.ru.');
+            console.error('ERROR: dist/CNAME must exist and contain plitka-sp.ru.');
             process.exit(1);
           }
 
-          console.log('Pages artifact is built for the root/custom domain without the stale fallback.');
+          console.log('Pages artifact contains the built React app, CNAME, and no stale fallback.');
           NODE
 
       - name: Verify custom domain CNAME
