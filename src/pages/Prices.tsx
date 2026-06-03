@@ -125,6 +125,8 @@ const Prices = () => {
     const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.xls`;
     const blob = new Blob(["\uFEFF", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
 
+    const fileName = `Прайс-Удачная-Плитка-${new Date().toISOString().slice(0, 10)}.doc`;
+    const blob = new Blob(["﻿", html], { type: "application/octet-stream" });
     const nav = window.navigator as Navigator & { msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean };
     if (typeof nav.msSaveOrOpenBlob === "function") {
       nav.msSaveOrOpenBlob(blob, fileName);
