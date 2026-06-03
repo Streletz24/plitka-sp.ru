@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -34,54 +34,85 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Resolve Pages base path
+      - name: Verify source is React app
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
-          if [ "$REPO_NAME" = "${OWNER_NAME}.github.io" ]; then
-            echo "GH_PAGES_BASE=/" >> "$GITHUB_ENV"
-          else
-            echo "GH_PAGES_BASE=/${REPO_NAME}/" >> "$GITHUB_ENV"
-          fi
+          node - <<'NODE'
+          const fs = require('fs');
+          const indexHtml = fs.readFileSync('index.html', 'utf8');
+          if (indexHtml.includes('static-fallback') || indexHtml.includes('Если интерактивная версия')) {
+            console.error('ERROR: source index.html contains the stale static fallback instead of the React root.');
+            process.exit(1);
+          }
+          if (!indexHtml.includes('<div id="root"></div>') || !indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: source index.html does not contain the normal React/Vite entry.');
+            process.exit(1);
+          }
+          console.log('Source index.html contains the normal React root and no stale fallback.');
+          NODE
 
       - name: Build
         run: npm run build
         env:
           GITHUB_PAGES: true
+          GH_PAGES_BASE: ./
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      - name: Write deployment marker
+        run: |
+          {
+            echo "sha=${GITHUB_SHA}"
+            echo "ref=${GITHUB_REF}"
+            echo "base=./"
+            date -u '+built_at=%Y-%m-%dT%H:%M:%SZ'
+          } > dist/deploy-version.txt
 
-      - name: Verify DOCX download marker in build
+      - name: Verify Pages artifact
         run: |
           node - <<'NODE'
           const fs = require('fs');
           const path = require('path');
-          const marker = 'DOCX_DOWNLOAD_ENABLED_V4';
-          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-            const fullPath = path.join(dir, entry.name);
-            return entry.isDirectory() ? walk(fullPath) : [fullPath];
-          });
-          const files = walk('dist');
-          const allText = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
-          const repoName = process.env.GITHUB_REPOSITORY?.split('/').pop();
-          if (repoName && indexHtml.includes(`/${repoName}/assets/`)) {
-            console.error(`ERROR: dist/index.html contains a repository-prefixed asset path /${repoName}/assets/. Use a relative Vite base so the custom domain does not render a white screen.`);
+          const fallbackMarkers = [
+            'static-fallback',
+            'Если интерактивная версия сайта',
+            'интерактивная версия',
+            'временно не загрузилась',
+            'эта страница остаётся доступной',
+          ];
+
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html still points to /src/main.tsx instead of a built Vite bundle.');
             process.exit(1);
           }
-          const requiredMarkers = [marker, 'Скачать Word-бланк заказа', 'blank-zakaza'];
-          for (const requiredMarker of requiredMarkers) {
-            if (!allText.includes(requiredMarker)) {
-              console.error(`${requiredMarker} was not found in dist. GitHub Pages artifact would contain an old cart download implementation.`);
+
+          for (const marker of fallbackMarkers) {
+            if (indexHtml.includes(marker)) {
+              console.error(`ERROR: dist/index.html contains stale fallback marker: ${marker}`);
               process.exit(1);
             }
           }
-          if (/blank-zakaza[^\s"']*\.pdf|application\/pdf|Распечатать заказ|printOrderBlank/.test(allText)) {
-            console.error('ERROR: PDF/print order blank still exists in production build.');
+
+          if (!/(?:\.\/)?assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under assets/.');
             process.exit(1);
           }
-          console.log(`${marker}, Word button text and blank-zakaza docx marker found in dist; no PDF order blank marker found.`);
+
+          const assetsDir = path.join('dist', 'assets');
+          const jsAssets = fs.existsSync(assetsDir)
+            ? fs.readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+            : [];
+          if (jsAssets.length === 0) {
+            console.error('ERROR: dist/assets does not contain any built JS files.');
+            process.exit(1);
+          }
+
+          if (!fs.existsSync('dist/CNAME') || fs.readFileSync('dist/CNAME', 'utf8').trim() !== 'plitka-sp.ru') {
+            console.error('ERROR: dist/CNAME must exist and contain plitka-sp.ru.');
+            process.exit(1);
+          }
+
+          console.log('Pages artifact contains the built React app, CNAME, and no stale fallback.');
           NODE
 
       - name: Add SPA fallback

@@ -23,6 +23,6 @@ npm run dev
 
 После следующего пуша в `main` сайт будет опубликован на GitHub Pages.
 
-### Важно для custom domain
+### Важно для GitHub Pages
 
-Сборка использует относительный Vite `base` (`./`), чтобы JS/CSS/assets корректно открывались и на `https://plitka-sp.ru/`, и на `*.github.io/<repo>/`. Не задавайте `GH_PAGES_BASE=/<repo>/` для custom domain: браузер будет искать бандлы по несуществующему пути вида `/repo/assets/...`, что приводит к белому экрану.
+Workflow собирает проект с относительным Vite `base` (`./`), чтобы один и тот же artifact корректно работал и на project site (`https://streletz24.github.io/plitka-sp.ru/`), и на пользовательском домене `https://plitka-sp.ru/`. Важно: адрес `https://streletz24.github.io/` относится к user-site репозиторию `streletz24.github.io`; этот репозиторий `plitka-sp.ru` не может обновить корневую страницу `streletz24.github.io` без перенастройки GitHub Pages или переноса сборки в user-site репозиторий.
