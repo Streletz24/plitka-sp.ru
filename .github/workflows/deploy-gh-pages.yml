@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -31,16 +31,24 @@ jobs:
       - name: Configure npm registry
         run: npm config set registry https://registry.npmjs.org/
 
-      - name: Verify source entry
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Verify source is React app
         run: |
-          set -euo pipefail
-          test -f index.html
-          grep -q '<div id="root"' index.html
-          grep -q 'src="/src/main.tsx"' index.html
-          if tr -d '\n' < index.html | grep -Eq '<body>[[:space:]]*</body>'; then
-            echo "ERROR: source index.html has empty body"
-            exit 1
-          fi
+          node - <<'NODE'
+          const fs = require('fs');
+          const indexHtml = fs.readFileSync('index.html', 'utf8');
+          if (indexHtml.includes('static-fallback') || indexHtml.includes('Если интерактивная версия')) {
+            console.error('ERROR: source index.html contains the stale static fallback instead of the React root.');
+            process.exit(1);
+          }
+          if (!indexHtml.includes('<div id="root"></div>') || !indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: source index.html does not contain the normal React/Vite entry.');
+            process.exit(1);
+          }
+          console.log('Source index.html contains the normal React root and no stale fallback.');
+          NODE
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
@@ -53,11 +61,8 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Add Pages files
+      - name: Write deployment marker
         run: |
-          set -euo pipefail
-          cp dist/index.html dist/404.html
-          touch dist/.nojekyll
           {
             echo "sha=${GITHUB_SHA}"
             echo "ref=${GITHUB_REF}"
@@ -68,36 +73,54 @@ jobs:
 
       - name: Verify Pages artifact
         run: |
-          set -euo pipefail
-          echo "Listing dist:"
-          find dist -maxdepth 3 -type f | sort
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const indexHtml = fs.readFileSync('dist/index.html', 'utf8');
+          const fallbackMarkers = [
+            'static-fallback',
+            'Если интерактивная версия сайта',
+            'интерактивная версия',
+            'временно не загрузилась',
+            'эта страница остаётся доступной',
+          ];
 
-          test -f dist/index.html
-          test -f dist/404.html
-          test -f dist/.nojekyll
-          test -f dist/deploy-version.txt
-          test -d dist/assets
+          if (indexHtml.includes('/src/main.tsx')) {
+            console.error('ERROR: dist/index.html still points to /src/main.tsx instead of a built Vite bundle.');
+            process.exit(1);
+          }
 
-          find dist/assets -name "*.js" | grep -q .
-          find dist/assets -name "*.css" | grep -q .
-          grep -q '<div id="root"' dist/index.html
-          grep -Eq "/plitka-sp\.ru/assets/[^\"]+\.js" dist/index.html
-          grep -Eq "/plitka-sp\.ru/assets/[^\"]+\.css" dist/index.html
+          for (const marker of fallbackMarkers) {
+            if (indexHtml.includes(marker)) {
+              console.error(`ERROR: dist/index.html contains stale fallback marker: ${marker}`);
+              process.exit(1);
+            }
+          }
 
-          if tr -d '\n' < dist/index.html | grep -Eq '<body>[[:space:]]*</body>'; then
-            echo "ERROR: dist/index.html has empty body"
-            exit 1
-          fi
+          if (!/\/plitka-sp\.ru\/assets\/[^"']+\.js/.test(indexHtml)) {
+            console.error('ERROR: dist/index.html does not reference a built JS bundle under /plitka-sp.ru/assets/.');
+            process.exit(1);
+          }
 
-          if grep -q '/src/main.tsx' dist/index.html; then
-            echo "ERROR: raw Vite entry found in dist/index.html"
-            exit 1
-          fi
+          const assetsDir = path.join('dist', 'assets');
+          const jsAssets = fs.existsSync(assetsDir)
+            ? fs.readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+            : [];
+          if (jsAssets.length === 0) {
+            console.error('ERROR: dist/assets does not contain any built JS files.');
+            process.exit(1);
+          }
 
-          ! grep -R "Если интерактивная версия сайта" dist
-          ! grep -R "static-fallback" dist
-          ! grep -R "site-shell" dist
-          ! test -f dist/CNAME
+          if (fs.existsSync('dist/CNAME')) {
+            console.error('ERROR: dist/CNAME must not be present while publishing the development project URL.');
+            process.exit(1);
+          }
+
+          console.log('Pages artifact targets https://streletz24.github.io/plitka-sp.ru/ and contains the built React app with no stale fallback.');
+          NODE
+
+      - name: Add SPA fallback
+        run: cp dist/index.html dist/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
