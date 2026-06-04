@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
 import { normalizeSectionId } from "@/lib/scrollToSection";
 
