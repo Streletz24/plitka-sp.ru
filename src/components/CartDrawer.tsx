@@ -54,14 +54,18 @@ const CartDrawer = () => {
     body{font-family:Arial,sans-serif;color:#143a3a;padding:0;margin:0;background:#fff}
     .doc{max-width:780px;margin:0 auto}
     .head-top{font-size:11px;color:#3d4b4b;margin-bottom:6px}
-    .head{display:flex;gap:12px;align-items:flex-start;border-bottom:3px solid #1f4a48;padding:8px 0 10px;margin-bottom:10px}
-    .head img{height:3cm;width:auto;object-fit:contain;display:block}
-    .firm{font-size:34px;font-weight:700;line-height:1;letter-spacing:.2px}
-    .meta{font-size:12px;color:#2f3f3f;line-height:1.35}
+    .head{border-bottom:3px solid #1f4a48;padding:8px 0 12px;margin-bottom:10px}
+    .head-table{width:100%;border-collapse:collapse;margin:0;table-layout:fixed}
+    .head-table td{border:0;padding:0;vertical-align:top}
+    .logo-cell{width:190px;padding-right:26px}
+    .logo{width:168px;max-height:96px;object-fit:contain;display:block}
+    .firm{font-size:28px;font-weight:700;line-height:1.15;letter-spacing:.2px;margin:0 0 12px}
+    .company-details{margin-top:2px}
+    .meta{font-size:12px;color:#2f3f3f;line-height:1.5;margin:0 0 2px}
     .title{font-size:34px;font-weight:700;margin:10px 0 8px}
-    table{border-collapse:collapse;width:100%;margin-top:6px}
-    th,td{border:1px solid #9fb0b0;padding:8px;font-size:12px;vertical-align:top}
-    th{background:#eef3f3;font-weight:700;text-align:center}
+    .items{border-collapse:collapse;width:100%;margin-top:6px}
+    .items th,.items td{border:1px solid #9fb0b0;padding:8px;font-size:12px;vertical-align:top}
+    .items th{background:#eef3f3;font-weight:700;text-align:center}
     .num{width:42px;text-align:center}
     .sum{margin-top:14px;font-size:30px;font-weight:700}
     .photo{width:54px;height:54px;object-fit:cover;border:1px solid #c7d2d2;flex:0 0 auto}
@@ -71,17 +75,23 @@ const CartDrawer = () => {
     <div class="doc">
       <div class="head-top">${dateText}</div>
       <div class="head">
-        <img src="${logoSrc}" alt="logo"/>
-        <div>
-          <div class="firm">УДАЧНАЯ ПЛИТКА</div>
-          <div class="meta">Адрес: Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</div>
-          <div class="meta">Тел.: +7 (916) 133-50-56</div>
-          <div class="meta">E-mail: plitka-sp.ru@yandex.ru</div>
-          <div class="meta">Дата заказа: ${dateText}</div>
-        </div>
+        <table class="head-table" aria-label="Реквизиты компании">
+          <tr>
+            <td class="logo-cell"><img class="logo" src="${logoSrc}" alt="logo"/></td>
+            <td>
+              <div class="firm">УДАЧНАЯ ПЛИТКА</div>
+              <div class="company-details">
+                <div class="meta">Адрес: Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А</div>
+                <div class="meta">Тел.: +7 (916) 133-50-56</div>
+                <div class="meta">E-mail: plitka-sp.ru@yandex.ru</div>
+                <div class="meta">Дата заказа: ${dateText}</div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </div>
       <div class="title">Бланк заказа</div>
-      <table>
+      <table class="items">
         <thead>
           <tr><th class="num">№</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Сумма</th></tr>
         </thead>
