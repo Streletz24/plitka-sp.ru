@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-transparent.png";
 import CartButton from "./CartButton";
 import { normalizeSectionId } from "@/lib/scrollToSection";
+
+
+const contactLine = "+7 (916) 133-50-56 · plitka-sp.ru@yandex.ru · Московская обл., г. Сергиев Посад, ул. Фестивальная, д.6А";
 
 const navLinks: { label: string; href: string; route?: string }[] = [
   { label: "Преимущества", href: "advantages" },
@@ -51,18 +54,20 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-24 md:h-28 lg:h-36 bg-card/90 backdrop-blur-md border-b border-border pt-[env(safe-area-inset-top)]">
-      <div className="container mx-auto h-full flex items-center justify-between px-4 lg:px-8 gap-6">
+    <header className="fixed top-0 left-0 right-0 z-50 h-32 xl:h-40 bg-card/90 backdrop-blur-md border-b border-border">
+      <div className="mx-auto flex h-full w-full max-w-[1780px] flex-col justify-center gap-2 px-4 sm:px-6 lg:px-8">
+        <div className="hidden w-full text-center text-[11px] text-foreground/70 whitespace-nowrap overflow-hidden text-ellipsis xl:block">{contactLine}</div>
+        <div className="flex items-center justify-between gap-4 xl:gap-6">
         <Link to="/" onClick={handleLogoClick} className="flex items-center shrink-0">
           <img
             src={logo}
             alt="Удачная Плитка"
-            className="h-10 md:h-12 lg:h-16 w-auto object-contain"
+            className="w-36 sm:w-40 md:w-44 xl:w-[220px] h-auto max-h-24 xl:max-h-32 object-contain"
             data-no-zoom
           />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-7 flex-1 justify-center">
+        <nav className="hidden xl:flex items-center gap-4 2xl:gap-6 flex-1 justify-center">
           {navLinks.map((link) =>
             link.route ? (
               <Link
@@ -84,7 +89,7 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3 shrink-0">
+        <div className="hidden xl:flex items-center gap-2 2xl:gap-3 shrink-0">
           <a href="tel:+79161335056" className="text-sm font-semibold text-foreground/90 mr-1 tracking-wide">
             +7 (916) 133-50-56
           </a>
@@ -96,25 +101,25 @@ const Header = () => {
           </Link>
           <Link
             to="/prices"
-            className="inline-flex items-center min-h-11 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-accent text-accent-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Наши цены
           </Link>
           <button
             type="button"
             onClick={(e) => handleNavClick(e, "contacts")}
-            className="inline-flex items-center min-h-11 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="inline-flex items-center h-10 px-4 rounded-md text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
             Консультация
           </button>
           <CartButton />
         </div>
 
-        <div className="lg:hidden flex items-center gap-2">
+        <div className="xl:hidden flex items-center gap-2">
           <CartButton />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden min-h-11 min-w-11 inline-flex items-center justify-center text-foreground"
+            className="xl:hidden p-2 text-foreground"
             aria-label="Меню"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,7 +135,8 @@ const Header = () => {
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden bg-card border-t border-border px-4 py-4 space-y-2 max-h-[calc(100dvh-7rem)] overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="xl:hidden bg-card border-t border-border px-4 py-4 space-y-2">
+          <p className="text-[11px] text-foreground/70 leading-snug">{contactLine}</p>
           {navLinks.map((link) =>
             link.route ? (
               <Link

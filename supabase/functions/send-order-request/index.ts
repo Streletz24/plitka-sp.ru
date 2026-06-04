@@ -1,144 +1,127 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+const RECIPIENT = "plitka-sp.ru@yandex.ru";
 
 interface OrderItem {
   product: string;
+  color: string | null;
+  area: number | null;
+  unit?: string | null;
+  pieces: number | null;
+  total: number | null;
+  price: string | null;
+}
+
+interface OrderPayload {
+  name: string;
+  phone: string;
+  email: string;
+  // Multi-item (cart) payload
+  items?: OrderItem[];
+  total?: number;
+  // Legacy single-item payload (kept for compatibility)
+  product?: string;
   color?: string | null;
   area?: number | null;
-  unit?: string | null;
   pieces?: number | null;
-  total?: number | null;
   price?: string | null;
 }
 
-interface RequestPayload {
-  type: "contact_request" | "cart_order" | "healthcheck";
-  name?: string;
-  phone?: string;
-  email?: string;
-  comment?: string;
-  deliveryAddress?: string;
-  items?: OrderItem[];
-  total?: number;
-  source?: string;
-  pageUrl?: string;
-  sentAt?: string;
-  honeypot?: string;
-}
+const escape = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const jsonResponse = (body: Record<string, unknown>, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-
-const validatePayload = (payload: RequestPayload) => {
-  if (!payload || (payload.type !== "contact_request" && payload.type !== "cart_order")) return "invalid_request_type";
-  if (!payload.name?.trim()) return "missing_name";
-  if (!payload.phone?.trim()) return "missing_phone";
-  if (payload.type === "cart_order" && (!Array.isArray(payload.items) || payload.items.length === 0)) return "empty_cart_items";
-  return null;
-};
-
-const toText = (payload: RequestPayload) => {
-  const base = [
-    `Имя: ${payload.name}`,
-    `Телефон: ${payload.phone}`,
-    `Email: ${payload.email || "—"}`,
-    `Источник: ${payload.source || "сайт"}`,
-    `Страница: ${payload.pageUrl || "—"}`,
-    `Дата: ${payload.sentAt || new Date().toISOString()}`,
-  ];
-
-  if (payload.type === "contact_request") {
-    return ["Новая заявка с сайта Удачная Плитка", ...base, `Комментарий: ${payload.comment || "—"}`].join("\n");
-  }
-
-  const rows = (payload.items || [])
-    .map((i, idx) => `${idx + 1}) ${i.product}; цвет: ${i.color || "—"}; кол-во: ${i.pieces || "—"}; цена: ${i.price || "—"}; сумма: ${i.total || 0}`)
-    .join("\n");
-
-  return [
-    "Новый заказ с сайта Удачная Плитка",
-    ...base,
-    `Адрес доставки: ${payload.deliveryAddress || "—"}`,
-    `Комментарий: ${payload.comment || "—"}`,
-    "Товары:",
-    rows,
-    `Итого: ${(payload.total || 0).toLocaleString("ru-RU")} руб`,
-  ].join("\n");
+const renderItem = (it: OrderItem, idx: number) => {
+  const unit = it.unit ?? "м²";
+  return `
+    <div style="border:1px solid #eee;border-radius:8px;padding:12px;margin-bottom:10px;">
+      <p style="margin:0 0 6px;"><strong>${idx + 1}. ${escape(it.product)}</strong></p>
+      ${it.color ? `<p style="margin:2px 0;">Цвет: ${escape(it.color)}</p>` : ""}
+      ${it.area ? `<p style="margin:2px 0;">Объём: ${it.area} ${unit}</p>` : ""}
+      ${it.pieces ? `<p style="margin:2px 0;">Количество: ${it.pieces} шт</p>` : ""}
+      ${it.price ? `<p style="margin:2px 0;">Цена: ${escape(it.price)}</p>` : ""}
+      ${it.total ? `<p style="margin:2px 0;"><strong>Сумма: ${it.total.toLocaleString("ru-RU")} руб</strong></p>` : ""}
+    </div>
+  `;
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders, status: 204 });
-  if (req.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
   try {
-    const payload = (await req.json()) as RequestPayload;
+    const payload: OrderPayload = await req.json();
 
-    const recipient = Deno.env.get("COMPANY_CONTACT_EMAIL")?.trim();
-    const resendApiKey = Deno.env.get("RESEND_API_KEY")?.trim();
-    const fromEmail = Deno.env.get("FROM_EMAIL")?.trim();
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    if (payload.type === "healthcheck") {
-      return jsonResponse({
-        ok: true,
-        config: {
-          companyEmailConfigured: Boolean(recipient),
-          resendKeyConfigured: Boolean(resendApiKey),
-          fromEmailConfigured: Boolean(fromEmail),
-        },
+    const items: OrderItem[] = payload.items && payload.items.length > 0
+      ? payload.items
+      : [
+          {
+            product: payload.product ?? "—",
+            color: payload.color ?? null,
+            area: payload.area ?? null,
+            unit: "м²",
+            pieces: payload.pieces ?? null,
+            total: payload.total ?? null,
+            price: payload.price ?? null,
+          },
+        ];
+
+    const grandTotal =
+      payload.total ?? items.reduce((acc, i) => acc + (i.total ?? 0), 0);
+
+    const subject =
+      items.length > 1
+        ? `Новая заявка из корзины (${items.length} поз.)`
+        : `Новая заявка: ${items[0].product}`;
+
+    const html = `
+      <h2>Новая заявка с сайта</h2>
+      ${items.map(renderItem).join("")}
+      <p style="font-size:16px;"><strong>Итого: ${grandTotal.toLocaleString("ru-RU")} руб</strong></p>
+      <hr>
+      <h3>Контакты клиента</h3>
+      <p><strong>Имя:</strong> ${escape(payload.name)}</p>
+      <p><strong>Телефон:</strong> <a href="tel:${escape(payload.phone)}">${escape(payload.phone)}</a></p>
+      <p><strong>Email:</strong> <a href="mailto:${escape(payload.email)}">${escape(payload.email)}</a></p>
+    `;
+
+    const { error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        to: [RECIPIENT],
+        reply_to: payload.email,
+        subject,
+        html,
+        purpose: "transactional",
+        idempotency_key: `order-${Date.now()}-${payload.phone}`,
+      },
+    });
+
+    if (error) {
+      console.error("Email send error:", error);
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    if (payload.honeypot?.trim()) {
-      return jsonResponse({ success: true, ignored: true });
-    }
-
-    const validationError = validatePayload(payload);
-    if (validationError) return jsonResponse({ error: validationError }, 400);
-
-    if (!recipient || !resendApiKey || !fromEmail) {
-      return jsonResponse({ error: "email_not_configured" }, 500);
-    }
-
-    const subject = payload.type === "cart_order" ? "Новый заказ с сайта Удачная Плитка" : "Новая заявка с сайта Удачная Плитка";
-    const html = payload.type === "cart_order"
-      ? `<h2>${subject}</h2><p><b>Имя:</b> ${escape(payload.name || "")}</p><p><b>Телефон:</b> ${escape(payload.phone || "")}</p><p><b>Email:</b> ${escape(payload.email || "—")}</p><p><b>Адрес:</b> ${escape(payload.deliveryAddress || "—")}</p><p><b>Комментарий:</b> ${escape(payload.comment || "—")}</p><p><b>Источник:</b> ${escape(payload.source || "сайт")}</p><p><b>Страница:</b> ${escape(payload.pageUrl || "—")}</p><table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;"><tr><th>#</th><th>Товар</th><th>Цвет</th><th>Количество</th><th>Ед.</th><th>Цена</th><th>Сумма</th></tr>${(payload.items || []).map((i, idx) => `<tr><td>${idx + 1}</td><td>${escape(i.product)}</td><td>${escape(i.color || "—")}</td><td>${i.pieces || "—"}</td><td>${escape(i.unit || "шт")}</td><td>${escape(i.price || "—")}</td><td>${(i.total || 0).toLocaleString("ru-RU")} руб</td></tr>`).join("")}</table><p><b>Итого:</b> ${(payload.total || 0).toLocaleString("ru-RU")} руб</p><p><b>Дата:</b> ${escape(payload.sentAt || new Date().toISOString())}</p>`
-      : `<h2>${subject}</h2><p><b>Имя:</b> ${escape(payload.name || "")}</p><p><b>Телефон:</b> ${escape(payload.phone || "")}</p><p><b>Email:</b> ${escape(payload.email || "—")}</p><p><b>Комментарий:</b> ${escape(payload.comment || "—")}</p><p><b>Источник:</b> ${escape(payload.source || "сайт")}</p><p><b>Страница:</b> ${escape(payload.pageUrl || "—")}</p><p><b>Дата:</b> ${escape(payload.sentAt || new Date().toISOString())}</p>`;
-
-    const resendPayload: Record<string, unknown> = {
-      from: fromEmail,
-      to: [recipient],
-      subject,
-      html,
-      text: toText(payload),
-    };
-
-    if (payload.email?.trim()) {
-      resendPayload.reply_to = payload.email.trim();
-    }
-
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(resendPayload),
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-
-    if (!resendResponse.ok) {
-      const providerError = await resendResponse.text();
-      return jsonResponse({ error: "email_provider_error", details: providerError }, 502);
-    }
-
-    return jsonResponse({ success: true });
-  } catch {
-    return jsonResponse({ error: "internal_error" }, 500);
+  } catch (e) {
+    console.error(e);
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
