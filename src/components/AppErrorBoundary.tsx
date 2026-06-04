@@ -28,9 +28,9 @@ class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundary
       return (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
           <div className="max-w-xl w-full rounded-xl border border-border bg-card p-6 md:p-8 text-center shadow-sm">
-            <h1 className="text-2xl md:text-3xl font-bold mb-3">Произошла ошибка загрузки сайта</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-3">Сайт временно недоступен</h1>
             <p className="text-sm md:text-base text-muted-foreground mb-5">
-              Обновите страницу или свяжитесь с нами по телефону: +7 (916) 133-50-56.
+              Произошла ошибка при загрузке страницы. Попробуйте обновить вкладку.
             </p>
             <button
               type="button"
