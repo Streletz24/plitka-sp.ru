@@ -6,6 +6,34 @@ import { catalogCategories } from "@/data/catalogData";
 import { ArrowLeft, FileText, Printer } from "lucide-react";
 import { computeUnitPrice, isLinearProduct } from "@/lib/pricing";
 
+type PriceRow = {
+  category: string;
+  product: string;
+  color: string;
+  description: string;
+  price: string;
+  image: string | null;
+};
+
+const PriceColorCell = ({ color, image, product }: { color: string; image: string | null; product: string }) => (
+  <div className="flex min-w-0 items-center gap-3">
+    {image ? (
+      <img
+        src={image}
+        alt={`${product} · ${color}`}
+        loading="lazy"
+        className="h-11 w-11 shrink-0 rounded-md border border-border bg-muted object-cover"
+        data-no-zoom
+      />
+    ) : (
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-dashed border-border bg-muted text-xs text-muted-foreground">
+        —
+      </span>
+    )}
+    <span className="min-w-0 break-words">{color}</span>
+  </div>
+);
+
 const Prices = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -15,7 +43,7 @@ const Prices = () => {
     n === null || n <= 0 ? "По запросу" : `${n.toLocaleString("ru-RU")} руб/${unit}`;
 
   const priceRows = useMemo(() => {
-    const rows: Array<{ category: string; product: string; color: string; description: string; price: string }> = [];
+    const rows: PriceRow[] = [];
 
     for (const category of catalogCategories) {
       for (const product of category.products) {
@@ -25,6 +53,7 @@ const Prices = () => {
           product.colors && product.colors.length > 0
             ? product.colors.map((c) => ({
                 color: c.name,
+                image: c.image ?? product.image ?? null,
                 description: c.description ?? product.description,
                 price: computeUnitPrice(
                   product.name,
@@ -35,6 +64,7 @@ const Prices = () => {
             : [
                 {
                   color: "—",
+                  image: product.image ?? null,
                   description: product.description,
                   price: computeUnitPrice(product.name, product.description, product.price),
                 },
@@ -47,6 +77,7 @@ const Prices = () => {
             color: row.color,
             description: row.description,
             price: formatPrice(row.price, unit),
+            image: row.image,
           });
         }
       }
@@ -189,6 +220,7 @@ const Prices = () => {
                         product.colors && product.colors.length > 0
                           ? product.colors.map((c) => ({
                               color: c.name,
+                              image: c.image ?? product.image ?? null,
                               description: c.description ?? product.description,
                               price: computeUnitPrice(
                                 product.name,
@@ -199,6 +231,7 @@ const Prices = () => {
                           : [
                               {
                                 color: "—",
+                                image: product.image ?? null,
                                 description: product.description,
                                 price: computeUnitPrice(product.name, product.description, product.price),
                               },
@@ -209,7 +242,10 @@ const Prices = () => {
                           className={`rounded-lg border border-border p-4 ${((pIdx + rIdx) % 2 === 0) ? "bg-card" : "bg-muted/50"}`}
                         >
                           <p className="text-sm font-semibold text-foreground">{product.name}</p>
-                          <p className="mt-1 text-sm text-foreground/80">Цвет: {row.color}</p>
+                          <div className="mt-3 text-sm text-foreground/80">
+                            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Цвет</span>
+                            <PriceColorCell color={row.color} image={row.image} product={product.name} />
+                          </div>
                           <p className="mt-1 text-sm text-foreground/70">{row.description}</p>
                           <p className="mt-2 text-sm font-semibold text-primary">{formatPrice(row.price, unit)}</p>
                         </article>
@@ -237,6 +273,7 @@ const Prices = () => {
                             product.colors && product.colors.length > 0
                               ? product.colors.map((c) => ({
                                   color: c.name,
+                                  image: c.image ?? product.image ?? null,
                                   description: c.description ?? product.description,
                                   price: computeUnitPrice(
                                     product.name,
@@ -247,6 +284,7 @@ const Prices = () => {
                               : [
                                   {
                                     color: "—",
+                                    image: product.image ?? null,
                                     description: product.description,
                                     price: computeUnitPrice(product.name, product.description, product.price),
                                   },
@@ -256,7 +294,9 @@ const Prices = () => {
                             return (
                               <tr key={`${product.id}-${rIdx}`} className={idx % 2 === 0 ? "bg-card" : "bg-muted/50"}>
                                 <td className="p-4 text-sm font-medium text-foreground">{rIdx === 0 ? product.name : ""}</td>
-                                <td className="p-4 text-sm text-foreground/80">{row.color}</td>
+                                <td className="p-4 text-sm text-foreground/80">
+                                  <PriceColorCell color={row.color} image={row.image} product={product.name} />
+                                </td>
                                 <td className="p-4 text-sm text-foreground/70">{row.description}</td>
                                 <td className="p-4 text-sm font-semibold text-primary text-right whitespace-nowrap">
                                   {formatPrice(row.price, unit)}
