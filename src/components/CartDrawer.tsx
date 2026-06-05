@@ -118,8 +118,8 @@ const CartDrawer = () => {
     }
 
     const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm"),
-      import("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm"),
+      import("html2canvas"),
+      import("jspdf"),
     ]);
 
     const date = new Date();
